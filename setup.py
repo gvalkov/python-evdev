@@ -7,6 +7,7 @@ import textwrap
 
 from os.path import abspath, dirname, join as pjoin
 from distutils.command.build import build
+from setuptools.command.develop import develop
 from setuptools import setup, Extension, Command
 
 
@@ -86,11 +87,16 @@ def create_ecodes():
                shell=True)
 
 
-# :todo: doesn't work with develop
+# :todo: figure out a smarter way to do this
 class BuildCommand(build):
     def run(self):
         create_ecodes()
         build.run(self)
+
+class DevelopCommand(develop):
+    def run(self):
+        create_ecodes()
+        develop.run(self)
 
 
 class PyTest(Command):
@@ -111,5 +117,6 @@ class PyTest(Command):
 
 kw['cmdclass']['test'] = PyTest
 kw['cmdclass']['build'] = BuildCommand
+kw['cmdclass']['develop'] = DevelopCommand
 
 setup(**kw)
