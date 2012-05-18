@@ -8,6 +8,7 @@ import textwrap
 from os.path import abspath, dirname, join as pjoin
 from distutils.command.build import build
 from setuptools.command.develop import develop
+from setuptools.command.bdist_egg import bdist_egg
 from setuptools import setup, Extension, Command
 
 
@@ -88,6 +89,7 @@ def create_ecodes():
 
 
 # :todo: figure out a smarter way to do this
+# :note: subclassing build_ext doesn't really cut it
 class BuildCommand(build):
     def run(self):
         create_ecodes()
@@ -97,6 +99,11 @@ class DevelopCommand(develop):
     def run(self):
         create_ecodes()
         develop.run(self)
+
+class BdistEggCommand(bdist_egg):
+    def run(self):
+        create_ecodes()
+        bdist_egg.run(self)
 
 
 class PyTest(Command):
@@ -118,5 +125,6 @@ class PyTest(Command):
 kw['cmdclass']['test'] = PyTest
 kw['cmdclass']['build'] = BuildCommand
 kw['cmdclass']['develop'] = DevelopCommand
+kw['cmdclass']['bdist_egg'] = BdistEggCommand
 
 setup(**kw)
