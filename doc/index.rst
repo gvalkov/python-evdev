@@ -36,8 +36,8 @@ Listing device capabilities::
     >>> { 0: [0, 1, 2], 1: [272, 273, 274, 275], 2: [0, 1, 6, 8], 4: [4] }
 
     >>> dev.capabilities(verbose=True)
-    >>> { '(EV_SYN, 0)': [('SYN_REPORT', 0), ('SYN_CONFIG', 1), ('SYN_MT_REPORT', 2)],
-    >>>   '(EV_KEY, 1)': [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274), ('BTN_SIDE', 275)], ...
+    >>> { ('EV_SYN', 0): [('SYN_REPORT', 0), ('SYN_CONFIG', 1), ('SYN_MT_REPORT', 2)],
+    >>>   ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274), ('BTN_SIDE', 275)], ...
 
 Accessing input subsystem constants::
 
@@ -178,8 +178,8 @@ Module Contents
 Similar Projects
 ----------------
 
-* python-uinput_
-* ruby-evdev_
+* `python-uinput`_
+* `ruby-evdev`_
 
 
 License
@@ -197,7 +197,7 @@ Todo
 
 * More tests.
 
-* Better uinput support (setting device capabilities as in `python-uinput_`)
+* Better uinput support (setting device capabilities as in `python-uinput`_)
 
 * Expose more input subsystem functionality (`EVIOCSKEYCODE`, `EVIOCGREP` etc)
 
@@ -213,7 +213,7 @@ Indices and Tables
 * :ref:`search`
 
 
-.. _`New BSD License`: https://raw.github.com/gvalkov/rsstail.py/master/LICENSE
+.. _`New BSD License`: https://raw.github.com/gvalkov/python-evdev/master/LICENSE
 .. _PyPi:              http://pypi.python.org/pypi/evdev
 .. _github:            https://github.com/gvalkov/python-evdev
 .. _python-uinput:     https://github.com/tuomasjjrasanen/python-uinput
