@@ -37,7 +37,7 @@ All of the provided classes have reasonable str() and repr() methods::
 # event type descriptions have been taken mot-a-mot from:
 # http://www.kernel.org/doc/Documentation/input/event-codes.txt
 
-from evdev.ecodes import KEY, SYN, REL, ABS, EV_KEY, EV_REL, EV_ABS, EV_SYN
+from evdev.ecodes import keys, KEY, SYN, REL, ABS, EV_KEY, EV_REL, EV_ABS, EV_SYN
 
 
 class InputEvent(object):
@@ -97,7 +97,7 @@ class KeyEvent(object):
         elif event.value == 1:
             self.keystate = KeyEvent.key_down
 
-        self.keycode  = KEY[event.code]  # :todo:
+        self.keycode  = keys[event.code]  # :todo:
         self.scancode = event.code
 
         #: :class:`InputEvent` instance
