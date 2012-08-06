@@ -127,4 +127,5 @@ kw['cmdclass']['build'] = BuildCommand
 kw['cmdclass']['develop'] = DevelopCommand
 kw['cmdclass']['bdist_egg'] = BdistEggCommand
 
-setup(**kw)
+if __name__ == '__main__':
+    setup(**kw)
