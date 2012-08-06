@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 '''
-This module provides the :class:`InputEvent` class, which closely resembles the
-`input_event` C struct in `linux/input.h`:
+This module provides the :class:`InputEvent` class, which closely
+resembles the ``input_event`` C struct in ``linux/input.h``:
 
 .. code-block:: c
 
@@ -21,7 +21,7 @@ Assuming you use the provided :func:`evdev.util.categorize()` function to
 categorize events according to type, adding or replacing a class for a specific
 event type becomes a matter of modifying :data:`event_factory`.
 
-All of the provided classes have reasonable str() and repr() methods::
+All of the provided classes have reasonable ``str()`` and ``repr()`` methods::
 
     >>> print(event)
     event at 1337197425.477827, code 04, type 04, val 458792
@@ -42,7 +42,7 @@ from evdev.ecodes import keys, KEY, SYN, REL, ABS, EV_KEY, EV_REL, EV_ABS, EV_SY
 
 class InputEvent(object):
     '''
-    A generic input event. This closely resembles the input_event C struct.
+    A generic input event. This closely resembles the ``input_event`` C struct.
     '''
 
     __slots__ = 'sec', 'usec', 'type', 'code', 'value'
@@ -54,13 +54,13 @@ class InputEvent(object):
         #: Microsecond portion of the timestamp
         self.usec = usec
 
-        #: Event type - one of ecodes.EV_*
+        #: Event type - one of ``ecodes.EV_*``
         self.type = type
 
-        #: Event code - probably one of :data:`evdev.ecodes.bytype`
+        #: Event code related to the event type
         self.code = code
 
-        #: Event value
+        #: Event value related to the event type
         self.value = value
 
     def timestamp(self):

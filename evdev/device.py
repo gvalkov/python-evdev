@@ -40,7 +40,7 @@ class InputDevice(object):
     def __init__(self, dev, nophys=False):
         '''
         :param dev: path to input device
-        :param nophys: do not do a EVIOCGPHYS ioctl (needed by uinput)
+        :param nophys: do not do a ``EVIOCGPHYS`` ioctl (needed by uinput)
         '''
 
         #: Path to input device
@@ -119,9 +119,9 @@ class InputDevice(object):
 
     def fileno(self):
         '''
-        Returns file descriptor to event device. This makes passing InputDevice
-        instances directly to :func:`select.select()` and
-        :class:`asyncore.file_dispatcher` possible.
+        Returns file descriptor to event device. This makes passing
+        ``InputDevice`` instances directly to :func:`select.select()`
+        and :class:`asyncore.file_dispatcher` possible.
         '''
 
         return self.fd

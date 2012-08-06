@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 '''
-This modules exposes most integer constants defined in `linux/input.h`.
+This modules exposes most integer constants defined in ``linux/input.h``.
 
 Exposed constants::
 

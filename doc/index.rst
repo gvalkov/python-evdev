@@ -1,21 +1,22 @@
 *evdev* documentation
 ========================================
 
-:mod:`evdev` provides bindings to the generic input event interface in Linux.
-The *evdev* interface serves the purpose of passing events generated in the
-kernel directly to userspace through character devices that are typically
-located in `/dev/input/`. 
+:mod:`evdev` provides bindings to the generic input event interface in
+Linux.  The *evdev* interface serves the purpose of passing events
+generated in the kernel directly to userspace through character
+devices that are typically located in ``/dev/input/``.
 
-:mod:`evdev` also comes with bindings to `uinput`, the userspace input
-subsystem. `Uinput` allows userspace programs to create and handle input
-devices from which they can inject events directly into the input subsystem.
+:mod:`evdev` also comes with bindings to ``uinput``, the userspace
+input subsystem. ``Uinput`` allows userspace programs to create and
+handle input devices from which they can inject events directly into
+the input subsystem.
 
 
 Tutorial
 --------
 
 Listing accessible event devices::
-    
+
     >>> from evdev import InputDevice, list_devices
 
     >>> devices = map(InputDevice, list_devices())
@@ -24,7 +25,7 @@ Listing accessible event devices::
     ...    print( '%-20s %-32s %s' % (dev.fn, dev.name, dev.phys) )
     /dev/input/event1    Dell Dell USB Keyboard           usb-0000:00:12.1-2/input0
     /dev/input/event0    Dell Premium USB Optical Mouse   usb-0000:00:12.0-2/input0
-         
+
 Listing device capabilities::
 
     >>> dev = InputDevice('/dev/input/event0')
@@ -42,11 +43,11 @@ Listing device capabilities::
 Accessing input subsystem constants::
 
     >>> from evdev import ecodes
-    >>> ecodes.KEY_A, ecodes.ecodes['KEY_A'] 
+    >>> ecodes.KEY_A, ecodes.ecodes['KEY_A']
     (30, 30)
     >>> ecodes.KEY[30]
     'KEY_A'
-    >>> ecodes.bytype[ecodes.EV_KEY][30] 
+    >>> ecodes.bytype[ecodes.EV_KEY][30]
     'KEY_A'
 
 
@@ -82,7 +83,7 @@ Reading events with asyncore::
     ...     def __init__(self, device):
     ...         self.device = device
     ...         file_dispatcher.__init__(self, device)
-    ...     
+    ...
     ...     def recv(self, ign=None):
     ...         return self.device.read()
     ...
@@ -128,14 +129,14 @@ headers as well as the kernel headers.
 On a Debian compatible OS:
 
 .. code-block:: bash
-    
+
     $ apt-get install python-dev
     $ apt-get install linux-headers-$(uname -r)
 
 On a Redhat compatible OS:
 
 .. code-block:: bash
-    
+
     $ yum install python-devel
     $ yum install kernel-headers-$(uname -r)
 
@@ -160,7 +161,7 @@ Alternatively, :mod:`evdev` can be installed like any other
 .. code-block:: bash
 
     $ git clone github.com/gvalkov/python-evdev.git
-    $ cd python-evdev 
+    $ cd python-evdev
     $ git checkout $versiontag
     $ python setup.py install
 
@@ -171,7 +172,7 @@ Module Contents
 
 .. toctree::
    :maxdepth: 2
-   
+
    moduledoc
 
 
@@ -192,16 +193,16 @@ Todo
 ----
 
 * Use libudev to find the uinput device node as well as the other input
-  devices. Their locations are currently assumed to be `/dev/uinput` and
-  `/dev/input/*`.
+  devices. Their locations are currently assumed to be ``/dev/uinput`` and
+  ``/dev/input/*``.
 
 * More tests.
 
 * Better uinput support (setting device capabilities as in `python-uinput`_)
 
-* Expose more input subsystem functionality (`EVIOCSKEYCODE`, `EVIOCGREP` etc)
+* Expose more input subsystem functionality (``EVIOCSKEYCODE``, ``EVIOCGREP`` etc)
 
-* Figure out if using `linux/input.h` and other kernel headers in your
+* Figure out if using ``linux/input.h`` and other kernel headers in your
   userspace program binds it to the GPL2.
 
 
