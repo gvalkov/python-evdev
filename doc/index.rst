@@ -64,7 +64,7 @@ Reading events::
     ...    r,w,x = select([dev], [], [])
     ...    for event in dev.read():
     ...        if event.type == ecodes.EV_KEY:
-    ...            print(categorize(e))
+    ...            print(categorize(event))
     ... # hitting a and holding space
     key event at 1337016188.396030, 30 (KEY_A), down
     key event at 1337016188.492033, 30 (KEY_A), up
