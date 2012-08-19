@@ -50,11 +50,15 @@ def categorize(event):
 
 def resolve_ecodes(typecodemap, unknown='?'):
     '''
-    Resolve event codes and types to their verbose names:
-    {            1  : [272, 273, 274] } =>
-    { ('EV_KEY', 1) : [('BTN_MOUSE', 272),
-                       ('BTN_RIGHT', 273),
-                       ('BTN_MIDDLE', 273)] }
+    Resolve event codes and types to their verbose names.
+
+    :param typecodemap: mapping of event types to lists of event codes
+    :param unknown: symbol to which unknown types or codes will be resolved
+
+    Example::
+
+        resolve_ecodes({ 1 : [272, 273, 274] })
+        { ('EV_KEY', 1) : [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274)] }
     '''
 
     for type, codes in typecodemap.items():

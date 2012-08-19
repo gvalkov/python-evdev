@@ -18,7 +18,7 @@ evdev.util
 ^^^^^^^^^^
 
 .. automodule:: evdev.util
-   :members: list_devices, is_device, categorize 
+   :members: list_devices, is_device, categorize, resolve_ecodes
 
 evdev.ecodes
 ^^^^^^^^^^^^
