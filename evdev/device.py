@@ -2,7 +2,7 @@
 
 import os
 
-from evdev import _input, ecodes
+from evdev import _input, ecodes, util
 from evdev.events import InputEvent
 
 
@@ -81,23 +81,7 @@ class InputDevice(object):
         '''
 
         if verbose:
-            cap = {}
-            for type, codes in self._capabilities.items():
-                type_name = ecodes.EV[type]
-
-                # ecodes.keys are a combination of KEY_ and BTN_ codes
-                if type == ecodes.EV_KEY:
-                    code_names = ecodes.keys
-                else:
-                    code_names = getattr(ecodes, type_name.split('_')[-1])
-
-                codes_res = []
-                for i in codes:
-                    l = [(code_names[i], i) if i in code_names else ('?', i)]
-                    codes_res.append(l)
-
-                cap[(type_name, type)] = codes_res
-            return cap
+            return dict(util.resolve_ecodes(self._capabilities))
         else:
             return self._capabilities
 

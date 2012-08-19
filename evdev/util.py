@@ -4,6 +4,7 @@ import os
 import stat
 import glob
 
+from evdev import ecodes
 from evdev.events import event_factory
 
 
@@ -47,4 +48,30 @@ def categorize(event):
         return event
 
 
-__all__ = list_devices, is_device, categorize
+def resolve_ecodes(typecodemap, unknown='?'):
+    '''
+    Resolve event codes and types to their verbose names:
+    {            1  : [272, 273, 274] } =>
+    { ('EV_KEY', 1) : [('BTN_MOUSE', 272),
+                       ('BTN_RIGHT', 273),
+                       ('BTN_MIDDLE', 273)] }
+    '''
+
+    for type, codes in typecodemap.items():
+        type_name = ecodes.EV[type]
+
+        # ecodes.keys are a combination of KEY_ and BTN_ codes
+        if type == ecodes.EV_KEY:
+            code_names = ecodes.keys
+        else:
+            code_names = getattr(ecodes, type_name.split('_')[-1])
+
+        codes_res = []
+        for i in codes:
+            l = [(code_names[i], i) if i in code_names else (unknown, i)]
+            codes_res.append(l)
+
+        yield (type_name, type), codes_res
+
+
+__all__ = list_devices, is_device, categorize, resolve_ecodes
