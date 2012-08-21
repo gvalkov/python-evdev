@@ -76,8 +76,7 @@ uinput_create(PyObject *self, PyObject *args) {
 	if (ioctl(fd, UI_DEV_CREATE) < 0)
         goto on_err;
 
-
-    return Py_BuildValue("i", 1);
+    Py_RETURN_NONE;
 
     on_err:
         _uinput_close(fd);
@@ -99,7 +98,7 @@ uinput_close(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    return Py_BuildValue("i", 1);
+    Py_RETURN_NONE;
 }
 
 
@@ -124,7 +123,7 @@ uinput_write(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    return Py_BuildValue("i", 1);
+    Py_RETURN_NONE;
 }
 
 
@@ -158,7 +157,7 @@ uinput_enable_event(PyObject *self, PyObject *args)
     if (ioctl(fd, req, code) < 0)
         goto on_err;
 
-    return Py_BuildValue("i", 1);
+    Py_RETURN_NONE;
 
     on_err:
         _uinput_close(fd);
