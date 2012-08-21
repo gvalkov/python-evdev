@@ -16,6 +16,15 @@ evdev.device
    :special-members:
    :member-order: groupwise
 
+evdev.uinput
+^^^^^^^^^^^^
+
+.. automodule:: evdev.uinput
+   :members: UInput
+   :undoc-members:
+   :special-members:
+   :member-order: groupwise
+
 evdev.util
 ^^^^^^^^^^
 
@@ -28,4 +37,3 @@ evdev.ecodes
 
 .. automodule:: evdev.ecodes
    :members:
-   :members: 

@@ -7,72 +7,81 @@ from evdev import uinput, ecodes, events, device, util
 
 
 uinput_options = {
-    'name'      : 'test-uinput-device',
+    'name'      : 'test-py-evdev-uinput',
+    'bustype'   : ecodes.BUS_USB,
     'vendor'    : 0x1100,
     'product'   : 0x2200,
     'version'   : 0x3300,
     'mouserel'  : True,
     'mouseabs'  : False,
-    'keys'      : True,
-    'fn'        : '/dev/uinput',
 }
 
 
-def test_open():
-    ui = uinput.UInput(**uinput_options)
-    device_exists()
-    ui.close()
-
-def test_with_open():
-    with uinput.UInput(**uinput_options):
-        pass
-
-def test_maxnamelen():
-    o = uinput_options.copy()
-    with raises(uinput.UInputError):
-        o['name'] = 'a' * 150
-        uinput.UInput(**o)
-
-def test_write():
-    ui = uinput.UInput(**uinput_options)
-
-    dev = find_device_byname(uinput_options['name'])
-    assert dev, 'could not find uinput device "%s"' % uinput_options['name']
-
-    ev1 = events.InputEvent(1334414993, 274296, ecodes.EV_KEY, ecodes.KEY_P, 1) # KEY_P down
-    ev2 = events.InputEvent(1334414993, 274396, ecodes.EV_KEY, ecodes.KEY_P, 1) # KEY_P down
-    ev3 = events.InputEvent(1334414993, 274296, ecodes.EV_KEY, ecodes.KEY_P, 0) # KEY_P up
-
-    while True:
-        r, w, x = select([dev], [dev], [])
-
-        if w:
-            ui.write(ev1)
-            ui.write(ev2)
-            ui.write(ev3)
-            ui.syn()
-
-        if r:
-            assert dev.read_one().code == ev1.code
-            assert dev.read_one().code == ev3.code
-            break
-
-    dev.close()
-    ui.close()
+def pytest_funcarg__c(request):
+    return uinput_options.copy()
 
 
-def device_exists():
-    o = uinput_options
-    match = 'I: Bus=0003 Vendor=%04hx Product=%04hx Version=%04hx' % \
-            (o['vendor'], o['product'], o['version'])
+def device_exists(bustype, vendor, product, version):
+    match = 'I: Bus=%04hx Vendor=%04hx Product=%04hx Version=%04hx' % \
+            (bustype, vendor, product, version)
 
     for line in open('/proc/bus/input/devices'):
-        if line.strip() == match: break
-    else:
-        assert False, '%s missing from /proc/bus/input/devices' % match
+        if line.strip() == match: return True
 
-def find_device_byname(name):
-    for fn in util.list_devices('/dev/input/'):
-        d = device.InputDevice(fn, nophys=True)
-        if d.name == name:
-            return d
+    return False
+
+
+def test_open(c):
+    ui = uinput.UInput(**c)
+    args = (c['bustype'], c['vendor'], c['product'], c['version'])
+    assert device_exists(*args)
+    ui.close()
+    assert not device_exists(*args)
+
+def test_open_context(c):
+    args = (c['bustype'], c['vendor'], c['product'], c['version'])
+    with uinput.UInput(**c):
+        assert device_exists(*args)
+    assert not device_exists(*args)
+
+def test_maxnamelen(c):
+    with raises(uinput.UInputError):
+        c['name'] = 'a' * 150
+        uinput.UInput(**c)
+
+def test_enable_events(c):
+    e = ecodes
+    c['events'] = {e.EV_KEY : [e.KEY_A, e.KEY_B, e.KEY_C]}
+
+    with uinput.UInput(**c) as ui:
+        cap = ui.capabilities()
+        assert e.EV_KEY in cap
+        assert sorted(cap[e.EV_KEY]) == sorted(c['events'][e.EV_KEY])
+
+def test_write(c):
+    with uinput.UInput(**c) as ui:
+        d = ui.device
+        wrote = False
+
+        while True:
+            r, w, x = select([d], [d], [])
+
+            if w and not wrote:
+                ui.write(ecodes.EV_KEY, ecodes.KEY_P, 1) # KEY_P down
+                ui.write(ecodes.EV_KEY, ecodes.KEY_P, 1) # KEY_P down
+                ui.write(ecodes.EV_KEY, ecodes.KEY_P, 0) # KEY_P up
+                ui.write(ecodes.EV_KEY, ecodes.KEY_A, 1) # KEY_A down
+                ui.write(ecodes.EV_KEY, ecodes.KEY_A, 2) # KEY_A hold
+                ui.write(ecodes.EV_KEY, ecodes.KEY_A, 0) # KEY_P up
+                ui.syn()
+                wrote = True
+
+            if r:
+                evs = list(d.read())
+
+                assert evs[0].code == ecodes.KEY_P and evs[0].value == 1
+                assert evs[1].code == ecodes.KEY_P and evs[1].value == 0
+                assert evs[2].code == ecodes.KEY_A and evs[2].value == 1
+                assert evs[3].code == ecodes.KEY_A and evs[3].value == 2
+                assert evs[4].code == ecodes.KEY_A and evs[4].value == 0
+                break

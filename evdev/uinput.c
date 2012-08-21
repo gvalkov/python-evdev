@@ -12,63 +12,79 @@
 #include <linux/uinput.h>
 
 
-static int uinput_fd = -1;
+int _uinput_close(int fd)
+{
+    if (ioctl(fd, UI_DEV_DESTROY) < 0) {
+        int oerrno = errno;
+        close(fd);
+        errno = oerrno;
+        return -1;
+    }
 
-static void _uinput_close(void) {
-	if (uinput_fd >= 0) {
-		close(uinput_fd);
-		uinput_fd = -1;
-	}
+    return close(fd);
 }
 
 
 static PyObject *
 uinput_open(PyObject *self, PyObject *args)
 {
-    struct uinput_user_dev uidev;
+    const char* devnode;
 
-    __u16 vendor, product, version;
-    const char* name;
-    const char* uinputdev_fn;
-
-    int ret = PyArg_ParseTuple(args, "shhhs", &name, &vendor, &product, &version, &uinputdev_fn);
+    int ret = PyArg_ParseTuple(args, "s", &devnode);
     if (!ret) return NULL;
 
-    uinput_fd = open(uinputdev_fn, O_WRONLY | O_NONBLOCK);
-    if (uinput_fd < 0) {
+    int fd = open(devnode, O_WRONLY | O_NONBLOCK);
+    if (fd < 0) {
         PyErr_SetString(PyExc_IOError, "could not open uinput device in write mode");
         return NULL;
     }
 
+    return Py_BuildValue("i", fd);
+}
+
+
+static PyObject *
+uinput_create(PyObject *self, PyObject *args) {
+    int fd;
+    __u16 vendor, product, version, bustype;
+
+    struct uinput_user_dev uidev;
+    const char* name;
+
+    int ret = PyArg_ParseTuple(args, "ishhhh", &fd, &name, &vendor,
+                               &product, &version, &bustype);
+    if (!ret) return NULL;
+
     memset(&uidev, 0, sizeof(uidev));
     strncpy(uidev.name, name, UINPUT_MAX_NAME_SIZE);
-    uidev.id.bustype = BUS_USB;
     uidev.id.vendor  = vendor;
     uidev.id.product = product;
     uidev.id.version = version;
+    uidev.id.bustype = bustype;
 
-    if (write(uinput_fd, &uidev, sizeof(uidev)) != sizeof(uidev))
+    if (write(fd, &uidev, sizeof(uidev)) != sizeof(uidev))
         goto on_err;
 
-	if (ioctl(uinput_fd, UI_SET_EVBIT, EV_KEY) < 0)
+	/* if (ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0) */
+    /*     goto on_err; */
+    /* int i; */
+	/* for (i=0; i<KEY_MAX && fd; i++) { */
+	/* 	if (ioctl(fd, UI_SET_KEYBIT, i) < 0) */
+    /*         goto on_err; */
+	/* } */
+
+	if (ioctl(fd, UI_DEV_CREATE) < 0)
         goto on_err;
 
-    int i;
-	for (i=0; i<KEY_MAX && uinput_fd; i++) {
-		if (ioctl(uinput_fd, UI_SET_KEYBIT, i) < 0)
-            goto on_err;
-	}
 
-	if (ioctl(uinput_fd, UI_DEV_CREATE) < 0)
-        goto on_err;
-
-    return Py_BuildValue("i", uinput_fd);
+    return Py_BuildValue("i", 1);
 
     on_err:
-        _uinput_close();
+        _uinput_close(fd);
         PyErr_SetFromErrno(PyExc_IOError);
         return NULL;
 }
+
 
 static PyObject *
 uinput_close(PyObject *self, PyObject *args)
@@ -78,14 +94,14 @@ uinput_close(PyObject *self, PyObject *args)
     int ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
 
-    ret = ioctl(fd, UI_DEV_DESTROY);
-    if (ret < 0) {
+    if (_uinput_close(fd) < 0) {
         PyErr_SetFromErrno(PyExc_IOError);
         return NULL;
     }
 
     return Py_BuildValue("i", 1);
 }
+
 
 static PyObject *
 uinput_write(PyObject *self, PyObject *args)
@@ -97,30 +113,78 @@ uinput_write(PyObject *self, PyObject *args)
 
     struct input_event event;
     memset(&event, 0, sizeof(event));
+    gettimeofday(&event.time, 0);
     event.type = type;
     event.code = code;
     event.value = value;
 
     if (write(fd, &event, sizeof(event)) != sizeof(event)) {
-        PyErr_SetString(PyExc_IOError, "error writing event to uinput device"); // @todo: elaborate
+        // @todo: elaborate
+        PyErr_SetString(PyExc_IOError, "error writing event to uinput device");
         return NULL;
-    }  
+    }
 
     return Py_BuildValue("i", 1);
 }
+
+
+static PyObject *
+uinput_enable_event(PyObject *self, PyObject *args)
+{
+    int fd;
+    __u16 type, code;
+    unsigned long req;
+
+    int ret = PyArg_ParseTuple(args, "ihh", &fd, &type, &code);
+    if (!ret) return NULL;
+
+    switch (type) {
+        case EV_KEY: req = UI_SET_KEYBIT; break;
+        case EV_ABS: req = UI_SET_ABSBIT; break;
+        case EV_REL: req = UI_SET_RELBIT; break;
+        case EV_MSC: req = UI_SET_MSCBIT; break;
+        case EV_SW:  req = UI_SET_SWBIT;  break;
+        case EV_LED: req = UI_SET_LEDBIT; break;
+        case EV_FF:  req = UI_SET_FFBIT;  break;
+        case EV_SND: req = UI_SET_SNDBIT; break;
+        default:
+            errno = EINVAL;
+            goto on_err;
+    }
+
+    if (ioctl(fd, UI_SET_EVBIT, type) < 0)
+        goto on_err;
+
+    if (ioctl(fd, req, code) < 0)
+        goto on_err;
+
+    return Py_BuildValue("i", 1);
+
+    on_err:
+        _uinput_close(fd);
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+}
+
 
 #define MODULE_NAME "_uinput"
 #define MODULE_HELP "Python bindings for parts of linux/uinput.c"
 
 static PyMethodDef MethodTable[] = {
     { "open",  uinput_open, METH_VARARGS,
-      "Create uinput device."},
+      "Open uinput device node."},
+
+    { "create",  uinput_create, METH_VARARGS,
+      "Create an uinput device."},
 
     { "close",  uinput_close, METH_VARARGS,
       "Destroy uinput device."},
 
     { "write",  uinput_write, METH_VARARGS,
       "Write event to uinput device."},
+
+    { "enable", uinput_enable_event, METH_VARARGS,
+      "Enable a type of event."},
 
     { NULL, NULL, 0, NULL}
 };
