@@ -70,12 +70,12 @@ def resolve_ecodes(typecodemap, unknown='?'):
         else:
             code_names = getattr(ecodes, type_name.split('_')[-1])
 
-        codes_res = []
+        res = []
         for i in codes:
-            l = [(code_names[i], i) if i in code_names else (unknown, i)]
-            codes_res.append(l)
+            l = (code_names[i], i) if i in code_names else (unknown, i)
+            res.append(l)
 
-        yield (type_name, type), codes_res
+        yield (type_name, type), res
 
 
 __all__ = list_devices, is_device, categorize, resolve_ecodes
