@@ -130,7 +130,7 @@ event_unpack(PyObject *self, PyObject *args)
 static PyObject *
 ioctl_capabilities(PyObject *self, PyObject *args)
 {
-    int fd, i, j;
+    int fd, ev_type, ev_code;
     char ev_bits[EV_MAX/8], code_bits[KEY_MAX/8];
 
     int ret = PyArg_ParseTuple(args, "i", &fd);
@@ -152,16 +152,16 @@ ioctl_capabilities(PyObject *self, PyObject *args)
         goto on_err;
 
     // Build a dictionary of the device's capabilities
-    for (i = 0 ; i < EV_MAX ; i++) {
-        if (test_bit(ev_bits, i)) {
-            capability = PyLong_FromLong(i);
+    for (ev_type = 0 ; ev_type < EV_MAX ; ev_type++) {
+        if (test_bit(ev_bits, ev_type)) {
+            capability = PyLong_FromLong(ev_type);
             eventcodes = PyList_New(0);
 
             memset(&code_bits, 0, sizeof(code_bits));
-            ioctl(_fd, EVIOCGBIT(i, KEY_MAX), code_bits);
-            for (j = 0; j < KEY_MAX; j++) {
-                if (test_bit(code_bits, j)) {
-                    PyList_Append(eventcodes, PyLong_FromLong(j));
+            ioctl(_fd, EVIOCGBIT(ev_type, KEY_MAX), code_bits);
+            for (ev_code = 0; ev_code < KEY_MAX; ev_code++) {
+                if (test_bit(code_bits, ev_code)) {
+                    PyList_Append(eventcodes, PyLong_FromLong(ev_code));
                 }
             }
 
