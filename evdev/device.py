@@ -61,7 +61,7 @@ class InputDevice(object):
 
         #: The physical topology of the device
         self.phys = info_res[5] if not nophys else ''
-        self._capabilities = info_res[6] if not nophys else {}
+        self._capabilities = info_res[6]
 
     def capabilities(self, verbose=False):
         '''
