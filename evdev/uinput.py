@@ -20,17 +20,13 @@ class UInput(object):
 
     __slots__ = (
         'name', 'vendor', 'product', 'version', 'bustype',
-        'mouserel', 'mouseabs', 'events', 'devnode', 'fd',
-        'device',
+        'events', 'devnode', 'fd', 'device',
     )
 
     def __init__(self,
                  events=None,
                  name='py-evdev-uinput',
-                 vendor=0x1, product=0x1, version=0x1,
-                 bustype=0x3,
-                 mouserel=True,
-                 mouseabs=False,
+                 vendor=0x1, product=0x1, version=0x1, bustype=0x3,
                  devnode='/dev/uinput'):
         '''
 
@@ -59,9 +55,6 @@ class UInput(object):
         self.version = version   #: device version identifier
         self.bustype = bustype   #: device bustype - eg. ``BUS_USB``
         self.devnode = devnode   #: uinput device node - eg. ``/dev/uinput/``
-
-        self.mouserel = mouserel
-        self.mouseabs = mouseabs
 
         if not events: events = {ecodes.EV_KEY: ecodes.keys.keys()}
 
