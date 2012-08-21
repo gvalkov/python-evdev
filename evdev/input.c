@@ -1,10 +1,10 @@
 
 /*
  * Python bindings to certain linux input subsystem functions.
- * 
+ *
  * While everything here can be implemented in pure Python with struct and
  * fcntl.ioctl, imho, it is much more straightforward to do so in C.
- * 
+ *
  */
 
 #include <Python.h>
@@ -51,7 +51,7 @@ device_read(PyObject *self, PyObject *args)
     struct input_event event;
 
     // get device file descriptor (O_RDONLY|O_NONBLOCK)
-    if (PyArg_ParseTuple(args, "i", &fd) < 0) 
+    if (PyArg_ParseTuple(args, "i", &fd) < 0)
         return NULL;
 
     read(fd, &event, sizeof(event));
@@ -62,7 +62,7 @@ device_read(PyObject *self, PyObject *args)
         return Py_None;
     }
 
-    PyObject* sec  = PyLong_FromLong(event.time.tv_sec); 
+    PyObject* sec  = PyLong_FromLong(event.time.tv_sec);
     PyObject* usec = PyLong_FromLong(event.time.tv_usec);
     PyObject* val  = PyLong_FromLong(event.value);
 
@@ -70,7 +70,7 @@ device_read(PyObject *self, PyObject *args)
 }
 
 
-// Read multiple input events from a device and return a list of tuples 
+// Read multiple input events from a device and return a list of tuples
 static PyObject *
 device_read_many(PyObject *self, PyObject *args)
 {
@@ -80,7 +80,7 @@ device_read_many(PyObject *self, PyObject *args)
     int ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
 
-    PyObject* event_list = PyList_New(0); 
+    PyObject* event_list = PyList_New(0);
     PyObject* py_input_event = NULL;
     PyObject* sec  = NULL;
     PyObject* usec = NULL;
@@ -95,7 +95,7 @@ device_read_many(PyObject *self, PyObject *args)
 
     // Construct a list of event tuples, which we'll make sense of in Python
     for (i = 0 ; i < nread/event_size ; i++) {
-        sec  = PyLong_FromLong(event[i].time.tv_sec); 
+        sec  = PyLong_FromLong(event[i].time.tv_sec);
         usec = PyLong_FromLong(event[i].time.tv_usec);
         val  = PyLong_FromLong(event[i].value);
 
@@ -151,17 +151,17 @@ ioctl_devinfo(PyObject *self, PyObject *args)
 
     if (ioctl(fd, EVIOCGID, &iid) < 0)                 goto on_err;
     if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0) goto on_err;
-    if (ioctl(fd, EVIOCGBIT(0, EV_MAX), ev_mask) < 0)  goto on_err; 
+    if (ioctl(fd, EVIOCGBIT(0, EV_MAX), ev_mask) < 0)  goto on_err;
 
     // Build a dictionary of the device's capabilities
     for (i = 0 ; i < EV_MAX ; i++) {
         if (test_bit(ev_mask, i)) {
-            capability = PyLong_FromLong(i); 
+            capability = PyLong_FromLong(i);
             eventcodes = PyList_New(0);
 
             memset(&key_mask, 0, sizeof(key_mask));
             ioctl(fd, EVIOCGBIT(i, KEY_MAX), key_mask);
-            for (j = 0; j < KEY_MAX; j++) 
+            for (j = 0; j < KEY_MAX; j++)
                 if (test_bit(key_mask, j))
                     PyList_Append(eventcodes, PyLong_FromLong(j));
 
@@ -170,7 +170,7 @@ ioctl_devinfo(PyObject *self, PyObject *args)
     }
 
     // Uinput devices do not have a physical topology associated with them
-    if (!nophys) 
+    if (!nophys)
         if (ioctl(fd, EVIOCGPHYS(sizeof(phys)), phys) < 0) goto on_err;
     else
         phys[0] = ' ';

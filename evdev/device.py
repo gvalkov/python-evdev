@@ -103,10 +103,10 @@ class InputDevice(object):
 
     def fileno(self):
         '''
-        Returns file descriptor to event device. This makes passing
-        ``InputDevice`` instances directly to :func:`select.select()`
-        and :class:`asyncore.file_dispatcher` possible.
-        '''
+        Returns the file descriptor to the event device. This makes
+        passing ``InputDevice`` instances directly to
+        :func:`select.select()` and :class:`asyncore.file_dispatcher`
+        possible. '''
 
         return self.fd
 
