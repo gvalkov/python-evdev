@@ -45,10 +45,16 @@ for k,v in getmembers(_ecodes):
             g.setdefault(i, {})[v] = k
             ecodes[k] = v
 
+
 #: keys are a combination of all BTN and KEY codes
 keys = {}
-keys.update(KEY)
 keys.update(BTN)
+keys.update(KEY)
+
+# make keys save to use for the default list of uinput device
+# capabilities
+del keys[_ecodes.KEY_MAX]
+del keys[_ecodes.KEY_CNT]
 
 #: mapping of event types to other value/name mappings
 bytype = {

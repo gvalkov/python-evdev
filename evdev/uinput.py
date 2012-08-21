@@ -63,8 +63,7 @@ class UInput(object):
         self.mouserel = mouserel
         self.mouseabs = mouseabs
 
-        if not events:
-            events = {ecodes.EV_KEY : ecodes.KEY.keys()}
+        if not events: events = {ecodes.EV_KEY: ecodes.keys.keys()}
 
         self._verify()
 
@@ -80,6 +79,8 @@ class UInput(object):
         # create uinput device
         _uinput.create(self.fd, name, vendor, product, version, bustype)
 
+        #: an :class:`InputDevice <evdev.device.InputDevice>` instance
+        # to the fake input device
         self.device = self._find_device()
 
     def __enter__(self):
@@ -184,7 +185,7 @@ class UInput(object):
             raise UInputError(msg.format(_uinput.maxnamelen))
 
     def _find_device(self):
-        # :todo: use udev
+        #:todo: use udev
         for fn in util.list_devices('/dev/input/'):
             d = device.InputDevice(fn, nophys=True)
             if d.name == self.name:
