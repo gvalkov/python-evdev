@@ -56,7 +56,12 @@ class UInput(object):
         self.bustype = bustype   #: device bustype - eg. ``BUS_USB``
         self.devnode = devnode   #: uinput device node - eg. ``/dev/uinput/``
 
-        if not events: events = {ecodes.EV_KEY: ecodes.keys.keys()}
+        if not events:
+             events = {ecodes.EV_KEY: ecodes.keys.keys()}
+
+        # the min, max, fuzz and flat values for the absolute axis for
+        # a given code
+        absdata = []
 
         self._verify()
 
@@ -66,11 +71,18 @@ class UInput(object):
         # set device capabilities
         for etype, codes in events.items():
             for code in codes:
+                # handle max,min,fuzz,flat
+                if isinstance(code, (tuple, list, device.AbsInfo)):
+                    # flatten (ABS_Y, (0,255,0,0)) to (ABS_Y,0,255,0,0)
+                    f = [code[0]] ; f += code[1]
+                    absdata.append(f)
+                    code = code[0]
+
                 #:todo: a lot of unnecessary packing/unpacking
                 _uinput.enable(self.fd, etype, code)
 
         # create uinput device
-        _uinput.create(self.fd, name, vendor, product, version, bustype)
+        _uinput.create(self.fd, name, vendor, product, version, bustype, absdata)
 
         #: an :class:`InputDevice <evdev.device.InputDevice>` instance
         # to the fake input device

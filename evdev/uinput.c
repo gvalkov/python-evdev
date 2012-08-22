@@ -45,14 +45,16 @@ uinput_open(PyObject *self, PyObject *args)
 
 static PyObject *
 uinput_create(PyObject *self, PyObject *args) {
-    int fd;
+    int fd, len, i, abscode;
     __u16 vendor, product, version, bustype;
+
+    PyObject *absdata = NULL, *item = NULL;
 
     struct uinput_user_dev uidev;
     const char* name;
 
-    int ret = PyArg_ParseTuple(args, "ishhhh", &fd, &name, &vendor,
-                               &product, &version, &bustype);
+    int ret = PyArg_ParseTuple(args, "ishhhhO", &fd, &name, &vendor,
+                               &product, &version, &bustype, &absdata);
     if (!ret) return NULL;
 
     memset(&uidev, 0, sizeof(uidev));
@@ -61,6 +63,18 @@ uinput_create(PyObject *self, PyObject *args) {
     uidev.id.product = product;
     uidev.id.version = version;
     uidev.id.bustype = bustype;
+
+    len = PyList_Size(absdata);
+    for (i=0; i<len; i++) {
+        // item -> (ABS_X, 0, 255, 0, 0)
+        item = PyList_GetItem(absdata, i);
+        abscode = (int)PyLong_AsLong(PyList_GetItem(item, 0));
+
+        uidev.absmin[abscode]  = PyLong_AsLong(PyList_GetItem(item, 1));
+        uidev.absmax[abscode]  = PyLong_AsLong(PyList_GetItem(item, 2));
+        uidev.absfuzz[abscode] = PyLong_AsLong(PyList_GetItem(item, 3));
+        uidev.absflat[abscode] = PyLong_AsLong(PyList_GetItem(item, 4));
+    }
 
     if (write(fd, &uidev, sizeof(uidev)) != sizeof(uidev))
         goto on_err;
