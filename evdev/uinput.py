@@ -164,9 +164,9 @@ class UInput(object):
 
         _uinput.write(self.fd, ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
 
-    def capabilities(self, verbose=False):
+    def capabilities(self, verbose=False, absinfo=True):
         '''See :func:`capabilities <evdev.device.InputDevice.capabilities>`.'''
-        return self.device.capabilities(verbose)
+        return self.device.capabilities(verbose, absinfo)
 
     def _verify(self):
         ''' Verify that an uinput device exists and is readable and writable
