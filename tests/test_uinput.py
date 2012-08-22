@@ -12,8 +12,6 @@ uinput_options = {
     'vendor'    : 0x1100,
     'product'   : 0x2200,
     'version'   : 0x3300,
-    'mouserel'  : True,
-    'mouseabs'  : False,
 }
 
 
@@ -57,6 +55,25 @@ def test_enable_events(c):
         cap = ui.capabilities()
         assert e.EV_KEY in cap
         assert sorted(cap[e.EV_KEY]) == sorted(c['events'][e.EV_KEY])
+
+def test_abs_values(c):
+    e = ecodes
+    c['events'] = {
+        e.EV_KEY : [e.KEY_A, e.KEY_B],
+        e.EV_ABS : [(e.ABS_X, (0, 255, 0, 0)),
+                    (e.ABS_Y, device.AbsInfo(0, 255, 5, 10))],
+    }
+
+    with uinput.UInput(**c) as ui:
+        c = ui.capabilities()
+        assert c[e.EV_ABS][0] == (0L, device.AbsInfo(min=0, max=255, fuzz=0, flat=0))
+        assert c[e.EV_ABS][1] == (1L, device.AbsInfo(min=0, max=255, fuzz=5, flat=10))
+
+        c = ui.capabilities(verbose=True)
+        assert c[('EV_ABS', 3)][0] == (('ABS_X', 0L), device.AbsInfo(min=0, max=255, fuzz=0, flat=0))
+
+        c = ui.capabilities(verbose=False, absinfo=False)
+        assert c[e.EV_ABS][0] == (0, 1)
 
 def test_write(c):
     with uinput.UInput(**c) as ui:
