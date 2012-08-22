@@ -100,7 +100,7 @@ class UInput(object):
         return '{}({})'.format(self.__class__.__name__, ', '.join(v))
 
     def __str__(self):
-        msg = ('name "{}", bus "{}", vendor "{:04x}", product "{:04x}", ver "{:04x}"\n'
+        msg = ('name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}"\n'
                'event types: {}')
 
         evtypes = [i[0] for i in self.capabilities(True).keys()]
