@@ -72,7 +72,7 @@ class UInput(object):
         for etype, codes in events.items():
             for code in codes:
                 # handle max,min,fuzz,flat
-                if isinstance(code, (tuple, list, device.AbsInfo)):
+                if isinstance(code, (tuple, list, device.AbsData)):
                     # flatten (ABS_Y, (0,255,0,0)) to (ABS_Y,0,255,0,0)
                     f = [code[0]] ; f += code[1]
                     absdata.append(f)
@@ -164,9 +164,9 @@ class UInput(object):
 
         _uinput.write(self.fd, ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
 
-    def capabilities(self, verbose=False, absinfo=True):
+    def capabilities(self, verbose=False, absdata=True):
         '''See :func:`capabilities <evdev.device.InputDevice.capabilities>`.'''
-        return self.device.capabilities(verbose, absinfo)
+        return self.device.capabilities(verbose, absdata)
 
     def _verify(self):
         ''' Verify that an uinput device exists and is readable and writable
