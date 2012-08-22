@@ -78,9 +78,12 @@ class InputDevice(object):
             for code in ecodes:
                 l = res.setdefault(etype, [])
                 if isinstance(code, tuple):
-                    a = code[1]  # (0, 0, 255, 0)
-                    i = AbsInfo(min=a[1], max=a[2], fuzz=a[3], flat=a[4])
-                    l.append((code[0], i))
+                    if absinfo:
+                        a = code[1]  # (0, 0, 255, 0)
+                        i = AbsInfo(min=a[1], max=a[2], fuzz=a[3], flat=a[4])
+                        l.append((code[0], i))
+                    else:
+                        l.append(code[0])
                 else:
                     l.append(code)
 
