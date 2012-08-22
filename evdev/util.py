@@ -59,23 +59,38 @@ def resolve_ecodes(typecodemap, unknown='?'):
 
         resolve_ecodes({ 1 : [272, 273, 274] })
         { ('EV_KEY', 1) : [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274)] }
+
+    If the typecodemap contains absolute axis info (wrapped in
+    instances of `AbsInfo <evdev.device.AbsInfo>`) the result would
+    look like::
+
+        resove_ecodes({ 3 : [(0, AbsInfo(...))] })
+        { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
     '''
 
-    for type, codes in typecodemap.items():
-        type_name = ecodes.EV[type]
+    for etype, codes in typecodemap.items():
+        type_name = ecodes.EV[etype]
 
         # ecodes.keys are a combination of KEY_ and BTN_ codes
-        if type == ecodes.EV_KEY:
+        if etype == ecodes.EV_KEY:
             code_names = ecodes.keys
         else:
             code_names = getattr(ecodes, type_name.split('_')[-1])
 
         res = []
         for i in codes:
-            l = (code_names[i], i) if i in code_names else (unknown, i)
+            # elements with AbsInfo(), eg { 3 : [(0, AbsInfo(...)), (1, AbsInfo(...))] }
+            if isinstance(i, tuple):
+                l = ((code_names[i[0]], i[0]), i[1]) if i[0] in code_names \
+                    else ((unknown, i[0]), i[1])
+
+            # just ecodes { 0 : [0, 1, 3], 1 : [30, 48] }
+            else:
+                l = (code_names[i], i) if i in code_names else (unknown, i)
+
             res.append(l)
 
-        yield (type_name, type), res
+        yield (type_name, etype), res
 
 
 __all__ = list_devices, is_device, categorize, resolve_ecodes

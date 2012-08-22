@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import os
+from collections import namedtuple
 
 from evdev import _input, ecodes, util
 from evdev.events import InputEvent
@@ -30,12 +31,20 @@ class DeviceInfo(object):
            and self.version == o.version
 
 
+
+_AbsInfo = namedtuple('AbsInfo',
+                     ['min', 'max', 'fuzz', 'flat'])
+
+class AbsInfo(_AbsInfo):
+    pass
+
+
 class InputDevice(object):
     '''
     A linux input device from which input events can be read.
     '''
 
-    __slots__ = 'fn', 'nophys', 'fd', 'info', 'name', 'phys', '_capabilities'
+    __slots__ = 'fn', 'nophys', 'fd', 'info', 'name', 'phys', '_rawcapabilities'
 
     def __init__(self, dev, nophys=False):
         '''
@@ -61,9 +70,23 @@ class InputDevice(object):
 
         #: The physical topology of the device
         self.phys = info_res[5] if not nophys else ''
-        self._capabilities = info_res[6]
+        self._rawcapabilities = info_res[6]
 
-    def capabilities(self, verbose=False):
+    def _capabilities(self, absinfo=True):
+        res = {}
+        for etype, ecodes in self._rawcapabilities.items():
+            for code in ecodes:
+                l = res.setdefault(etype, [])
+                if isinstance(code, tuple):
+                    a = code[1]  # (0, 0, 255, 0)
+                    i = AbsInfo(min=a[1], max=a[2], fuzz=a[3], flat=a[4])
+                    l.append((code[0], i))
+                else:
+                    l.append(code)
+
+        return res
+
+    def capabilities(self, verbose=False, absinfo=True):
         '''
         Returns the event types that this device supports as a a mapping of
         supported event types to lists of handled event codes. Example::
@@ -71,19 +94,32 @@ class InputDevice(object):
           { 1: [272, 273, 274],
             2: [0, 1, 6, 8] }
 
-        If verbose is `True`, event codes and types will be resolved to their
-        names. Example::
+        If ``verbose`` is ``True``, event codes and types will be resolved
+        to their names. Example::
 
           { ('EV_KEY', 1) : [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 273)],
             ('EV_REL', 2) : [('REL_X', 0), ('REL_Y', 0), ('REL_HWHEEL', 6), ('REL_WHEEL', 8)] }
 
         Unknown codes or types will be resolved to '?'.
+
+        If ``absinfo`` is ``True``, the list of capabilities will also
+        include absolute axis information (``absmin``, ``absmax``,
+        ``absfuzz``, ``absflat``) in the following form::
+
+          { 3 : [ (0, AbsInfo(min=0, max=255, fuzz=0, flat=0)),
+                  (1, AbsInfo(min=0, max=255, fuzz=0, flat=0)) ]}
+
+        Combined with ``verbose`` the above becomes::
+
+          { ('EV_ABS', 3) : [ (('ABS_X', 0), AbsInfo(min=0, max=255, fuzz=0, flat=0)),
+                              (('ABS_Y', 1), AbsInfo(min=0, max=255, fuzz=0, flat=0)) ]}
+
         '''
 
         if verbose:
-            return dict(util.resolve_ecodes(self._capabilities))
+            return dict(util.resolve_ecodes(self._capabilities(absinfo)))
         else:
-            return self._capabilities
+            return self._capabilities(absinfo)
 
     def __eq__(self, o):
         ''' Two devices are considered equal if their :data:`info` attributes are equal. '''

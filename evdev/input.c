@@ -130,7 +130,8 @@ event_unpack(PyObject *self, PyObject *args)
 static PyObject *
 ioctl_capabilities(PyObject *self, PyObject *args)
 {
-    int fd, ev_type, ev_code;
+    int abs_bits[6] = {0};
+    int fd, ev_type, ev_code, i;
     char ev_bits[EV_MAX/8], code_bits[KEY_MAX/8];
 
     int ret = PyArg_ParseTuple(args, "i", &fd);
@@ -145,6 +146,8 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     PyObject* capabilities = PyDict_New();
     PyObject* eventcodes = NULL;
     PyObject* capability = NULL;
+    PyObject* absdata = NULL;
+    PyObject* absitem = NULL;
 
     memset(&ev_bits, 0, sizeof(ev_bits));
 
@@ -152,7 +155,7 @@ ioctl_capabilities(PyObject *self, PyObject *args)
         goto on_err;
 
     // Build a dictionary of the device's capabilities
-    for (ev_type = 0 ; ev_type < EV_MAX ; ev_type++) {
+    for (ev_type=0 ; ev_type<EV_MAX ; ev_type++) {
         if (test_bit(ev_bits, ev_type)) {
             capability = PyLong_FromLong(ev_type);
             eventcodes = PyList_New(0);
@@ -161,7 +164,20 @@ ioctl_capabilities(PyObject *self, PyObject *args)
             ioctl(_fd, EVIOCGBIT(ev_type, KEY_MAX), code_bits);
             for (ev_code = 0; ev_code < KEY_MAX; ev_code++) {
                 if (test_bit(code_bits, ev_code)) {
-                    PyList_Append(eventcodes, PyLong_FromLong(ev_code));
+                    if (ev_type == EV_ABS) {
+                        memset(&abs_bits, 0, sizeof(abs_bits));
+                        ioctl(_fd, EVIOCGABS(ev_code), abs_bits);
+
+                        absdata = Py_BuildValue("(iiiii)",   abs_bits[0], abs_bits[1],
+                                                abs_bits[2], abs_bits[3], abs_bits[4],
+                                                abs_bits[5]);
+
+                        absitem = Py_BuildValue("(OO)", PyLong_FromLong(ev_code), absdata);
+                        PyList_Append(eventcodes, absitem);
+                    } else {
+                        PyList_Append(eventcodes, PyLong_FromLong(ev_code));
+                    }
+
                 }
             }
 
