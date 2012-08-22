@@ -131,7 +131,7 @@ static PyObject *
 ioctl_capabilities(PyObject *self, PyObject *args)
 {
     int abs_bits[6] = {0};
-    int fd, ev_type, ev_code, i;
+    int fd, ev_type, ev_code;
     char ev_bits[EV_MAX/8], code_bits[KEY_MAX/8];
 
     int ret = PyArg_ParseTuple(args, "i", &fd);
@@ -197,14 +197,14 @@ ioctl_capabilities(PyObject *self, PyObject *args)
 static PyObject *
 ioctl_devinfo(PyObject *self, PyObject *args)
 {
-    int fd, nophys;
+    int fd;
     PyObject* capabilities = NULL;
 
     struct input_id iid;
     char name[MAX_NAME_SIZE];
-    char phys[MAX_NAME_SIZE];
+    char phys[MAX_NAME_SIZE] = {0};
 
-    int ret = PyArg_ParseTuple(args, "ii", &fd, &nophys);
+    int ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
 
     memset(&iid,  0, sizeof(iid));
@@ -215,12 +215,8 @@ ioctl_devinfo(PyObject *self, PyObject *args)
     // Get device capabilities
     capabilities = ioctl_capabilities(self, Py_BuildValue("(i)", fd));
 
-    // Uinput devices do not have a physical topology associated with them
-    if (!nophys) {
-        if (ioctl(fd, EVIOCGPHYS(sizeof(phys)), phys) < 0)
-            goto on_err;
-    } else
-        phys[0] = ' ';
+    // Some devices do not have a physical topology associated with them
+    ioctl(fd, EVIOCGPHYS(sizeof(phys)), phys);
 
     return Py_BuildValue("hhhhssO", iid.bustype, iid.vendor, iid.product, iid.version,
                          name, phys, capabilities);

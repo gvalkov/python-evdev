@@ -52,23 +52,21 @@ class InputDevice(object):
     A linux input device from which input events can be read.
     '''
 
-    __slots__ = 'fn', 'nophys', 'fd', 'info', 'name', 'phys', '_rawcapabilities'
+    __slots__ = 'fn', 'fd', 'info', 'name', 'phys', '_rawcapabilities'
 
-    def __init__(self, dev, nophys=False):
+    def __init__(self, dev):
         '''
         :param dev: path to input device
-        :param nophys: do not do a ``EVIOCGPHYS`` ioctl (needed by uinput)
         '''
 
         #: Path to input device
         self.fn = dev
-        self.nophys = nophys
 
         #: A non-blocking file descriptor to the device file
         self.fd = os.open(dev, os.O_RDONLY | os.O_NONBLOCK)
 
         # Returns (bustype, vendor, product, version, name, phys, capabilities)
-        info_res  = _input.ioctl_devinfo(self.fd, nophys)
+        info_res  = _input.ioctl_devinfo(self.fd)
 
         #: A :class:`DeviceInfo <evdev.device.DeviceInfo>` instance
         self.info = DeviceInfo(*info_res[:4])
@@ -77,7 +75,6 @@ class InputDevice(object):
         self.name = info_res[4]
 
         #: The physical topology of the device
-        self.phys = info_res[5] if not nophys else ''
         self.phys = info_res[5]
 
         #: The raw dictionary of device capabilities - see `:func:capabilities()`
@@ -144,8 +141,8 @@ class InputDevice(object):
         return msg.format(self.fn, self.name, self.phys)
 
     def __repr__(self):
-        msg = (self.__class__.__name__, self.fn, self.nophys)
-        return '{}({!r}, {})'.format(*msg)
+        msg = (self.__class__.__name__, self.fn)
+        return '{}({!r})'.format(*msg)
 
     def close(self):
         os.close(self.fd)

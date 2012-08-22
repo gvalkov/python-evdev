@@ -13,9 +13,8 @@ class UInputError(Exception):
 
 class UInput(object):
     '''
-    I represent a linux userland input (an `uinput`) device and I am
-    capapble of injecting input events into the input subsystem.
-
+    A userland input (an `uinput`) device and that can inject input
+    events directly into the linux input subsystem.
     '''
 
     __slots__ = (
@@ -192,6 +191,6 @@ class UInput(object):
     def _find_device(self):
         #:todo: use udev
         for fn in util.list_devices('/dev/input/'):
-            d = device.InputDevice(fn, nophys=True)
+            d = device.InputDevice(fn)
             if d.name == self.name:
                  return d
