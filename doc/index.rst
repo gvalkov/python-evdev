@@ -128,7 +128,7 @@ Associating classes with event types (see :mod:`events <evdev.events>`)::
 
 Injecting events::
 
-    >>> from evdev import UInput, ecodes as e,
+    >>> from evdev import UInput, ecodes as e
 
     >>> ui = UInput()
 
