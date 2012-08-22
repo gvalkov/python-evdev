@@ -2,6 +2,7 @@
 
 import os
 import stat
+import time
 
 from evdev import _uinput
 from evdev import ecodes, util, device
@@ -190,6 +191,10 @@ class UInput(object):
 
     def _find_device(self):
         #:todo: use udev
+
+        #:bug: the device node might not be immediately avaiable
+        time.sleep(0.1)
+
         for fn in util.list_devices('/dev/input/'):
             d = device.InputDevice(fn)
             if d.name == self.name:
