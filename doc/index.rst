@@ -34,22 +34,42 @@ Listing device capabilities::
     device /dev/input/event0, name "Dell Premium USB Optical Mouse", phys "usb-0000:00:12.0-2/input0"
 
     >>> dev.capabilities()
-    >>> { 0: [0, 1, 2], 1: [272, 273, 274, 275], 2: [0, 1, 6, 8], 4: [4] }
+    ... { 0: [0, 1, 2], 1: [272, 273, 274, 275], 2: [0, 1, 6, 8], 4: [4] }
 
     >>> dev.capabilities(verbose=True)
-    >>> { ('EV_SYN', 0): [('SYN_REPORT', 0), ('SYN_CONFIG', 1), ('SYN_MT_REPORT', 2)],
-    >>>   ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274), ('BTN_SIDE', 275)], ...
+    ... { ('EV_SYN', 0): [('SYN_REPORT', 0), ('SYN_CONFIG', 1), ('SYN_MT_REPORT', 2)],
+    ...   ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274), ('BTN_SIDE', 275)], ...
+
+Listing device capabilities for devices with absolute axes::
+
+    >>> dev = InputDevice('/dev/input/event7')
+
+    >>> print(dev)
+    device /dev/input/event7, name "Wacom Bamboo 2FG 4x5 Finger", phys ""
+
+    >>> dev.capabilities()
+    ... { 1: [272, 273, 277, 278, 325, 330, 333] ,
+    ...   3: [(0, AbsData(min=0, max=15360, fuzz=128, flat=0)),
+    ...       (1, AbsData(min=0, max=10240, fuzz=128, flat=0))] }
+
+    >>> dev.capabilities(verbose=True)
+    ... { ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ...],
+    ...   ('EV_ABS', 3): [(('ABS_X', 0), AbsData(min=0, max=15360, fuzz=128, flat=0)),
+    ...                   (('ABS_Y', 1), AbsData(min=0, max=10240, fuzz=128, flat=0)),] }
+
+    >>> dev.capabilities(absinfo=False)
+    ... { 1: [272, 273, 277, 278, 325, 330, 333],
+    ...   3: [0, 1, 47, 53, 54, 57] }
 
 Accessing input subsystem constants::
 
     >>> from evdev import ecodes
     >>> ecodes.KEY_A, ecodes.ecodes['KEY_A']
-    (30, 30)
+    ... (30, 30)
     >>> ecodes.KEY[30]
-    'KEY_A'
+    ... 'KEY_A'
     >>> ecodes.bytype[ecodes.EV_KEY][30]
-    'KEY_A'
-
+    ... 'KEY_A'
 
 Reading events::
 
@@ -96,7 +116,6 @@ Reading events with asyncore::
     InputEvent(1337255905L, 358854L, 1, 30, 0L)
     InputEvent(1337255905L, 358857L, 0, 0, 0L)
 
-
 Associating classes with event types (see :mod:`events <evdev.events>`)::
 
     >>> from evdev import categorize, event_factory, ecodes
@@ -107,18 +126,53 @@ Associating classes with event types (see :mod:`events <evdev.events>`)::
 
     >>> event_factory[ecodes.EV_SYN] = SynEvent
 
-
 Injecting events::
 
-    >>> from evdev import ecodes, UInput, events
+    >>> from evdev import UInput, ecodes as e,
 
-    >>> ui = UInput('test-device', 0x0001, 0x0002, 0x0003)
-    >>> ev = events.InputEvent(1334414993, 274296, ecodes.EV_KEY, ecodes.KEY_A, 1)
+    >>> ui = UInput()
 
-    >>> ui.write(ev)
+    >>> # accepts only KEY_* events by default
+    >>> ui.write(e.EV_KEY, e.KEY_A, 1)  # KEY_A down
+    >>> ui.write(e.EV_KEY, e.KEY_A, 0)  # KEY_A up
     >>> ui.syn()
+
     >>> ui.close()
 
+Injecting events (2)::
+
+    >>> ev = InputEvent(1334414993, 274296, ecodes.EV_KEY, ecodes.KEY_A, 1)
+    >>> with UInput() as ui:
+    ...    ui.write_event(ev)
+    ...    ui.syn()
+
+Specifying uinput device options::
+
+    >>> from evdev import UInput, AbsData, ecodes as e
+
+    >>> cap = {
+    ...     e.EV_KEY : [e.KEY_A, e.KEY_B],
+    ...     e.EV_ABS : [
+    ...         (e.ABS_X, AbsData(min=0, max=255, fuzz=0, flat=0)),
+    ...         (e.ABS_Y, AbsData(0, 255, 0, 0)),
+    ...         (e.ABS_MT_POSITION_X, (0, 255, 128, 0)) ]
+    ... }
+
+    >>> ui = UInput(cap, name='example-device', version=0x3)
+    >>> print(ui)
+    name "example-device", bus "BUS_USB", vendor "0001", product "0001", version "0003"
+    event types: EV_KEY EV_ABS EV_SYN
+
+    >>> print(ui.capabilities())
+    ... { 0: [0, 1, 3], 1: [30, 48],
+    ...   3: [(0,  AbsData(min=0, max=255, fuzz=0, flat=0)),
+    ...       (1,  AbsData(min=0, max=255, fuzz=0, flat=0)),
+    ...       (53, AbsData(min=0, max=255, fuzz=128, flat=0))] }
+
+    >>> # move mouse cursor
+    >>> ui.write(e.EV_ABS, e.ABS_X, 20)
+    >>> ui.write(e.EV_ABS, e.ABS_Y, 20)
+    >>> ui.syn()
 
 Requirements
 ------------
