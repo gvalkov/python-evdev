@@ -32,7 +32,7 @@ int test_bit(const char* bitmask, int bit) {
 }
 
 
-// useful for comparing input events as seen in the extension module
+// Useful for comparing input events as seen in the extension module
 // and as seen in python
 static void
 print_event(struct input_event *ev) {
@@ -137,12 +137,12 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     int ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
 
-    // @todo: figure out why fd gets zeroed on the ioctls after the
+    // @todo: figure out why fd gets zeroed on an ioctl after the
     // refactoring and get rid of this workaround
     const int _fd = fd;
 
     // Capabilities is a mapping of supported event types to lists of handled
-    // evenes e.g: {1: [272, 273, 274, 275], 2: [0, 1, 6, 8]}
+    // events e.g: {1: [272, 273, 274, 275], 2: [0, 1, 6, 8]}
     PyObject* capabilities = PyDict_New();
     PyObject* eventcodes = NULL;
     PyObject* capability = NULL;
@@ -157,30 +157,35 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     // Build a dictionary of the device's capabilities
     for (ev_type=0 ; ev_type<EV_MAX ; ev_type++) {
         if (test_bit(ev_bits, ev_type)) {
+
             capability = PyLong_FromLong(ev_type);
             eventcodes = PyList_New(0);
 
             memset(&code_bits, 0, sizeof(code_bits));
             ioctl(_fd, EVIOCGBIT(ev_type, KEY_MAX), code_bits);
+
             for (ev_code = 0; ev_code < KEY_MAX; ev_code++) {
                 if (test_bit(code_bits, ev_code)) {
+                    // Get abs{min,max,fuzz,flat} values for ABS_* event codes
                     if (ev_type == EV_ABS) {
                         memset(&abs_bits, 0, sizeof(abs_bits));
                         ioctl(_fd, EVIOCGABS(ev_code), abs_bits);
 
-                        absdata = Py_BuildValue("(iiiii)",   abs_bits[0], abs_bits[1],
-                                                abs_bits[2], abs_bits[3], abs_bits[4],
-                                                abs_bits[5]);
+                        absdata = Py_BuildValue("(iiiii)", abs_bits[0], abs_bits[1], abs_bits[2],
+                                                abs_bits[3], abs_bits[4], abs_bits[5]);
 
                         absitem = Py_BuildValue("(OO)", PyLong_FromLong(ev_code), absdata);
+
+                        // absitem -> tuple(ABS_X, (0, 255, 0, 0))
                         PyList_Append(eventcodes, absitem);
-                    } else {
+                    }
+                    else {
                         PyList_Append(eventcodes, PyLong_FromLong(ev_code));
                     }
-
                 }
             }
-
+            // capabilities[EV_KEY] = [KEY_A, KEY_B, KEY_C, ...]
+            // capabilities[EV_ABS] = [(ABS_X, (0, 255, 0, 0)), ...]
             PyDict_SetItem(capabilities, capability, eventcodes);
         }
     }
