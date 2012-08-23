@@ -26,10 +26,10 @@ PyPi:
 
 
 Changelog
-^^^^^^^^^
+=========
 
 0.2.0 (Aug 22, 2012)
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 
 Enhancements:
     - Add the ability to set arbitrary device capabilities on uinput
@@ -56,7 +56,7 @@ Enhancements:
 
     - Make ``InputDevice.capabilities()`` perform a ``EVIOCGABS`` ioctl
       for devices that support ``EV_ABS`` and return that info wrapped in
-      a ``AbsData`` namedtuple.
+      an ``AbsData`` namedtuple.
 
     - Split ``ioctl_devinfo`` into ``ioctl_devinfo`` and
       ``ioctl_capabilities``.
@@ -79,7 +79,7 @@ Fixes:
 
 
 0.1.1 (May 18, 2012)
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 
 Enhancements:
     - Add ``events.keys``, which is a combination of all ``BTN_`` and
@@ -90,6 +90,6 @@ Fixes:
 
 
 0.1.0 (May 17, 2012)
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 
 *Initial Release*
