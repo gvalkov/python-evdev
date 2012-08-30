@@ -51,7 +51,7 @@ keys = {}
 keys.update(BTN)
 keys.update(KEY)
 
-# make keys save to use for the default list of uinput device
+# make keys safe to use for the default list of uinput device
 # capabilities
 del keys[_ecodes.KEY_MAX]
 del keys[_ecodes.KEY_CNT]
