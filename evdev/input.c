@@ -146,7 +146,7 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     PyObject* capabilities = PyDict_New();
     PyObject* eventcodes = NULL;
     PyObject* capability = NULL;
-    PyObject* absinfo = NULL;
+    PyObject* py_absinfo = NULL;
     PyObject* absitem = NULL;
 
     memset(&ev_bits, 0, sizeof(ev_bits));
@@ -171,15 +171,15 @@ ioctl_capabilities(PyObject *self, PyObject *args)
                         memset(&absinfo, 0, sizeof(absinfo));
                         ioctl(_fd, EVIOCGABS(ev_code), &absinfo);
 
-                        absinfo = Py_BuildValue("(iiiiii)",
-                                                absinfo.value,
-                                                absinfo.minimum,
-                                                absinfo.maximum,
-                                                absinfo.fuzz,
-                                                absinfo.flat,
-                                                absinfo.resolution);
+                        py_absinfo = Py_BuildValue("(iiiiii)",
+                                                   absinfo.value,
+                                                   absinfo.minimum,
+                                                   absinfo.maximum,
+                                                   absinfo.fuzz,
+                                                   absinfo.flat,
+                                                   absinfo.resolution);
 
-                        absitem = Py_BuildValue("(OO)", PyLong_FromLong(ev_code), absinfo);
+                        absitem = Py_BuildValue("(OO)", PyLong_FromLong(ev_code), py_absinfo);
 
                         // absitem -> tuple(ABS_X, (0, 255, 0, 0))
                         PyList_Append(eventcodes, absitem);
