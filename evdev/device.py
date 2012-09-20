@@ -31,20 +31,45 @@ class DeviceInfo(object):
            and self.version == o.version
 
 
+_AbsInfo = namedtuple('AbsInfo',
+                     ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
 
-_AbsData = namedtuple('AbsData',
-                     ['min', 'max', 'fuzz', 'flat'])
-
-class AbsData(_AbsData):
+class AbsInfo(_AbsInfo):
     '''
-    A ``namedtuple`` for storing absolut axis information:
+    A ``namedtuple`` for storing absolut axis information -
+    corresponds to the ``input_absinfo`` c struct:
 
-     - min  - minimal value for an absolute axis
-     - max  - maximum value for an absolute axis
-     - fuzz - noise tolerance (+- value)
-     - flat - size of the center flat position
+     - value
+        Latest reported value for the axis.
+
+     - min
+        Specifies minimum value for the axis.
+
+     - max
+        Specifies maximum value for the axis.
+
+     - fuzz
+        Specifies fuzz value that is used to filter noise from the
+        event stream.
+
+     - flat
+        Values that are within this value will be discarded by joydev
+        interface and reported as 0 instead.
+
+     - resolution
+        Specifies resolution for the values reported for the axis.
+        Resolution for main axes (``ABS_X, ABS_Y, ABS_Z``) is reported
+        in units per millimeter (units/mm), resolution for rotational
+        axes (``ABS_RX, ABS_RY, ABS_RZ``) is reported in units per
+        radian.
+
+    .. note: The input core does not clamp reported values to the
+       ``[minimum, maximum]`` limits, such task is left to userspace.
     '''
     pass
+
+    def __str__(self):
+        return 'val {}, min {}, max {}, fuzz {}, flat {}, res {}'.format(*self)
 
 
 class InputDevice(object):
@@ -80,15 +105,15 @@ class InputDevice(object):
         #: The raw dictionary of device capabilities - see `:func:capabilities()`
         self._rawcapabilities = info_res[6]
 
-    def _capabilities(self, absdata=True):
+    def _capabilities(self, absinfo=True):
         res = {}
         for etype, ecodes in self._rawcapabilities.items():
             for code in ecodes:
                 l = res.setdefault(etype, [])
                 if isinstance(code, tuple):
-                    if absdata:
-                        a = code[1]  # (0, 0, 255, 0)
-                        i = AbsData(min=a[1], max=a[2], fuzz=a[3], flat=a[4])
+                    if absinfo:
+                        a = code[1]  # (0, 0, 0, 255, 0, 0)
+                        i = AbsInfo(*a)
                         l.append((code[0], i))
                     else:
                         l.append(code[0])
@@ -97,7 +122,7 @@ class InputDevice(object):
 
         return res
 
-    def capabilities(self, verbose=False, absdata=True):
+    def capabilities(self, verbose=False, absinfo=True):
         '''
         Returns the event types that this device supports as a a mapping of
         supported event types to lists of handled event codes. Example::
@@ -113,24 +138,24 @@ class InputDevice(object):
 
         Unknown codes or types will be resolved to '?'.
 
-        If ``absdata`` is ``True``, the list of capabilities will also
+        If ``absinfo`` is ``True``, the list of capabilities will also
         include absolute axis information (``absmin``, ``absmax``,
         ``absfuzz``, ``absflat``) in the following form::
 
-          { 3 : [ (0, AbsData(min=0, max=255, fuzz=0, flat=0)),
-                  (1, AbsData(min=0, max=255, fuzz=0, flat=0)) ]}
+          { 3 : [ (0, AbsInfo(min=0, max=255, fuzz=0, flat=0)),
+                  (1, AbsInfo(min=0, max=255, fuzz=0, flat=0)) ]}
 
         Combined with ``verbose`` the above becomes::
 
-          { ('EV_ABS', 3) : [ (('ABS_X', 0), AbsData(min=0, max=255, fuzz=0, flat=0)),
-                              (('ABS_Y', 1), AbsData(min=0, max=255, fuzz=0, flat=0)) ]}
+          { ('EV_ABS', 3) : [ (('ABS_X', 0), AbsInfo(min=0, max=255, fuzz=0, flat=0)),
+                              (('ABS_Y', 1), AbsInfo(min=0, max=255, fuzz=0, flat=0)) ]}
 
         '''
 
         if verbose:
-            return dict(util.resolve_ecodes(self._capabilities(absdata)))
+            return dict(util.resolve_ecodes(self._capabilities(absinfo)))
         else:
-            return self._capabilities(absdata)
+            return self._capabilities(absinfo)
 
     def __eq__(self, o):
         ''' Two devices are considered equal if their :data:`info` attributes are equal. '''

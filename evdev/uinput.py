@@ -61,7 +61,7 @@ class UInput(object):
 
         # the min, max, fuzz and flat values for the absolute axis for
         # a given code
-        absdata = []
+        absinfo = []
 
         self._verify()
 
@@ -72,17 +72,17 @@ class UInput(object):
         for etype, codes in events.items():
             for code in codes:
                 # handle max,min,fuzz,flat
-                if isinstance(code, (tuple, list, device.AbsData)):
+                if isinstance(code, (tuple, list, device.AbsInfo)):
                     # flatten (ABS_Y, (0,255,0,0)) to (ABS_Y,0,255,0,0)
                     f = [code[0]] ; f += code[1]
-                    absdata.append(f)
+                    absinfo.append(f)
                     code = code[0]
 
                 #:todo: a lot of unnecessary packing/unpacking
                 _uinput.enable(self.fd, etype, code)
 
         # create uinput device
-        _uinput.create(self.fd, name, vendor, product, version, bustype, absdata)
+        _uinput.create(self.fd, name, vendor, product, version, bustype, absinfo)
 
         #: an :class:`InputDevice <evdev.device.InputDevice>` instance
         # to the fake input device
@@ -164,9 +164,9 @@ class UInput(object):
 
         _uinput.write(self.fd, ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
 
-    def capabilities(self, verbose=False, absdata=True):
+    def capabilities(self, verbose=False, absinfo=True):
         '''See :func:`capabilities <evdev.device.InputDevice.capabilities>`.'''
-        return self.device.capabilities(verbose, absdata)
+        return self.device.capabilities(verbose, absinfo)
 
     def _verify(self):
         ''' Verify that an uinput device exists and is readable and writable

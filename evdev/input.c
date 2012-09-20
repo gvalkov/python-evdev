@@ -130,9 +130,9 @@ event_unpack(PyObject *self, PyObject *args)
 static PyObject *
 ioctl_capabilities(PyObject *self, PyObject *args)
 {
-    int abs_bits[6] = {0};
     int fd, ev_type, ev_code;
     char ev_bits[EV_MAX/8], code_bits[KEY_MAX/8];
+    struct input_absinfo absinfo;
 
     int ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
@@ -146,7 +146,7 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     PyObject* capabilities = PyDict_New();
     PyObject* eventcodes = NULL;
     PyObject* capability = NULL;
-    PyObject* absdata = NULL;
+    PyObject* absinfo = NULL;
     PyObject* absitem = NULL;
 
     memset(&ev_bits, 0, sizeof(ev_bits));
@@ -168,13 +168,18 @@ ioctl_capabilities(PyObject *self, PyObject *args)
                 if (test_bit(code_bits, ev_code)) {
                     // Get abs{min,max,fuzz,flat} values for ABS_* event codes
                     if (ev_type == EV_ABS) {
-                        memset(&abs_bits, 0, sizeof(abs_bits));
-                        ioctl(_fd, EVIOCGABS(ev_code), abs_bits);
+                        memset(&absinfo, 0, sizeof(absinfo));
+                        ioctl(_fd, EVIOCGABS(ev_code), &absinfo);
 
-                        absdata = Py_BuildValue("(iiiii)", abs_bits[0], abs_bits[1], abs_bits[2],
-                                                abs_bits[3], abs_bits[4], abs_bits[5]);
+                        absinfo = Py_BuildValue("(iiiiii)",
+                                                absinfo.value,
+                                                absinfo.minimum,
+                                                absinfo.maximum,
+                                                absinfo.fuzz,
+                                                absinfo.flat,
+                                                absinfo.resolution);
 
-                        absitem = Py_BuildValue("(OO)", PyLong_FromLong(ev_code), absdata);
+                        absitem = Py_BuildValue("(OO)", PyLong_FromLong(ev_code), absinfo);
 
                         // absitem -> tuple(ABS_X, (0, 255, 0, 0))
                         PyList_Append(eventcodes, absitem);

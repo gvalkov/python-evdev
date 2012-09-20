@@ -48,13 +48,13 @@ uinput_create(PyObject *self, PyObject *args) {
     int fd, len, i, abscode;
     __u16 vendor, product, version, bustype;
 
-    PyObject *absdata = NULL, *item = NULL;
+    PyObject *absinfo = NULL, *item = NULL;
 
     struct uinput_user_dev uidev;
     const char* name;
 
     int ret = PyArg_ParseTuple(args, "ishhhhO", &fd, &name, &vendor,
-                               &product, &version, &bustype, &absdata);
+                               &product, &version, &bustype, &absinfo);
     if (!ret) return NULL;
 
     memset(&uidev, 0, sizeof(uidev));
@@ -64,10 +64,10 @@ uinput_create(PyObject *self, PyObject *args) {
     uidev.id.version = version;
     uidev.id.bustype = bustype;
 
-    len = PyList_Size(absdata);
+    len = PyList_Size(absinfo);
     for (i=0; i<len; i++) {
         // item -> (ABS_X, 0, 255, 0, 0)
-        item = PyList_GetItem(absdata, i);
+        item = PyList_GetItem(absinfo, i);
         abscode = (int)PyLong_AsLong(PyList_GetItem(item, 0));
 
         uidev.absmin[abscode]  = PyLong_AsLong(PyList_GetItem(item, 1));

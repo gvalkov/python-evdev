@@ -61,11 +61,11 @@ def resolve_ecodes(typecodemap, unknown='?'):
         { ('EV_KEY', 1) : [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274)] }
 
     If the typecodemap contains absolute axis info (wrapped in
-    instances of `AbsData <evdev.device.AbsData>`) the result would
+    instances of `AbsInfo <evdev.device.AbsInfo>`) the result would
     look like::
 
-        resove_ecodes({ 3 : [(0, AbsData(...))] })
-        { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsData(...))] }
+        resove_ecodes({ 3 : [(0, AbsInfo(...))] })
+        { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
     '''
 
     for etype, codes in typecodemap.items():
@@ -79,7 +79,7 @@ def resolve_ecodes(typecodemap, unknown='?'):
 
         res = []
         for i in codes:
-            # elements with AbsData(), eg { 3 : [(0, AbsData(...)), (1, AbsData(...))] }
+            # elements with AbsInfo(), eg { 3 : [(0, AbsInfo(...)), (1, AbsInfo(...))] }
             if isinstance(i, tuple):
                 l = ((code_names[i[0]], i[0]), i[1]) if i[0] in code_names \
                     else ((unknown, i[0]), i[1])
