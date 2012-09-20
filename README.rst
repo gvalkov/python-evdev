@@ -7,8 +7,9 @@ kernel directly to userspace through character devices that are typically
 located in `/dev/input/`.
 
 *evdev* also comes with bindings to *uinput*, the userspace input
-subsystem. *Uinput* allows userspace programs to create and handle input
-devices from which they can inject events directly into the input subsystem.
+subsystem. *Uinput* allows userspace programs to create and handle
+input devices from which input events can be directly injected into
+the input subsystem.
 
 
 Documentation:
