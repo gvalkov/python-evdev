@@ -8,7 +8,7 @@ evdev example - input device event monitor
 
 from sys import argv, exit
 from select import select
-from evdev import ecodes, InputDevice, list_devices
+from evdev import ecodes, InputDevice, list_devices, AbsInfo
 
 
 usage = 'usage: evtest <device> [<type> <value>]'
@@ -33,13 +33,6 @@ def select_device():
 
     choice = input('Select device [0-{}]:'.format(len(dev_lns)-1))
     return devices[int(choice)]
-
-
-def print_capabilities(dev):
-    for type, codes in dev.capabilities().items():
-        print('Type {} {}'.format(ecodes.ecodes[type], type))
-        for name, value in codes:
-            print('  Code {:<4} {}'.format(value, name))
 
 
 def print_event(e):
@@ -74,8 +67,16 @@ else:
 print('Device name: {.name}'.format(device))
 print('Device info: {.info}'.format(device))
 
-cap = device.capabilities(verbose=True).keys()
-print('Device capabilities: {}'.format(' '.join(i[0] for i in cap)))
+print('Device capabilities:')
+for type, codes in device.capabilities(verbose=True).items():
+    print('  Type {} {}:'.format(*type))
+    for i in codes:
+        if isinstance(i[1], AbsInfo):
+            print('    Code {:<4} {}:'.format(*i[0]))
+            print('      {}'.format(i[1]))
+        else:
+            print('    Code {:<4} {}'.format(*i))
+    print('')
 
 print('Listening for events ...\n')
 while True:
