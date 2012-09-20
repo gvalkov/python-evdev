@@ -237,10 +237,39 @@ ioctl_devinfo(PyObject *self, PyObject *args)
 }
 
 
+static PyObject *
+ioctl_EVIOCGREP(PyObject *self, PyObject *args)
+{
+    int fd, ret;
+    unsigned int rep[2] = {0};
+    ret = PyArg_ParseTuple(args, "i", &fd);
+    if (!ret) return NULL;
+
+    ioctl(fd, EVIOCGREP, &rep);
+    return Py_BuildValue("(ii)", rep[0], rep[1]);
+}
+
+
+static PyObject *
+ioctl_EVIOCSREP(PyObject *self, PyObject *args)
+{
+    int fd, ret;
+    unsigned int rep[2] = {0};
+
+    ret = PyArg_ParseTuple(args, "iii", &fd, &rep[0], &rep[1]);
+    if (!ret) return NULL;
+
+    ret = ioctl(fd, EVIOCSREP, &rep);
+    return Py_BuildValue("i", ret);
+}
+
+
 static PyMethodDef MethodTable[] = {
     { "unpack",             event_unpack,       METH_VARARGS, "unpack a single input event" },
     { "ioctl_devinfo",      ioctl_devinfo,      METH_VARARGS, "fetch input device info" },
     { "ioctl_capabilities", ioctl_capabilities, METH_VARARGS, "fetch input device capabilities" },
+    { "ioctl_EVIOCGREP",    ioctl_EVIOCGREP,    METH_VARARGS},
+    { "ioctl_EVIOCSREP",    ioctl_EVIOCSREP,    METH_VARARGS},
     { "device_read",        device_read,        METH_VARARGS, "read an input event from a device" },
     { "device_read_many",   device_read_many,   METH_VARARGS, "read all available input events from a device" },
 

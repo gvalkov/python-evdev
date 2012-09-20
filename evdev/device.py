@@ -31,8 +31,9 @@ class DeviceInfo(object):
            and self.version == o.version
 
 
-_AbsInfo = namedtuple('AbsInfo',
-                     ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
+_AbsInfo = namedtuple('AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
+_KbdInfo = namedtuple('KbdInfo', ['repeat', 'delay'])
+
 
 class AbsInfo(_AbsInfo):
     '''
@@ -70,6 +71,22 @@ class AbsInfo(_AbsInfo):
 
     def __str__(self):
         return 'val {}, min {}, max {}, fuzz {}, flat {}, res {}'.format(*self)
+
+
+class KbdInfo(_KbdInfo):
+    '''
+    Keyboard repeat rate:
+
+    - repeat:
+       Keyboard repeat rate in characters per second.
+
+    - delay:
+       Amount of time that a key must be depressed before it will start
+       to repeat (in milliseconds).
+    '''
+
+    def __str__(self):
+        return 'repeat {}, delay {}'.format(*self)
 
 
 class InputDevice(object):
@@ -207,3 +224,14 @@ class InputDevice(object):
 
         for i in events:
             yield InputEvent(*i)
+
+    @property
+    def repeat(self):
+        ''' Get or set the keyboard repeat rate (in characters per
+        minute) and delay (in milliseconds).'''
+
+        return KbdInfo(*_input.ioctl_EVIOCGREP(self.fd))
+
+    @repeat.setter
+    def repeat(self, value):
+        return _input.ioctl_EVIOCSREP(self.fd, *value)

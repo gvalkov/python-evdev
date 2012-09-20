@@ -66,6 +66,7 @@ else:
 
 print('Device name: {.name}'.format(device))
 print('Device info: {.info}'.format(device))
+print('Repeat settings: {}'.format(device.repeat))
 
 print('Device capabilities:')
 for type, codes in device.capabilities(verbose=True).items():
@@ -77,6 +78,7 @@ for type, codes in device.capabilities(verbose=True).items():
         else:
             print('    Code {:<4} {}'.format(*i))
     print('')
+
 
 print('Listening for events ...\n')
 while True:
