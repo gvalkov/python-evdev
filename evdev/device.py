@@ -7,32 +7,9 @@ from evdev import _input, ecodes, util
 from evdev.events import InputEvent
 
 
-class DeviceInfo(object):
-    __slots__ = 'bustype', 'product', 'vendor', 'version'
-
-    def __init__(self, bustype, vendor, product, version):
-        self.bustype = bustype
-        self.vendor  = vendor
-        self.product = product
-        self.version = version
-
-    def __str__(self):
-        msg = 'bus: {:04x}, product {:04x}, vendor {:04x}, version {:04x}'
-        return msg.format(self.bustype, self.product, self.vendor, self.version)
-
-    def __repr__(s):
-        msg = (s.__class__.__name__, s.bustype, s.vendor, s.product, s.version)
-        return '{}({:04x}, {:04x}, {:04x}, {:04x})'.format(*msg)
-
-    def __eq__(self, o):
-        return self.bustype == o.bustype \
-           and self.vendor  == o.vendor  \
-           and self.product == o.product \
-           and self.version == o.version
-
-
 _AbsInfo = namedtuple('AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
 _KbdInfo = namedtuple('KbdInfo', ['repeat', 'delay'])
+_DeviceInfo = namedtuple('DeviceInfo', ['bustype', 'product', 'vendor', 'version'])
 
 
 class AbsInfo(_AbsInfo):
@@ -87,6 +64,12 @@ class KbdInfo(_KbdInfo):
 
     def __str__(self):
         return 'repeat {}, delay {}'.format(*self)
+
+
+class DeviceInfo(_DeviceInfo):
+    def __str__(self):
+        msg = 'bus: {:04x}, product {:04x}, vendor {:04x}, version {:04x}'
+        return msg.format(*self)
 
 
 class InputDevice(object):
