@@ -11,7 +11,7 @@ evdev.device
 ^^^^^^^^^^^^
 
 .. automodule:: evdev.device
-   :members: InputDevice, DeviceInfo, AbsData
+   :members: InputDevice, DeviceInfo, AbsInfo, KbdInfo
    :undoc-members:
    :special-members:
    :member-order: groupwise
