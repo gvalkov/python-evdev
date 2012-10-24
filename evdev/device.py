@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import os
+from select import select
 from collections import namedtuple
 
 from evdev import _input, ecodes, util
@@ -200,6 +201,14 @@ class InputDevice(object):
         if event:
             return InputEvent(*event)
 
+    def read_loop(self):
+        '''Enter a polling loop that yields input events.'''
+
+        while True:
+            r,w,x = select([self.fd], [], [])
+            for event in self.read():
+                yield event
+
     def read(self):
         '''
         Read multiple input events from device. This function returns a
@@ -219,7 +228,7 @@ class InputDevice(object):
 
     @property
     def repeat(self):
-        ''' Get or set the keyboard repeat rate (in characters per
+        '''Get or set the keyboard repeat rate (in characters per
         minute) and delay (in milliseconds).'''
 
         return KbdInfo(*_input.ioctl_EVIOCGREP(self.fd))

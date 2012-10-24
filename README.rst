@@ -37,6 +37,8 @@ Enhancements:
 
     - Add ``InputDevice.version`` - the value of ``EVIOCGVERSION``.
 
+    - Add ``device.read_loop()``
+
     - Replace the DeviceInfo class with a namedtuple.
 
 Fixes:
