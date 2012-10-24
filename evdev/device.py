@@ -204,7 +204,12 @@ class InputDevice(object):
         '''
         Read multiple input events from device. This function returns a
         generator object that yields :class:`InputEvent
-        <evdev.events.InputEvent>` instances.  '''
+        <evdev.events.InputEvent>` instances.
+
+        .. warning:: Attempting to read from an input device that has no
+                     available data will result in a segmentation fault. Consider
+                     wrapping calls to ``read()`` in a ``select()``.
+        '''
 
         # events -> [(sec, usec, type, code, val), ...]
         events = _input.device_read_many(self.fd)
