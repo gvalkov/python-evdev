@@ -39,10 +39,12 @@ Enhancements:
 
     - Add ``device.read_loop()``
 
-    - Replace the DeviceInfo class with a namedtuple.
+    - Replace the ``DeviceInfo`` class with a namedtuple.
 
 Fixes:
     - ``device.read_one()`` was dropping events.
+
+    - Rename ``AbsData`` to ``AbsInfo`` (due to ``struct input_absinfo``).
 
 
 0.2.0 (Aug 22, 2012)
