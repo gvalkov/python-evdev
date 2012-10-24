@@ -54,7 +54,6 @@ device_read(PyObject *self, PyObject *args)
     if (PyArg_ParseTuple(args, "i", &fd) < 0)
         return NULL;
 
-    read(fd, &event, sizeof(event));
     int n = read(fd, &event, sizeof(event));
 
     if (n<0) {
