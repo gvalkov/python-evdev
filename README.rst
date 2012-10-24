@@ -35,6 +35,8 @@ Changelog
 Enhancements:
     - Add ability to set/get auto-repeat settings ``EVIOC{SG}REP``.
 
+    - Add ``InputDevice.version`` - the value of ``EVIOCGVERSION``.
+
     - Replace the DeviceInfo class with a namedtuple.
 
 

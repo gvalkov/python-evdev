@@ -77,7 +77,8 @@ class InputDevice(object):
     A linux input device from which input events can be read.
     '''
 
-    __slots__ = 'fn', 'fd', 'info', 'name', 'phys', '_rawcapabilities'
+    __slots__ = ('fn', 'fd', 'info', 'name', 'phys', '_rawcapabilities',
+                 'version')
 
     def __init__(self, dev):
         '''
@@ -101,6 +102,9 @@ class InputDevice(object):
 
         #: The physical topology of the device
         self.phys = info_res[5]
+
+        #: The evdev protocol version
+        self.version = _input.ioctl_EVIOCGVERSION(self.fd)
 
         #: The raw dictionary of device capabilities - see `:func:capabilities()`
         self._rawcapabilities = info_res[6]
