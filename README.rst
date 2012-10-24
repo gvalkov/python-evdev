@@ -29,6 +29,16 @@ PyPi:
 Changelog
 =========
 
+0.2.1 (, 2012)
+^^^^^^^^^^^^^^^^^^^^
+
+Enhancements:
+    - Add ability to set/get auto-repeat settings ``EVIOC{SG}REP``.
+
+    - Replace the DeviceInfo class with a namedtuple.
+
+
+
 0.2.0 (Aug 22, 2012)
 ^^^^^^^^^^^^^^^^^^^^
 
