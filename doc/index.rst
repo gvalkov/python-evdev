@@ -74,24 +74,42 @@ Accessing input subsystem constants::
 Reading events::
 
     >>> from evdev import InputDevice, categorize, ecodes
-    >>> from select import select
     >>> dev = InputDevice('/dev/input/event1')
 
     >>> print(dev)
     device /dev/input/event1, name "Dell Dell USB Keyboard", phys "usb-0000:00:12.1-2/input0"
 
-    >>> while True:
-    ...    r,w,x = select([dev], [], [])
-    ...    for event in dev.read():
-    ...        if event.type == ecodes.EV_KEY:
-    ...            print(categorize(event))
-    ... # hitting a and holding space
+    >>> for event in dev.read_loop():
+    ...     if event.type == ecodes.EV_KEY:
+    ...         print(categorize(event)) 
+    ... # pressing 'a' and holding 'space'
     key event at 1337016188.396030, 30 (KEY_A), down
     key event at 1337016188.492033, 30 (KEY_A), up
     key event at 1337016189.772129, 57 (KEY_SPACE), down
     key event at 1337016190.275396, 57 (KEY_SPACE), hold
     key event at 1337016190.284160, 57 (KEY_SPACE), up
 
+Reading events from multiple devices::
+
+    >>> from evdev import InputDevice
+    >>> from select import select
+
+    >>> devices = map(InputDevice, ('/dev/input/event1', '/dev/input/event2'))
+    >>> devices = {dev.fd : dev for dev in devices}
+
+    >>> for dev in devices.values(): print(dev)
+    device /dev/input/event1, name "Dell Dell USB Keyboard", phys "usb-0000:00:12.1-2/input0"
+    device /dev/input/event2, name "Logitech USB Laser Mouse", phys "usb-0000:00:12.0-2/input0"
+
+    >>> while True:
+    ...    r,w,x = select(devices, [], [])
+    ...    for fd in r:
+    ...        for event in devices[fd].read():
+    ...            print(event)
+    event at 1351116708.002230, code 01, type 02, val 01
+    event at 1351116708.002234, code 00, type 00, val 00
+    event at 1351116708.782231, code 04, type 04, val 458782
+    event at 1351116708.782237, code 02, type 01, val 01
 
 Reading events with asyncore::
 
