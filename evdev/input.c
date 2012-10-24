@@ -34,13 +34,13 @@ int test_bit(const char* bitmask, int bit) {
 
 // Useful for comparing input events as seen in the extension module
 // and as seen in python
-static void
-print_event(struct input_event *ev) {
-    fprintf(stderr, "[so] event: time %ld.%06ld, code %02d, type %02d, val %02d\n",
-            ev->time.tv_sec, ev->time.tv_usec,
-            ev->code, ev->type, ev->value
-    );
-}
+// static void
+// print_event(struct input_event *ev) {
+//     fprintf(stderr, "[so] event: time %ld.%06ld, code %02d, type %02d, val %02d\n",
+//             ev->time.tv_sec, ev->time.tv_usec,
+//             ev->code, ev->type, ev->value
+//     );
+// }
 
 
 // Read input event from a device and return a tuple that mimics input_event
