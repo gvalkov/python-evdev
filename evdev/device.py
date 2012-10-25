@@ -226,6 +226,25 @@ class InputDevice(object):
         for i in events:
             yield InputEvent(*i)
 
+    def grab(self):
+        '''Grab input device using `EVIOCGRAB` - other applications
+        will be unable to receive until the device is released. Only
+        one process can hold a `EVIOCGRAB` on a device.
+
+        .. warning:: Grabbing an already grabbed device will raise an
+                     IOError('Device or resource busy') exception.'''
+
+        _input.ioctl_EVIOCGRAB(self.fd, 1)
+
+    def ungrab(self):
+        '''Release device if it has been already grabbed (uses
+        `EVIOCGRAB`).
+
+        .. warning:: Releasing an already released device will raise an
+                     IOError('Invalid argument') exception.'''
+
+        _input.ioctl_EVIOCGRAB(self.fd, 0)
+
     @property
     def repeat(self):
         '''Get or set the keyboard repeat rate (in characters per
