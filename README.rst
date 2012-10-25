@@ -39,7 +39,7 @@ Enhancements:
 
     - Add ``device.read_loop()``
 
-    - Add ``device.grab() and device.ungrab()`` - ``EVIOCGRAB``
+    - Add ``device.grab()`` and ``device.ungrab()`` - exposes ``EVIOCGRAB``
 
     - Replace the ``DeviceInfo`` class with a namedtuple.
 
