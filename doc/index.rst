@@ -134,6 +134,11 @@ Reading events with asyncore::
     InputEvent(1337255905L, 358854L, 1, 30, 0L)
     InputEvent(1337255905L, 358857L, 0, 0, 0L)
 
+Getting exclusive access to a device::
+
+    >>> dev.grab()  # become the sole recipient of all incoming input events
+    >>> dev.ungrab()
+
 Associating classes with event types (see :mod:`events <evdev.events>`)::
 
     >>> from evdev import categorize, event_factory, ecodes
