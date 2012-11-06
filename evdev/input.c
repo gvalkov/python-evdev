@@ -293,6 +293,44 @@ ioctl_EVIOCGRAB(PyObject *self, PyObject *args)
 }
 
 
+// todo: this function needs a better name
+static PyObject *
+get_sw_led_snd(PyObject *self, PyObject *args)
+{
+    int i, max, fd, evtype, ret;
+    PyObject* res = PyList_New(0);
+
+    ret = PyArg_ParseTuple(args, "ii", &fd, &evtype);
+    if (!ret) return NULL;
+
+    if (evtype == EV_LED)
+        max = LED_MAX;
+    else if (evtype == EV_SW)
+        max = SW_MAX;
+    else if (evtype == EV_SND)
+        max = SND_MAX;
+
+    char* bits = (char*) malloc(max/8);
+    memset(bits, 0, sizeof(bits));
+
+    if (evtype == EV_LED)
+        ret = ioctl(fd, EVIOCGLED(sizeof(bits)), bits);
+    else if (evtype == EV_SW)
+        ret = ioctl(fd, EVIOCGSW(sizeof(bits)), bits);
+    else if (evtype == EV_SND)
+        ret = ioctl(fd, EVIOCGSND(sizeof(bits)), bits);
+
+    for (i=0 ; i<max ; i++) {
+        if (test_bit(bits, i)) {
+            PyList_Append(res, Py_BuildValue("i", i));
+        }
+    }
+
+    free(bits);
+    return res;
+}
+
+
 static PyMethodDef MethodTable[] = {
     { "unpack",               event_unpack,         METH_VARARGS, "unpack a single input event" },
     { "ioctl_devinfo",        ioctl_devinfo,        METH_VARARGS, "fetch input device info" },
@@ -301,6 +339,7 @@ static PyMethodDef MethodTable[] = {
     { "ioctl_EVIOCSREP",      ioctl_EVIOCSREP,      METH_VARARGS},
     { "ioctl_EVIOCGVERSION",  ioctl_EVIOCGVERSION,  METH_VARARGS},
     { "ioctl_EVIOCGRAB",      ioctl_EVIOCGRAB,      METH_VARARGS},
+    { "get_sw_led_snd",       get_sw_led_snd,       METH_VARARGS},
     { "device_read",          device_read,          METH_VARARGS, "read an input event from a device" },
     { "device_read_many",     device_read_many,     METH_VARARGS, "read all available input events from a device" },
 

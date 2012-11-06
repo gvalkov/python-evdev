@@ -141,7 +141,7 @@ class InputDevice(object):
           { ('EV_KEY', 1) : [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 273)],
             ('EV_REL', 2) : [('REL_X', 0), ('REL_Y', 0), ('REL_HWHEEL', 6), ('REL_WHEEL', 8)] }
 
-        Unknown codes or types will be resolved to '?'.
+        Unknown codes or types will be resolved to ``'?'``.
 
         If ``absinfo`` is ``True``, the list of capabilities will also
         include absolute axis information (``absmin``, ``absmax``,
@@ -162,8 +162,26 @@ class InputDevice(object):
         else:
             return self._capabilities(absinfo)
 
+    def leds(self, verbose=False):
+        '''
+        Returns currently set LED keys. Example::
+
+          [0, 1, 8, 9]
+
+        If ``verbose`` is ``True``, event codes will be resolved to
+        their names. Unknown codes will be resolved to ``'?'``. Example::
+
+          [('LED_NUML', 0), ('LED_CAPSL', 1), ('LED_MISC', 8), ('LED_MAIL', 9)]
+
+        '''
+        leds = _input.get_sw_led_snd(self.fd, ecodes.EV_LED)
+        if verbose:
+            return [(ecodes.LED[l] if l in ecodes.LED else '?', l) for l in leds]
+
+        return leds
+
     def __eq__(self, o):
-        ''' Two devices are considered equal if their :data:`info` attributes are equal. '''
+        '''Two devices are considered equal if their :data:`info` attributes are equal.'''
         return self.info == o.info
 
     def __str__(self):
