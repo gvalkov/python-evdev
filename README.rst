@@ -32,6 +32,10 @@ Changelog
 Development
 ^^^^^^^^^^^
 
+
+0.3.0 (Nov 06, 2012)
+^^^^^^^^^^^^^^^^^^^^
+
 Enhancements:
     - Add ability to set/get auto-repeat settings with ``EVIOC{SG}REP``.
 
