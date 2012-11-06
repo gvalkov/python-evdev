@@ -33,20 +33,22 @@ Development
 ^^^^^^^^^^^
 
 Enhancements:
-    - Add ability to set/get auto-repeat settings ``EVIOC{SG}REP``.
+    - Add ability to set/get auto-repeat settings with ``EVIOC{SG}REP``.
 
-    - Add ``InputDevice.version`` - the value of ``EVIOCGVERSION``.
+    - Add ``device.version`` - the value of ``EVIOCGVERSION``.
 
-    - Add ``device.read_loop()``
+    - Add ``device.read_loop()``.
 
-    - Add ``device.grab()`` and ``device.ungrab()`` - exposes ``EVIOCGRAB``
+    - Add ``device.grab()`` and ``device.ungrab()`` - exposes ``EVIOCGRAB``.
 
-    - Replace the ``DeviceInfo`` class with a namedtuple.
+    - Add ``device.leds`` - exposes ``EVIOCGLED``.
+
+    - Replace ``DeviceInfo`` class with a namedtuple.
 
 Fixes:
     - ``device.read_one()`` was dropping events.
 
-    - Rename ``AbsData`` to ``AbsInfo`` (due to ``struct input_absinfo``).
+    - Rename ``AbsData`` to ``AbsInfo`` (as in ``struct input_absinfo``).
 
 
 0.2.0 (Aug 22, 2012)
