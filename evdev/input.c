@@ -88,9 +88,10 @@ device_read_many(PyObject *self, PyObject *args)
     struct input_event event[64];
 
     size_t event_size = sizeof(struct input_event);
-    size_t nread;
+    size_t nread = read(fd, event, event_size*64);
 
-    nread = read(fd, event, event_size*64);
+    if (nread == -1)
+        return PyTuple_New(0);
 
     // Construct a list of event tuples, which we'll make sense of in Python
     for (i = 0 ; i < nread/event_size ; i++) {

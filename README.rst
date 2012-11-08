@@ -32,6 +32,9 @@ Changelog
 Development
 ^^^^^^^^^^^
 
+Fixes:
+    - ``device.read()`` will return an empty tuple if the device has
+      nothing to offer (instead of segfaulting).
 
 0.3.0 (Nov 06, 2012)
 ^^^^^^^^^^^^^^^^^^^^
