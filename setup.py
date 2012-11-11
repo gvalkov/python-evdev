@@ -29,6 +29,7 @@ classifiers = (
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Libraries',
     'License :: OSI Approved :: BSD License',
+    'Programming Language :: Python :: Implementation :: CPython',
 )
 
 input_c  = Extension('evdev._input',  sources=['evdev/input.c'],  )  # extra_compile_args=['-O0'])
