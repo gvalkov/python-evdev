@@ -32,9 +32,14 @@ Changelog
 Development
 ^^^^^^^^^^^
 
+0.3.1 (Nov 23, 2012)
+^^^^^^^^^^^^^^^^^^^^
+
 Fixes:
     - ``device.read()`` will return an empty tuple if the device has
       nothing to offer (instead of segfaulting).
+
+    - exclude unnecessary package data in sdist and bdist.
 
 0.3.0 (Nov 06, 2012)
 ^^^^^^^^^^^^^^^^^^^^
