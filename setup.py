@@ -59,7 +59,7 @@ kw = {
     'install_requires'     : requires,
     'tests_require'        : test_requires,
 
-    'include_package_data' : True,
+    'include_package_data' : False,
     'zip_safe'             : True,
     'cmdclass'             : {},
 }
