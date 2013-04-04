@@ -10,7 +10,7 @@ from evdev.events import InputEvent
 
 _AbsInfo = namedtuple('AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
 _KbdInfo = namedtuple('KbdInfo', ['repeat', 'delay'])
-_DeviceInfo = namedtuple('DeviceInfo', ['bustype', 'product', 'vendor', 'version'])
+_DeviceInfo = namedtuple('DeviceInfo', ['bustype', 'vendor', 'product', 'version'])
 
 
 class AbsInfo(_AbsInfo):
