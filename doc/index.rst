@@ -49,13 +49,13 @@ Listing device capabilities for devices with absolute axes::
 
     >>> dev.capabilities()
     ... { 1: [272, 273, 277, 278, 325, 330, 333] ,
-    ...   3: [(0, AbsData(min=0, max=15360, fuzz=128, flat=0)),
-    ...       (1, AbsData(min=0, max=10240, fuzz=128, flat=0))] }
+    ...   3: [(0, AbsInfo(min=0, max=15360, fuzz=128, flat=0)),
+    ...       (1, AbsInfo(min=0, max=10240, fuzz=128, flat=0))] }
 
     >>> dev.capabilities(verbose=True)
     ... { ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ...],
-    ...   ('EV_ABS', 3): [(('ABS_X', 0), AbsData(min=0, max=15360, fuzz=128, flat=0)),
-    ...                   (('ABS_Y', 1), AbsData(min=0, max=10240, fuzz=128, flat=0)),] }
+    ...   ('EV_ABS', 3): [(('ABS_X', 0), AbsInfo(min=0, max=15360, fuzz=128, flat=0)),
+    ...                   (('ABS_Y', 1), AbsInfo(min=0, max=10240, fuzz=128, flat=0)),] }
 
     >>> dev.capabilities(absinfo=False)
     ... { 1: [272, 273, 277, 278, 325, 330, 333],
@@ -171,13 +171,13 @@ Injecting events (2)::
 
 Specifying uinput device options::
 
-    >>> from evdev import UInput, AbsData, ecodes as e
+    >>> from evdev import UInput, AbsInfo, ecodes as e
 
     >>> cap = {
     ...     e.EV_KEY : [e.KEY_A, e.KEY_B],
     ...     e.EV_ABS : [
-    ...         (e.ABS_X, AbsData(min=0, max=255, fuzz=0, flat=0)),
-    ...         (e.ABS_Y, AbsData(0, 255, 0, 0)),
+    ...         (e.ABS_X, AbsInfo(min=0, max=255, fuzz=0, flat=0)),
+    ...         (e.ABS_Y, AbsInfo(0, 255, 0, 0)),
     ...         (e.ABS_MT_POSITION_X, (0, 255, 128, 0)) ]
     ... }
 
@@ -188,9 +188,9 @@ Specifying uinput device options::
 
     >>> print(ui.capabilities())
     ... { 0: [0, 1, 3], 1: [30, 48],
-    ...   3: [(0,  AbsData(min=0, max=255, fuzz=0, flat=0)),
-    ...       (1,  AbsData(min=0, max=255, fuzz=0, flat=0)),
-    ...       (53, AbsData(min=0, max=255, fuzz=128, flat=0))] }
+    ...   3: [(0,  AbsInfo(min=0, max=255, fuzz=0, flat=0)),
+    ...       (1,  AbsInfo(min=0, max=255, fuzz=0, flat=0)),
+    ...       (53, AbsInfo(min=0, max=255, fuzz=128, flat=0))] }
 
     >>> # move mouse cursor
     >>> ui.write(e.EV_ABS, e.ABS_X, 20)
