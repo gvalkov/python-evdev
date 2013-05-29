@@ -184,4 +184,5 @@ event_factory = {
 }
 
 
-__all__ = InputEvent, KeyEvent, RelEvent, SynEvent, AbsEvent, event_factory
+__all__ = ('InputEvent', 'KeyEvent', 'RelEvent', 'SynEvent',
+           'AbsEvent', 'event_factory')

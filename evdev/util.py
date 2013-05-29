@@ -93,4 +93,4 @@ def resolve_ecodes(typecodemap, unknown='?'):
         yield (type_name, etype), res
 
 
-__all__ = list_devices, is_device, categorize, resolve_ecodes
+__all__ = ('list_devices', 'is_device', 'categorize', 'resolve_ecodes')
