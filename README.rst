@@ -32,6 +32,11 @@ Changelog
 Development
 ^^^^^^^^^^^
 
+Fixes:
+    - Raise IOError from device_read() and device_read_many() when read() fails.
+    - Several stability and style changes (thank you debian code reviewers).
+
+
 0.3.2 (Apr 05, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
