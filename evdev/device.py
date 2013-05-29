@@ -129,7 +129,7 @@ class InputDevice(object):
 
     def capabilities(self, verbose=False, absinfo=True):
         '''
-        Returns the event types that this device supports as a a mapping of
+        Returns the event types that this device supports as a mapping of
         supported event types to lists of handled event codes. Example::
 
           { 1: [272, 273, 274],
