@@ -310,24 +310,25 @@ get_sw_led_snd(PyObject *self, PyObject *args)
         max = SW_MAX;
     else if (evtype == EV_SND)
         max = SND_MAX;
+    else
+        return NULL;
 
-    char* bits = (char*) malloc(max/8);
-    memset(bits, 0, sizeof(bits));
+    char bytes[(max+7)/8];
+    memset(bytes, 0, sizeof bytes);
 
     if (evtype == EV_LED)
-        ret = ioctl(fd, EVIOCGLED(sizeof(bits)), bits);
+        ret = ioctl(fd, EVIOCGLED(sizeof(bytes)), &bytes);
     else if (evtype == EV_SW)
-        ret = ioctl(fd, EVIOCGSW(sizeof(bits)), bits);
+        ret = ioctl(fd, EVIOCGSW(sizeof(bytes)), &bytes);
     else if (evtype == EV_SND)
-        ret = ioctl(fd, EVIOCGSND(sizeof(bits)), bits);
+        ret = ioctl(fd, EVIOCGSND(sizeof(bytes)), &bytes);
 
     for (i=0 ; i<max ; i++) {
-        if (test_bit(bits, i)) {
+        if (test_bit(bytes, i)) {
             PyList_Append(res, Py_BuildValue("i", i));
         }
     }
 
-    free(bits);
     return res;
 }
 
