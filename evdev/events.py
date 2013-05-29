@@ -104,8 +104,8 @@ class KeyEvent(object):
         self.event = event
 
     def __str__(self):
-        try:    ks = ('up', 'down', 'hold')[self.keystate]
-        except: ks = 'unknown'
+        try: ks = ('up', 'down', 'hold')[self.keystate]
+        except IndexError: ks = 'unknown'
 
         msg = 'key event at {:f}, {} ({}), {}'
         return msg.format(self.event.timestamp(),

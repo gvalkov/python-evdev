@@ -176,7 +176,7 @@ class UInput(object):
             m = os.stat(self.devnode)[stat.ST_MODE]
             if not stat.S_ISCHR(m):
                 raise
-        except:
+        except (IndexError, OSError):
             msg = '"{}" does not exist or is not a character device file '\
                   '- verify that the uinput module is loaded'
             raise UInputError(msg.format(self.devnode))
