@@ -56,9 +56,9 @@ device_read(PyObject *self, PyObject *args)
 
     int n = read(fd, &event, sizeof(event));
 
-    if (n<0) {
-        Py_INCREF(Py_None);
-        return Py_None;
+    if (n < 0) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
     }
 
     PyObject* sec  = PyLong_FromLong(event.time.tv_sec);
@@ -90,8 +90,10 @@ device_read_many(PyObject *self, PyObject *args)
     size_t event_size = sizeof(struct input_event);
     size_t nread = read(fd, event, event_size*64);
 
-    if (nread == -1)
-        return PyTuple_New(0);
+    if (nread < 0) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
 
     // Construct a list of event tuples, which we'll make sense of in Python
     for (i = 0 ; i < nread/event_size ; i++) {
