@@ -63,13 +63,17 @@ elif len(argv) == 4:
 else:
     print(usage) ; exit(1)
 
+capabs = device.capabilities(verbose=True)
 
 print('Device name: {.name}'.format(device))
 print('Device info: {.info}'.format(device))
 print('Repeat settings: {}'.format(device.repeat))
 
+if ('EV_LED', ecodes.EV_LED) in capabs:
+    print('Active LEDs: {}\n'.format(','.join(i[0] for i in device.leds(True))))
+
 print('Device capabilities:')
-for type, codes in device.capabilities(verbose=True).items():
+for type, codes in capabs.items():
     print('  Type {} {}:'.format(*type))
     for i in codes:
         if isinstance(i[1], AbsInfo):
@@ -78,6 +82,7 @@ for type, codes in device.capabilities(verbose=True).items():
         else:
             print('    Code {:<4} {}'.format(*i))
     print('')
+
 
 
 print('Listening for events ...\n')
