@@ -88,7 +88,7 @@ device_read_many(PyObject *self, PyObject *args)
     struct input_event event[64];
 
     size_t event_size = sizeof(struct input_event);
-    size_t nread = read(fd, event, event_size*64);
+    ssize_t nread = read(fd, event, event_size*64);
 
     if (nread < 0) {
         PyErr_SetFromErrno(PyExc_IOError);
