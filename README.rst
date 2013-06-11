@@ -32,6 +32,12 @@ Changelog
 Development
 ^^^^^^^^^^^
 
+Fixes:
+    - Fix segfault in `device_read_many()` (thanks bgilbert).
+
+Enhancements:
+    - Add ``FF_*`` and ``FF_STATUS`` codes to ecodes (thanks bgilbert).
+
 0.3.3 (May 29, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
