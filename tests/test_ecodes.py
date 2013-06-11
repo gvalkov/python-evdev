@@ -2,9 +2,11 @@
 
 from evdev import ecodes
 
+prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF'
+
 def test_equality():
     keys = []
-    for i in 'KEY','ABS','REL','SW','MSC','LED','BTN','REP','SND','ID','EV','BUS','SYN':
+    for i in prefixes.split():
         keys.extend(getattr(ecodes, i, {}).keys())
 
     assert set(keys) == set(ecodes.ecodes.values())
@@ -14,3 +16,7 @@ def test_access():
     assert ecodes.KEY[ecodes.ecodes['KEY_A']] == 'KEY_A'
     assert ecodes.REL[0] == 'REL_X'
 
+def test_overlap():
+    vals_ff = set(ecodes.FF.values())
+    vals_ff_status = set(ecodes.FF_STATUS.values())
+    assert bool(vals_ff & vals_ff_status) == False
