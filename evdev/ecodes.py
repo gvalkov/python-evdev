@@ -37,20 +37,20 @@ from evdev import _ecodes
 #: mapping of names to values
 ecodes = {}
 
-# the order of FF_STATUS and FF is significant
 prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF'
+prev_prefix = ''
 g = globals()
 
-for k,v in getmembers(_ecodes):
-    for i in prefixes.split():
-        if k.startswith(i):
-            ecodes[k] = v
-            d = g.setdefault(i, {})
-            # keep FF_RUMBLE from being named FF_EFFECT_MIN, etc.
-            if v not in d or d[v].endswith('_MIN') or d[v].endswith('_MAX'):
-                d[v] = k
-            break
+# eg. code: 'REL_Z', val: 2
+for code, val in getmembers(_ecodes):
+    for prefix in prefixes.split():  # eg. 'REL'
+        if code.startswith(prefix):
+            ecodes[code] = val
+            # FF_STATUS codes should not appear in the FF reverse mapping
+            if not code.startswith(prev_prefix):
+                g.setdefault(prefix, {})[val] = code
 
+        prev_prefix = prefix
 
 #: keys are a combination of all BTN and KEY codes
 keys = {}
@@ -79,4 +79,4 @@ bytype = {
 from evdev._ecodes import *
 
 # cheaper than whitelisting in an __all__
-del k, v, i, getmembers, g, prefixes
+del code, val, prefix, getmembers, g, prefixes, prev_prefix
