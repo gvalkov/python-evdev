@@ -70,6 +70,9 @@ Accessing input subsystem constants::
     ... 'KEY_A'
     >>> ecodes.bytype[ecodes.EV_KEY][30]
     ... 'KEY_A'
+    # a single value in the reverse mappings may correspond to multiple codes
+    >>> ecodes.KEY[152]
+    ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
 
 Reading events::
 

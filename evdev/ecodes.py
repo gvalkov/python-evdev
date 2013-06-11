@@ -28,6 +28,14 @@ illustrated by a few examples::
 
     >>> evdev.ecodes.bytype[EV_REL][0]
     'REL_X'
+
+Values in reverse mappings may point to one or more ecodes. For example::
+
+    >>> evdev.ecodes.FF[80]
+    ['FF_EFFECT_MIN', 'FF_RUMBLE']
+
+    >>> evdev.ecodes.FF[81]
+    'FF_PERIODIC'
 '''
 
 from inspect import getmembers
@@ -48,7 +56,17 @@ for code, val in getmembers(_ecodes):
             ecodes[code] = val
             # FF_STATUS codes should not appear in the FF reverse mapping
             if not code.startswith(prev_prefix):
-                g.setdefault(prefix, {})[val] = code
+                d = g.setdefault(prefix, {})
+                # codes that share the same value will be added to a list. eg:
+                # >>> ecodes.FF_STATUS
+                # {0: 'FF_STATUS_STOPPED', 1: ['FF_STATUS_MAX', 'FF_STATUS_PLAYING']}
+                if val in d:
+                    if isinstance(d[val], list):
+                        d[val].append(code)
+                    else:
+                        d[val] = [d[val], code]
+                else:
+                    d[val] = code
 
         prev_prefix = prefix
 
@@ -79,4 +97,4 @@ bytype = {
 from evdev._ecodes import *
 
 # cheaper than whitelisting in an __all__
-del code, val, prefix, getmembers, g, prefixes, prev_prefix
+del code, val, prefix, getmembers, g, d, prefixes, prev_prefix

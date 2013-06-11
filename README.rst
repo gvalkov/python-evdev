@@ -32,11 +32,20 @@ Changelog
 Development
 ^^^^^^^^^^^
 
-Fixes:
-    - Fix segfault in ``device_read_many()`` (thanks bgilbert).
-
 Enhancements:
     - Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks bgilbert).
+
+    - Reverse event code mappings (``ecodes.{KEY,FF,REL,ABS}`` and
+      etc.) will now map to a list of codes, whenever a value
+      corresponds to multiple codes::
+
+        >>> ecodes.KEY[152]
+        ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
+        >>> ecodes.KEY[30]
+        ... 'KEY_A'
+
+Fixes:
+    - Fix segfault in ``device_read_many()`` (thanks bgilbert).
 
 0.3.3 (May 29, 2013)
 ^^^^^^^^^^^^^^^^^^^^
