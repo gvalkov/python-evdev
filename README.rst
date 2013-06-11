@@ -4,7 +4,7 @@
 *evdev* provides bindings to the generic input event interface in Linux.
 The *evdev* interface serves the purpose of passing events generated in the
 kernel directly to userspace through character devices that are typically
-located in `/dev/input/`.
+located in ``/dev/input/``.
 
 *evdev* also comes with bindings to *uinput*, the userspace input
 subsystem. *Uinput* allows userspace programs to create and handle
@@ -33,17 +33,17 @@ Development
 ^^^^^^^^^^^
 
 Fixes:
-    - Fix segfault in `device_read_many()` (thanks bgilbert).
+    - Fix segfault in ``device_read_many()`` (thanks bgilbert).
 
 Enhancements:
-    - Add ``FF_*`` and ``FF_STATUS`` codes to ecodes (thanks bgilbert).
+    - Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks bgilbert).
 
 0.3.3 (May 29, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
 Fixes:
-    - Raise `IOError` from `device_read()` and `device_read_many()` when
-      `read()` fails.
+    - Raise ``IOError`` from ``device_read()`` and ``device_read_many()`` when
+      ``read()`` fails.
 
     - Several stability and style changes (thank you debian code reviewers).
 
