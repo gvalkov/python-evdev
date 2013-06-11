@@ -5,7 +5,8 @@ This modules exposes most integer constants defined in ``linux/input.h``.
 
 Exposed constants::
 
-    KEY, ABS, REL, SW, MSC, LED, BTN, REP, SND, ID, EV, BUS, SYN
+    KEY, ABS, REL, SW, MSC, LED, BTN, REP, SND, ID, EV, BUS, SYN, FF,
+    FF_STATUS
 
 This module also provides numerous reverse and forward mappings that are best
 illustrated by a few examples::
@@ -36,14 +37,19 @@ from evdev import _ecodes
 #: mapping of names to values
 ecodes = {}
 
-prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN'
+# the order of FF_STATUS and FF is significant
+prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF'
 g = globals()
 
 for k,v in getmembers(_ecodes):
     for i in prefixes.split():
         if k.startswith(i):
-            g.setdefault(i, {})[v] = k
             ecodes[k] = v
+            d = g.setdefault(i, {})
+            # keep FF_RUMBLE from being named FF_EFFECT_MIN, etc.
+            if v not in d or d[v].endswith('_MIN') or d[v].endswith('_MAX'):
+                d[v] = k
+            break
 
 
 #: keys are a combination of all BTN and KEY codes
@@ -66,7 +72,9 @@ bytype = {
     _ecodes.EV_LED: LED,
     _ecodes.EV_REP: REP,
     _ecodes.EV_SND: SND,
-    _ecodes.EV_SYN: SYN, }
+    _ecodes.EV_SYN: SYN,
+    _ecodes.EV_FF:  FF,
+    _ecodes.EV_FF_STATUS: FF_STATUS, }
 
 from evdev._ecodes import *
 
