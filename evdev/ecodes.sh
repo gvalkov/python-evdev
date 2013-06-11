@@ -10,7 +10,7 @@ header=${1:-/usr/include/linux/input.h}
 
 function codes () {
     awk '
-    /#define +(KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN)_/ {
+    /#define +(KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF)_/ {
         print "    PyModule_AddIntMacro(m, "$2");"
     }' ${header}
 }
