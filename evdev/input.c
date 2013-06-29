@@ -335,6 +335,32 @@ get_sw_led_snd(PyObject *self, PyObject *args)
 }
 
 
+static PyObject *
+set_led(PyObject *self, PyObject *args)
+{
+    int fd, led_num, value, ret;
+    ssize_t n;
+    struct input_event event;
+
+    ret = PyArg_ParseTuple(args, "iii", &fd, &led_num, &value);
+    if (!ret) return NULL;
+
+    memset(&event, 0, sizeof(event));
+    event.type = EV_LED;
+    event.code = led_num;
+    event.value = value;
+
+    n = write(fd, &event, sizeof(event));
+    if (n < 0) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+
 static PyMethodDef MethodTable[] = {
     { "unpack",               event_unpack,         METH_VARARGS, "unpack a single input event" },
     { "ioctl_devinfo",        ioctl_devinfo,        METH_VARARGS, "fetch input device info" },
@@ -344,6 +370,7 @@ static PyMethodDef MethodTable[] = {
     { "ioctl_EVIOCGVERSION",  ioctl_EVIOCGVERSION,  METH_VARARGS},
     { "ioctl_EVIOCGRAB",      ioctl_EVIOCGRAB,      METH_VARARGS},
     { "get_sw_led_snd",       get_sw_led_snd,       METH_VARARGS},
+    { "set_led",              set_led,              METH_VARARGS},
     { "device_read",          device_read,          METH_VARARGS, "read an input event from a device" },
     { "device_read_many",     device_read_many,     METH_VARARGS, "read all available input events from a device" },
 
