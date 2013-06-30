@@ -90,7 +90,7 @@ class InputDevice(object):
         self.fn = dev
 
         #: A non-blocking file descriptor to the device file
-        self.fd = os.open(dev, os.O_RDONLY | os.O_NONBLOCK)
+        self.fd = os.open(dev, os.O_RDWR | os.O_NONBLOCK)
 
         # Returns (bustype, vendor, product, version, name, phys, capabilities)
         info_res  = _input.ioctl_devinfo(self.fd)
@@ -179,6 +179,14 @@ class InputDevice(object):
             return [(ecodes.LED[l] if l in ecodes.LED else '?', l) for l in leds]
 
         return leds
+
+    def set_led(self, led_num, value):
+        '''
+        Sets the state of the selected LED. Example::
+        
+          device.set_led(ecodes.LED_NUML, 1)
+        '''
+        _input.set_led(self.fd, led_num, value)
 
     def __eq__(self, o):
         '''Two devices are considered equal if their :data:`info` attributes are equal.'''
