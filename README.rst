@@ -13,11 +13,7 @@ the input subsystem.
 
 
 Documentation:
-    +---------+-----------------------------------------+
-    | devel   | http://gvalkov.github.com/python-evdev  |
-    +---------+-----------------------------------------+
-    | stable  | http://packages.python.org/evdev        |
-    +---------+-----------------------------------------+
+    http://packages.python.org/evdev
 
 Development:
     https://github.com/gvalkov/python-evdev
