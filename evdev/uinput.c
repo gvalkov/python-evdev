@@ -133,7 +133,8 @@ uinput_write(PyObject *self, PyObject *args)
 
     if (write(fd, &event, sizeof(event)) != sizeof(event)) {
         // @todo: elaborate
-        PyErr_SetString(PyExc_IOError, "error writing event to uinput device");
+        // PyErr_SetString(PyExc_IOError, "error writing event to uinput device");
+        PyErr_SetFromErrno(PyExc_IOError);
         return NULL;
     }
 

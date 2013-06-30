@@ -4,7 +4,7 @@ import os
 from select import select
 from collections import namedtuple
 
-from evdev import _input, ecodes, util
+from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
 
 
@@ -186,7 +186,7 @@ class InputDevice(object):
         
           device.set_led(ecodes.LED_NUML, 1)
         '''
-        _input.set_led(self.fd, led_num, value)
+        _uinput.write(self.fd, ecodes.EV_LED, led_num, value)
 
     def __eq__(self, o):
         '''Two devices are considered equal if their :data:`info` attributes are equal.'''
