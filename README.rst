@@ -33,7 +33,7 @@ Development
 ^^^^^^^^^^^
 
 Enhancements:
-    - Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks bgilbert).
+    - Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks @bgilbert).
 
     - Reverse event code mappings (``ecodes.{KEY,FF,REL,ABS}`` and
       etc.) will now map to a list of codes, whenever a value
@@ -44,8 +44,11 @@ Enhancements:
         >>> ecodes.KEY[30]
         ... 'KEY_A'
 
+    - Set the state of a LED through ``device.set_led()`` (thanks
+      @accek). ``device.fd`` is opened in ``O_RDWR`` mode from now on.
+
 Fixes:
-    - Fix segfault in ``device_read_many()`` (thanks bgilbert).
+    - Fix segfault in ``device_read_many()`` (thanks @bgilbert).
 
 0.3.3 (May 29, 2013)
 ^^^^^^^^^^^^^^^^^^^^
@@ -60,7 +63,7 @@ Fixes:
 ^^^^^^^^^^^^^^^^^^^^
 
 Fixes:
-    - Fix vendor id and product id order in ``DeviceInfo`` (thanks kived).
+    - Fix vendor id and product id order in ``DeviceInfo`` (thanks @kived).
 
 0.3.1 (Nov 23, 2012)
 ^^^^^^^^^^^^^^^^^^^^
