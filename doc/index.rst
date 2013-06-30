@@ -61,6 +61,17 @@ Listing device capabilities for devices with absolute axes::
     ... { 1: [272, 273, 277, 278, 325, 330, 333],
     ...   3: [0, 1, 47, 53, 54, 57] }
 
+Getting and setting LED states::
+
+    >>> dev.leds(verbose=True)
+    ... [('LED_NUML', 0), ('LED_CAPSL', 1)]
+
+    >>> dev.leds()
+    ... [0, 1]
+
+    >>> dev.set_led(ecodes.LED_NUML, 1)  # enable numlock
+    >>> dev.set_led(ecodes.LED_NUML, 0)  # disable numlock
+
 Accessing input subsystem constants::
 
     >>> from evdev import ecodes
