@@ -25,8 +25,8 @@ PyPi:
 Changelog
 =========
 
-Development
-^^^^^^^^^^^
+0.4.0 (Jul 01, 2013)
+^^^^^^^^^^^^^^^^^^^^
 
 Enhancements:
     - Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks @bgilbert).
