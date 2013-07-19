@@ -93,7 +93,7 @@ class InputDevice(object):
         self.fd = os.open(dev, os.O_RDWR | os.O_NONBLOCK)
 
         # Returns (bustype, vendor, product, version, name, phys, capabilities)
-        info_res  = _input.ioctl_devinfo(self.fd)
+        info_res = _input.ioctl_devinfo(self.fd)
 
         #: A :class:`DeviceInfo <evdev.device.DeviceInfo>` instance
         self.info = DeviceInfo(*info_res[:4])
@@ -108,7 +108,7 @@ class InputDevice(object):
         self.version = _input.ioctl_EVIOCGVERSION(self.fd)
 
         #: The raw dictionary of device capabilities - see `:func:capabilities()`
-        self._rawcapabilities = info_res[6]
+        self._rawcapabilities = _input.ioctl_capabilities(self.fd)
 
     def _capabilities(self, absinfo=True):
         res = {}

@@ -147,6 +147,7 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     // events e.g: {1: [272, 273, 274, 275], 2: [0, 1, 6, 8]}
     PyObject* capabilities = PyDict_New();
     PyObject* eventcodes = NULL;
+    PyObject* evlong = NULL;
     PyObject* capability = NULL;
     PyObject* py_absinfo = NULL;
     PyObject* absitem = NULL;
@@ -181,23 +182,33 @@ ioctl_capabilities(PyObject *self, PyObject *args)
                                                    absinfo.flat,
                                                    absinfo.resolution);
 
-                        absitem = Py_BuildValue("(OO)", PyLong_FromLong(ev_code), py_absinfo);
+                        evlong = PyLong_FromLong(ev_code);
+                        absitem = Py_BuildValue("(OO)", evlong, py_absinfo);
 
                         // absitem -> tuple(ABS_X, (0, 255, 0, 0))
                         PyList_Append(eventcodes, absitem);
+
+                        Py_DECREF(absitem);
+                        Py_DECREF(py_absinfo);
                     }
                     else {
-                        PyList_Append(eventcodes, PyLong_FromLong(ev_code));
+                        evlong = PyLong_FromLong(ev_code);
+                        PyList_Append(eventcodes, evlong);
                     }
+
+                    Py_DECREF(evlong);
                 }
             }
             // capabilities[EV_KEY] = [KEY_A, KEY_B, KEY_C, ...]
             // capabilities[EV_ABS] = [(ABS_X, (0, 255, 0, 0)), ...]
             PyDict_SetItem(capabilities, capability, eventcodes);
+
+            Py_DECREF(capability);
+            Py_DECREF(eventcodes);
         }
     }
 
-    return Py_BuildValue("O", capabilities);
+    return capabilities;
 
     on_err:
         PyErr_SetFromErrno(PyExc_IOError);
@@ -210,7 +221,6 @@ static PyObject *
 ioctl_devinfo(PyObject *self, PyObject *args)
 {
     int fd;
-    PyObject* capabilities = NULL;
 
     struct input_id iid;
     char name[MAX_NAME_SIZE];
@@ -224,14 +234,11 @@ ioctl_devinfo(PyObject *self, PyObject *args)
     if (ioctl(fd, EVIOCGID, &iid) < 0)                 goto on_err;
     if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0) goto on_err;
 
-    // Get device capabilities
-    capabilities = ioctl_capabilities(self, Py_BuildValue("(i)", fd));
-
     // Some devices do not have a physical topology associated with them
     ioctl(fd, EVIOCGPHYS(sizeof(phys)), phys);
 
-    return Py_BuildValue("hhhhssO", iid.bustype, iid.vendor, iid.product, iid.version,
-                         name, phys, capabilities);
+    return Py_BuildValue("hhhhss", iid.bustype, iid.vendor, iid.product, iid.version,
+                         name, phys);
 
     on_err:
         PyErr_SetFromErrno(PyExc_IOError);
