@@ -25,6 +25,14 @@ PyPi:
 Changelog
 =========
 
+Development
+^^^^^^^^^^^
+
+Fixes:
+    - Fix reference counting in ``device_read``, ``device_read_many``
+      and ``ioctl_capabilities``.
+
+
 0.4.0 (Jul 01, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
