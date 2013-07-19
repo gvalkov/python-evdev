@@ -76,11 +76,14 @@ print('Device capabilities:')
 for type, codes in capabs.items():
     print('  Type {} {}:'.format(*type))
     for i in codes:
+        # i <- ('BTN_RIGHT', 273) or (['BTN_LEFT', 'BTN_MOUSE'], 272)
         if isinstance(i[1], AbsInfo):
             print('    Code {:<4} {}:'.format(*i[0]))
             print('      {}'.format(i[1]))
         else:
-            print('    Code {:<4} {}'.format(*i))
+            # multiple names may resolve to one value
+            s = ', '.join(i[0]) if isinstance(i[0], list) else i[0]
+            print('    Code {:<4} {}'.format(s, i[1]))
     print('')
 
 
