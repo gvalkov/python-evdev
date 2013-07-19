@@ -10,6 +10,7 @@
 #include <Python.h>
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -303,7 +304,7 @@ ioctl_EVIOCGRAB(PyObject *self, PyObject *args)
     ret = PyArg_ParseTuple(args, "ii", &fd, &flag);
     if (!ret) return NULL;
 
-    ret = ioctl(fd, EVIOCGRAB, (void *)flag);
+    ret = ioctl(fd, EVIOCGRAB, (intptr_t)flag);
     if (ret != 0) {
         PyErr_SetFromErrno(PyExc_IOError);
         return NULL;
