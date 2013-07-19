@@ -64,8 +64,14 @@ device_read(PyObject *self, PyObject *args)
     PyObject* sec  = PyLong_FromLong(event.time.tv_sec);
     PyObject* usec = PyLong_FromLong(event.time.tv_usec);
     PyObject* val  = PyLong_FromLong(event.value);
+    PyObject* py_input_event = NULL;
 
-    return Py_BuildValue("OOhhO", sec, usec, event.type, event.code, val);
+    py_input_event = Py_BuildValue("OOhhO", sec, usec, event.type, event.code, val);
+    Py_DECREF(sec);
+    Py_DECREF(usec);
+    Py_DECREF(val);
+
+    return py_input_event;
 }
 
 
@@ -103,6 +109,11 @@ device_read_many(PyObject *self, PyObject *args)
 
         py_input_event = Py_BuildValue("OOhhO", sec, usec, event[i].type, event[i].code, val);
         PyList_Append(event_list, py_input_event);
+
+        Py_DECREF(py_input_event);
+        Py_DECREF(sec);
+        Py_DECREF(usec);
+        Py_DECREF(val);
     }
 
     return event_list;
