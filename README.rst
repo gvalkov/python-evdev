@@ -25,7 +25,7 @@ PyPi:
 Changelog
 =========
 
-Development
+0.4.1 (Jul 24, 2013)
 ^^^^^^^^^^^
 
 Fixes:
