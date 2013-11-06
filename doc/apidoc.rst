@@ -1,13 +1,16 @@
-evdev.events
-^^^^^^^^^^^^
+API documentation
+-----------------
+
+``events``
+============
 
 .. automodule:: evdev.events
    :members: InputEvent, KeyEvent, AbsEvent, RelEvent, SynEvent, event_factory
    :undoc-members:
    :member-order: groupwise
 
-evdev.device
-^^^^^^^^^^^^
+``device``
+============
 
 .. automodule:: evdev.device
    :members: InputDevice, DeviceInfo, AbsInfo, KbdInfo
@@ -15,22 +18,22 @@ evdev.device
    :special-members:
    :member-order: groupwise
 
-evdev.uinput
-^^^^^^^^^^^^
+``uinput``
+============
 
 .. autoclass:: evdev.uinput.UInput
    :members:
    :special-members:
 
-evdev.util
-^^^^^^^^^^
+``util``
+==========
 
 .. automodule:: evdev.util
    :members: list_devices, is_device, categorize, resolve_ecodes
    :member-order: groupwise
 
-evdev.ecodes
-^^^^^^^^^^^^
+``ecodes``
+============
 
 .. automodule:: evdev.ecodes
    :members:
