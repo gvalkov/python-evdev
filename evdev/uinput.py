@@ -35,18 +35,17 @@ class UInput(object):
                        key codes.
 
         :type events: dictionary of event types mapping to lists of
-                      event codes
+                      event codes.
 
-        :param name: the name of the input device
-        :param vendor:  vendor identifier
-        :param product: product identifier
-        :param version: version identifier
-        :param bustype: bustype identifier
+        :param name: the name of the input device.
+        :param vendor:  vendor identifier.
+        :param product: product identifier.
+        :param version: version identifier.
+        :param bustype: bustype identifier.
 
         .. note:: If you do not specify any events, the uinput device
-                  will by default be able to inject only KEY_* and
-                  BTN_* event codes.
-
+                  will by default be able to inject only ``KEY_*`` and
+                  ``BTN_*`` event codes.
         '''
 
         self.name = name         #: uinput device name
@@ -111,8 +110,7 @@ class UInput(object):
         return msg
 
     def close(self):
-        # close InputDevice object
-        self.device.close()
+        self.device.close()  # close InputDevice object
 
         # destroy the uinput device
         if self.fd and self.fd > 0:
@@ -126,7 +124,7 @@ class UInput(object):
         :param event: InputEvent instance or an object with an
                       ``event`` attribute (:class:`KeyEvent
                       <evdev.events.KeyEvent>`, :class:`RelEvent
-                      <evdev.events.RelEvent>` etc)
+                      <evdev.events.RelEvent>` etc).
 
         Example::
 
@@ -141,13 +139,12 @@ class UInput(object):
 
     def write(self, etype, code, value):
         '''
-
         Inject an input event into the input subsystem. Events are
         queued until a synchronization event is received.
 
-        :param etype: event type (eg. ``EV_KEY``)
-        :param code:  event code (eg. ``KEY_A``)
-        :param value: event value (eg. 0 1 2 - depends on event type)
+        :param etype: event type (eg. ``EV_KEY``).
+        :param code:  event code (eg. ``KEY_A``).
+        :param value: event value (eg. 0 1 2 - depends on event type).
 
         Example::
 
@@ -158,9 +155,11 @@ class UInput(object):
         _uinput.write(self.fd, etype, code, value)
 
     def syn(self):
-        ''' Inject a ``SYN_REPORT`` event into the input subsystem. Events
-        queued by :func:`write()` will be fired. If applicable, events
-        will be merged into an 'atomic' event.'''
+        '''
+        Inject a ``SYN_REPORT`` event into the input subsystem. Events
+        queued by :func:`write()` will be fired. If possible, events
+        will be merged into an 'atomic' event.
+        '''
 
         _uinput.write(self.fd, ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
 
@@ -169,8 +168,8 @@ class UInput(object):
         return self.device.capabilities(verbose, absinfo)
 
     def _verify(self):
-        ''' Verify that an uinput device exists and is readable and writable
-        by our process.'''
+        '''Verify that an uinput device exists and is readable and writable
+        by the current process.'''
 
         try:
             m = os.stat(self.devnode)[stat.ST_MODE]
@@ -190,8 +189,6 @@ class UInput(object):
             raise UInputError(msg.format(_uinput.maxnamelen))
 
     def _find_device(self):
-        #:todo: use udev
-
         #:bug: the device node might not be immediately avaiable
         time.sleep(0.1)
 

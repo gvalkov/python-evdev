@@ -1,12 +1,12 @@
 # encoding: utf-8
 
 '''
-This modules exposes most integer constants defined in ``linux/input.h``.
+This modules exposes the integer constants defined in ``linux/input.h``.
 
 Exposed constants::
 
-    KEY, ABS, REL, SW, MSC, LED, BTN, REP, SND, ID, EV, BUS, SYN, FF,
-    FF_STATUS
+    KEY, ABS, REL, SW, MSC, LED, BTN, REP, SND, ID, EV,
+    BUS, SYN, FF, FF_STATUS
 
 This module also provides numerous reverse and forward mappings that are best
 illustrated by a few examples::
@@ -42,7 +42,7 @@ from inspect import getmembers
 from evdev import _ecodes
 
 
-#: mapping of names to values
+#: Mapping of names to values.
 ecodes = {}
 
 prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF'
@@ -70,7 +70,7 @@ for code, val in getmembers(_ecodes):
 
         prev_prefix = prefix
 
-#: keys are a combination of all BTN and KEY codes
+#: Keys are a combination of all BTN and KEY codes.
 keys = {}
 keys.update(BTN)
 keys.update(KEY)
@@ -80,7 +80,7 @@ keys.update(KEY)
 del keys[_ecodes.KEY_MAX]
 del keys[_ecodes.KEY_CNT]
 
-#: mapping of event types to other value/name mappings
+#: Mapping of event types to other value/name mappings.
 bytype = {
     _ecodes.EV_KEY: keys,
     _ecodes.EV_ABS: ABS,

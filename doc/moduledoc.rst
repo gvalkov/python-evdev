@@ -4,7 +4,6 @@ evdev.events
 .. automodule:: evdev.events
    :members: InputEvent, KeyEvent, AbsEvent, RelEvent, SynEvent, event_factory
    :undoc-members:
-   :special-members:
    :member-order: groupwise
 
 evdev.device
@@ -19,11 +18,9 @@ evdev.device
 evdev.uinput
 ^^^^^^^^^^^^
 
-.. automodule:: evdev.uinput
-   :members: UInput
-   :undoc-members:
+.. autoclass:: evdev.uinput.UInput
+   :members:
    :special-members:
-   :member-order: groupwise
 
 evdev.util
 ^^^^^^^^^^

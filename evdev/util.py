@@ -9,7 +9,7 @@ from evdev.events import event_factory
 
 
 def list_devices(input_device_dir='/dev/input'):
-    '''List readable character devices.'''
+    '''List readable, character devices.'''
 
     fns = glob.glob('{}/event*'.format(input_device_dir))
     fns = list(filter(is_device, fns))
@@ -18,7 +18,7 @@ def list_devices(input_device_dir='/dev/input'):
 
 
 def is_device(fn):
-    '''Determine if a file exists, is readable and is a character device.'''
+    '''Check if ``fn`` exists, is readable and if it is a character device.'''
 
     if not os.path.exists(fn):
         return False
@@ -37,9 +37,10 @@ def categorize(event):
     '''
     Categorize an event according to its type.
 
-    The :data:`event_factory <evdev.events.event_factory>` dictionary maps
-    event types to their classes. If there is no corresponding key, the event
-    is returned as it was.
+    The :data:`event_factory <evdev.events.event_factory>` dictionary
+    maps event types to sub-classes of :class:`InputEvent
+    <evdev.events.InputEvent>`. If there is no corresponding key, the
+    event is returned as it is.
     '''
 
     if event.type in event_factory:
@@ -52,19 +53,21 @@ def resolve_ecodes(typecodemap, unknown='?'):
     '''
     Resolve event codes and types to their verbose names.
 
-    :param typecodemap: mapping of event types to lists of event codes
-    :param unknown: symbol to which unknown types or codes will be resolved
+    :param typecodemap: mapping of event types to lists of event codes.
+    :param unknown: symbol to which unknown types or codes will be resolved.
 
     Example::
 
-        resolve_ecodes({ 1 : [272, 273, 274] })
-        { ('EV_KEY', 1) : [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274)] }
+        resolve_ecodes({ 1: [272, 273, 274] })
+        { ('EV_KEY', 1): [('BTN_MOUSE',  272),
+                          ('BTN_RIGHT',  273),
+                          ('BTN_MIDDLE', 274)] }
 
-    If the typecodemap contains absolute axis info (wrapped in
-    instances of `AbsInfo <evdev.device.AbsInfo>`) the result would
-    look like::
+    If typecodemap contains absolute axis info (instances of
+    :class:`AbsInfo <evdev.device.AbsInfo>` ) the result would look
+    like::
 
-        resove_ecodes({ 3 : [(0, AbsInfo(...))] })
+        resove_ecodes({ 3: [(0, AbsInfo(...))] })
         { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
     '''
 
