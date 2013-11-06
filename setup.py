@@ -14,9 +14,6 @@ from setuptools import setup, Extension, Command
 
 here = abspath(dirname(__file__))
 
-requires = ()
-test_requires = ('pytest',)
-
 classifiers = (
     'Development Status :: 4 - Beta',
     # 'Development Status :: 5 - Production/Stable',
@@ -44,19 +41,15 @@ kw = {
 
     'author'               : 'Georgi Valkov',
     'author_email'         : 'georgi.t.valkov@gmail.com',
-
-    'license'              : 'New BSD License',
+    'license'              : 'Revised BSD License',
 
     'keywords'             : 'evdev input uinput',
     'classifiers'          : classifiers,
-
     'url'                  : 'https://github.com/gvalkov/python-evdev',
 
     'packages'             : ['evdev'],
-
     'ext_modules'          : [input_c, uinput_c, ecodes_c],
-    'install_requires'     : requires,
-    'tests_require'        : test_requires,
+    'tests_require'        : ['pytest'],
 
     'include_package_data' : False,
     'zip_safe'             : True,
