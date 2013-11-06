@@ -49,7 +49,7 @@ class InputEvent(object):
 
     def __init__(self, sec, usec, type, code, value):
         #: Time in seconds since epoch at which event occurred
-        self.sec  = sec
+        self.sec = sec
 
         #: Microsecond portion of the timestamp
         self.usec = usec
@@ -104,8 +104,10 @@ class KeyEvent(object):
         self.event = event
 
     def __str__(self):
-        try: ks = ('up', 'down', 'hold')[self.keystate]
-        except IndexError: ks = 'unknown'
+        try:
+            ks = ('up', 'down', 'hold')[self.keystate]
+        except IndexError:
+            ks = 'unknown'
 
         msg = 'key event at {:f}, {} ({}), {}'
         return msg.format(self.event.timestamp(),

@@ -183,7 +183,7 @@ class InputDevice(object):
     def set_led(self, led_num, value):
         '''
         Sets the state of the selected LED. Example::
-        
+
           device.set_led(ecodes.LED_NUML, 1)
         '''
         _uinput.write(self.fd, ecodes.EV_LED, led_num, value)
@@ -231,7 +231,7 @@ class InputDevice(object):
         '''Enter a polling loop that yields input events.'''
 
         while True:
-            r,w,x = select([self.fd], [], [])
+            r, w, x = select([self.fd], [], [])
             for event in self.read():
                 yield event
 

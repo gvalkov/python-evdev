@@ -57,7 +57,7 @@ class UInput(object):
         self.devnode = devnode   #: uinput device node - eg. ``/dev/uinput/``
 
         if not events:
-             events = {ecodes.EV_KEY: ecodes.keys.keys()}
+            events = {ecodes.EV_KEY: ecodes.keys.keys()}
 
         # the min, max, fuzz and flat values for the absolute axis for
         # a given code
@@ -71,10 +71,10 @@ class UInput(object):
         # set device capabilities
         for etype, codes in events.items():
             for code in codes:
-                # handle max,min,fuzz,flat
+                # handle max, min, fuzz, flat
                 if isinstance(code, (tuple, list, device.AbsInfo)):
-                    # flatten (ABS_Y, (0,255,0,0)) to (ABS_Y,0,255,0,0)
-                    f = [code[0]] ; f += code[1]
+                    # flatten (ABS_Y, (0, 255, 0, 0)) to (ABS_Y, 0, 255, 0, 0)
+                    f = [code[0]]; f += code[1]
                     absinfo.append(f)
                     code = code[0]
 
@@ -198,4 +198,4 @@ class UInput(object):
         for fn in util.list_devices('/dev/input/'):
             d = device.InputDevice(fn)
             if d.name == self.name:
-                 return d
+                return d

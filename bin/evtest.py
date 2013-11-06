@@ -61,7 +61,8 @@ elif len(argv) == 4:
     query_type = argv[2]
     query_value = argv[3]
 else:
-    print(usage) ; exit(1)
+    print(usage)
+    exit(1)
 
 capabs = device.capabilities(verbose=True)
 
@@ -85,7 +86,6 @@ for type, codes in capabs.items():
             s = ', '.join(i[0]) if isinstance(i[0], list) else i[0]
             print('    Code {:<4} {}'.format(s, i[1]))
     print('')
-
 
 
 print('Listening for events ...\n')

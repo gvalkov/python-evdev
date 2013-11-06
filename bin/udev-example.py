@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-This is an example of using pyudev[1] alongside evdev. 
+This is an example of using pyudev[1] alongside evdev.
 [1]: https://pyudev.readthedocs.org/
 '''
 
@@ -42,9 +42,11 @@ while True:
                         break
                     if udev.action == u'remove':
                         print('Device removed: %s' % udev)
+
                         def helper():
                             global fds
                             fds = {monitor.fileno(): monitor}
+
                         finalizers.append(helper)
                         break
 
