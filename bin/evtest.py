@@ -19,9 +19,12 @@ query_value = None
 
 
 def select_device():
-    ''' Select a device from the  list of accessible input devices '''
+    '''Select a device from the  list of accessible input devices.'''
 
     devices = [InputDevice(i) for i in reversed(list_devices(device_dir))]
+    if not devices:
+        print('error: no input devices found (do you have rw permission on /dev/input/*?)')
+        exit(1)
 
     dev_fmt = '{0:<3} {1.fn:<20} {1.name:<35} {1.phys}'
     dev_lns = [dev_fmt.format(n, d) for n, d in enumerate(devices)]
