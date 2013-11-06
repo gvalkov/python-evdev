@@ -14,3 +14,7 @@ TAGS
 evdev/*.so
 evdev/ecodes.c
 doc/_build
+
+evdev/_ecodes.py
+evdev/_input.py
+evdev/_uinput.py
