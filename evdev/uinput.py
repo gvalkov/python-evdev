@@ -83,7 +83,8 @@ class UInput(object):
         _uinput.create(self.fd, name, vendor, product, version, bustype, absinfo)
 
         #: An :class:`InputDevice <evdev.device.InputDevice>` instance
-        # to the fake input device
+        #: for the fake input device. ``None`` if the device cannot be
+        #: opened for reading and writing.
         self.device = self._find_device()
 
     def __enter__(self):
@@ -110,7 +111,9 @@ class UInput(object):
         return msg
 
     def close(self):
-        self.device.close()  # close InputDevice object
+        # close the associated InputDevice, if we managed to open it
+        if self.device != None:
+            self.device.close()
 
         # destroy the uinput device
         if self.fd and self.fd > 0:
