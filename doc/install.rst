@@ -26,8 +26,8 @@ development version can be installed from github_:
     $ pip install evdev  # latest stable version
     $ pip install git+git://github.com/gvalkov/python-evdev.git # latest development version
 
-:mod:`evdev` can also be installed like any other `setuptools`
-:mod:package:
+:mod:`evdev` can also be installed like any other :mod:`setuptools`
+package.
 
 .. code-block:: bash
 

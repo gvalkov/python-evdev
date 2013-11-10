@@ -24,6 +24,7 @@ API documentation
 .. autoclass:: evdev.uinput.UInput
    :members:
    :special-members:
+   :member-order: groupwise
 
 ``util``
 ==========

@@ -19,7 +19,7 @@ query_value = None
 
 
 def select_device():
-    '''Select a device from the  list of accessible input devices.'''
+    '''Select a device from the list of accessible input devices.'''
 
     devices = [InputDevice(i) for i in reversed(list_devices(device_dir))]
     if not devices:

@@ -14,8 +14,8 @@ class UInputError(Exception):
 
 class UInput(object):
     '''
-    A userland input (an `uinput`) device and that can inject input
-    events directly into the linux input subsystem.
+    A userland input device and that can inject input events into the
+    linux input subsystem.
     '''
 
     __slots__ = (
@@ -29,7 +29,6 @@ class UInput(object):
                  vendor=0x1, product=0x1, version=0x1, bustype=0x3,
                  devnode='/dev/uinput'):
         '''
-
         :param events: the event types and codes that the uinput
                        device will be able to inject - defaults to all
                        key codes.
@@ -44,16 +43,16 @@ class UInput(object):
         :param bustype: bustype identifier.
 
         .. note:: If you do not specify any events, the uinput device
-                  will by default be able to inject only ``KEY_*`` and
-                  ``BTN_*`` event codes.
+                  will be able to inject only ``KEY_*`` and ``BTN_*``
+                  event codes.
         '''
 
-        self.name = name         #: uinput device name
-        self.vendor = vendor     #: device vendor identifier
-        self.product = product   #: device product identifier
-        self.version = version   #: device version identifier
-        self.bustype = bustype   #: device bustype - eg. ``BUS_USB``
-        self.devnode = devnode   #: uinput device node - eg. ``/dev/uinput/``
+        self.name = name         #: Uinput device name.
+        self.vendor = vendor     #: Device vendor identifier.
+        self.product = product   #: Device product identifier.
+        self.version = version   #: Device version identifier.
+        self.bustype = bustype   #: Device bustype - eg. ``BUS_USB``.
+        self.devnode = devnode   #: Uinput device node - eg. ``/dev/uinput/``.
 
         if not events:
             events = {ecodes.EV_KEY: ecodes.keys.keys()}
@@ -64,7 +63,7 @@ class UInput(object):
 
         self._verify()
 
-        #: open write-only, nonblocking file descriptor to the uinput devnode
+        #: Write-only, non-blocking file descriptor to the uinput device node.
         self.fd = _uinput.open(devnode)
 
         # set device capabilities
@@ -83,7 +82,7 @@ class UInput(object):
         # create uinput device
         _uinput.create(self.fd, name, vendor, product, version, bustype, absinfo)
 
-        #: an :class:`InputDevice <evdev.device.InputDevice>` instance
+        #: An :class:`InputDevice <evdev.device.InputDevice>` instance
         # to the fake input device
         self.device = self._find_device()
 
@@ -104,7 +103,8 @@ class UInput(object):
                'event types: {}')
 
         evtypes = [i[0] for i in self.capabilities(True).keys()]
-        msg = msg.format(self.name, ecodes.BUS[self.bustype], self.vendor, self.product,
+        msg = msg.format(self.name, ecodes.BUS[self.bustype],
+                         self.vendor, self.product,
                          self.version, ' '.join(evtypes))
 
         return msg
@@ -168,8 +168,10 @@ class UInput(object):
         return self.device.capabilities(verbose, absinfo)
 
     def _verify(self):
-        '''Verify that an uinput device exists and is readable and writable
-        by the current process.'''
+        '''
+        Verify that an uinput device exists and is readable and writable
+        by the current process.
+        '''
 
         try:
             m = os.stat(self.devnode)[stat.ST_MODE]
