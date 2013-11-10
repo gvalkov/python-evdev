@@ -168,6 +168,9 @@ class UInput(object):
 
     def capabilities(self, verbose=False, absinfo=True):
         '''See :func:`capabilities <evdev.device.InputDevice.capabilities>`.'''
+        if self.device is None:
+            raise UInputError('input device not opened - cannot read capabilites')
+
         return self.device.capabilities(verbose, absinfo)
 
     def _verify(self):
