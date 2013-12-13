@@ -61,16 +61,19 @@ def test_abs_values(c):
     c['events'] = {
         e.EV_KEY : [e.KEY_A, e.KEY_B],
         e.EV_ABS : [(e.ABS_X, (0, 255, 0, 0)),
-                    (e.ABS_Y, device.AbsInfo(0, 255, 5, 10))],
+                    (e.ABS_Y, device.AbsInfo(0, 255, 5, 10, 0, 0))],
     }
 
     with uinput.UInput(**c) as ui:
         c = ui.capabilities()
-        assert c[e.EV_ABS][0] == (0L, device.AbsInfo(min=0, max=255, fuzz=0, flat=0))
-        assert c[e.EV_ABS][1] == (1L, device.AbsInfo(min=0, max=255, fuzz=5, flat=10))
+        abs = device.AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)
+        assert c[e.EV_ABS][0] == (0, abs)
+        abs = device.AbsInfo(value=0, min=0, max=255, fuzz=5, flat=10, resolution=0)
+        assert c[e.EV_ABS][1] == (1, abs)
 
         c = ui.capabilities(verbose=True)
-        assert c[('EV_ABS', 3)][0] == (('ABS_X', 0L), device.AbsInfo(min=0, max=255, fuzz=0, flat=0))
+        abs = device.AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)
+        assert c[('EV_ABS', 3)][0] == (('ABS_X', 0), abs)
 
         c = ui.capabilities(verbose=False, absinfo=False)
         assert c[e.EV_ABS] == list((0, 1))
