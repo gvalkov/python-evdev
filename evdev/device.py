@@ -211,8 +211,9 @@ class InputDevice(object):
         return '{}({!r})'.format(*msg)
 
     def close(self):
-        os.close(self.fd)
-        self.fd = -1
+        if self.fd > 0:
+            os.close(self.fd)
+            self.fd = -1
 
     def fileno(self):
         '''
