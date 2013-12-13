@@ -34,7 +34,7 @@ ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], )  # extra_com
 
 kw = {
     'name'                 : 'evdev',
-    'version'              : '0.4.1',
+    'version'              : '0.4.2',
 
     'description'          : 'bindings for the linux input handling subsystem',
     'long_description'     : open(pjoin(here, 'README.rst')).read(),
@@ -100,7 +100,7 @@ class BdistEggCommand(bdist_egg):
 
 
 class PyTest(Command):
-    ''' setup.py test -> py.test tests '''
+    '''setup.py test -> py.test tests'''
 
     user_options = []
     def initialize_options(self):

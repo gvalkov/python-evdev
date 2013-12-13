@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Development
-^^^^^^^^^^^
+0.4.2 (Dec 13, 2013)
+^^^^^^^^^^^^^^^^^^^^
 
 Enhancements:
     - Rework documentation and docstrings.
@@ -16,7 +16,6 @@ Fixes:
 Fixes:
     - Fix reference counting in ``device_read``, ``device_read_many``
       and ``ioctl_capabilities``.
-
 
 0.4.0 (Jul 01, 2013)
 ^^^^^^^^^^^^^^^^^^^^
