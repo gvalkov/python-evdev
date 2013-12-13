@@ -118,6 +118,7 @@ class UInput(object):
         # destroy the uinput device
         if self.fd and self.fd > 0:
             _uinput.close(self.fd)
+            self.fd = -1
 
     def write_event(self, event):
         '''
