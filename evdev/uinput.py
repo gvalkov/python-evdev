@@ -112,7 +112,7 @@ class UInput(object):
 
     def close(self):
         # close the associated InputDevice, if we managed to open it
-        if self.device != None:
+        if self.device is not None:
             self.device.close()
 
         # destroy the uinput device
@@ -197,7 +197,7 @@ class UInput(object):
             raise UInputError(msg.format(_uinput.maxnamelen))
 
     def _find_device(self):
-        #:bug: the device node might not be immediately avaiable
+        #:bug: the device node might not be immediately available
         time.sleep(0.1)
 
         for fn in util.list_devices('/dev/input/'):
