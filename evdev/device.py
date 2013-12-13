@@ -110,7 +110,7 @@ class InputDevice(object):
         self._rawcapabilities = _input.ioctl_capabilities(self.fd)
 
     def __del__(self):
-        if hasattr(self, 'fd') and self.fd != None:
+        if hasattr(self, 'fd') and self.fd is not None:
             self.close()
 
     def _capabilities(self, absinfo=True):
