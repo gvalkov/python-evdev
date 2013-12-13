@@ -5,8 +5,10 @@ Development
 ^^^^^^^^^^^
 
 Enhancements:
-    - Reworked documentation and docstrings.
+    - Rework documentation and docstrings.
 
+Fixes:
+    - Call ``InputDevice.close()`` in ``InputDevice.__del__()``.
 
 0.4.1 (Jul 24, 2013)
 ^^^^^^^^^^^^^^^^^^^^

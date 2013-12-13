@@ -110,6 +110,10 @@ class InputDevice(object):
         #: The raw dictionary of device capabilities - see `:func:capabilities()`.
         self._rawcapabilities = _input.ioctl_capabilities(self.fd)
 
+    def __del__(self):
+        if hasattr(self, 'fd') and self.fd != None:
+            self.close()
+
     def _capabilities(self, absinfo=True):
         res = {}
         for etype, ecodes in self._rawcapabilities.items():
