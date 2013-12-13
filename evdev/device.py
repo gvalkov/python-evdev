@@ -45,7 +45,6 @@ class AbsInfo(_AbsInfo):
     .. note: The input core does not clamp reported values to the
        ``[minimum, maximum]`` limits, such task is left to userspace.
     '''
-    pass
 
     def __str__(self):
         return 'val {}, min {}, max {}, fuzz {}, flat {}, res {}'.format(*self)
