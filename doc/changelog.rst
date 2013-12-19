@@ -1,8 +1,9 @@
 Changelog
 =========
 
-Development
-^^^^^^^^^^^
+0.4.3 (Dec 19, 2013)
+^^^^^^^^^^^^^^^^^^^^
+
 Fixes:
     - Silence ``OSError`` in destructor (thanks `@polyphemus`_).
 
