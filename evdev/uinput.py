@@ -91,7 +91,8 @@ class UInput(object):
         return self
 
     def __exit__(self, type, value, tb):
-        self.close()
+        if hasattr(self, 'fd'):
+            self.close()
 
     def __repr__(self):
         # :todo:
@@ -111,12 +112,12 @@ class UInput(object):
         return msg
 
     def close(self):
-        # close the associated InputDevice, if we managed to open it
+        # close the associated InputDevice, if it was previously opened
         if self.device is not None:
             self.device.close()
 
         # destroy the uinput device
-        if self.fd and self.fd > -1:
+        if self.fd > -1:
             _uinput.close(self.fd)
             self.fd = -1
 
