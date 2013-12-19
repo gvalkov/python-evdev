@@ -111,7 +111,10 @@ class InputDevice(object):
 
     def __del__(self):
         if hasattr(self, 'fd') and self.fd is not None:
-            self.close()
+            try:
+                self.close()
+            except OSError:
+                pass
 
     def _capabilities(self, absinfo=True):
         res = {}
@@ -212,8 +215,10 @@ class InputDevice(object):
 
     def close(self):
         if self.fd > -1:
-            os.close(self.fd)
-            self.fd = -1
+            try:
+                os.close(self.fd)
+            finally:
+                self.fd = -1
 
     def fileno(self):
         '''
