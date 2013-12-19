@@ -211,7 +211,7 @@ class InputDevice(object):
         return '{}({!r})'.format(*msg)
 
     def close(self):
-        if self.fd > 0:
+        if self.fd > -1:
             os.close(self.fd)
             self.fd = -1
 
