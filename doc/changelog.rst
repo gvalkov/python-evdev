@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Development
+^^^^^^^^^^^
+Fixes:
+    - Silence ``OSError`` in destructor (thanks `@polyphemus`_).
+
+    - Make ``InputDevice.close()`` work in cases in which stdin (fd 0)
+      has been closed (thanks `@polyphemus`_).
+
 0.4.2 (Dec 13, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -21,7 +29,7 @@ Fixes:
 ^^^^^^^^^^^^^^^^^^^^
 
 Enhancements:
-    - Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks @bgilbert).
+    - Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks `@bgilbert`_).
 
     - Reverse event code mappings (``ecodes.{KEY,FF,REL,ABS}`` and
       etc.) will now map to a list of codes, whenever a value
@@ -33,10 +41,10 @@ Enhancements:
         ... 'KEY_A'
 
     - Set the state of a LED through ``device.set_led()`` (thanks
-      @accek). ``device.fd`` is opened in ``O_RDWR`` mode from now on.
+      `@accek`_). ``device.fd`` is opened in ``O_RDWR`` mode from now on.
 
 Fixes:
-    - Fix segfault in ``device_read_many()`` (thanks @bgilbert).
+    - Fix segfault in ``device_read_many()`` (thanks `@bgilbert`_).
 
 0.3.3 (May 29, 2013)
 ^^^^^^^^^^^^^^^^^^^^
@@ -51,7 +59,7 @@ Fixes:
 ^^^^^^^^^^^^^^^^^^^^
 
 Fixes:
-    - Fix vendor id and product id order in ``DeviceInfo`` (thanks @kived).
+    - Fix vendor id and product id order in ``DeviceInfo`` (thanks `@kived`_).
 
 0.3.1 (Nov 23, 2012)
 ^^^^^^^^^^^^^^^^^^^^
@@ -149,3 +157,8 @@ Fixes:
 ^^^^^^^^^^^^^^^^^^^^
 
 *Initial Release*
+
+.. _`@polyphemus`: https://github.com/polyphemus
+.. _`@bgilbert`: https://github.com/bgilbert
+.. _`@accek`: https://github.com/accek
+.. _`@kived`: https://github.com/kived
