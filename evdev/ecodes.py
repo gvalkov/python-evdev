@@ -23,7 +23,7 @@ illustrated by a few examples::
     >>> evdev.ecodes.REL[0]
     'REL_X'
 
-    >>> evdev.ecodes.EV[evdev.EV_KEY]
+    >>> evdev.ecodes.EV[evdev.ecodes.EV_KEY]
     'EV_KEY'
 
     >>> evdev.ecodes.bytype[EV_REL][0]
