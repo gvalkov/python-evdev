@@ -26,7 +26,7 @@ illustrated by a few examples::
     >>> evdev.ecodes.EV[evdev.ecodes.EV_KEY]
     'EV_KEY'
 
-    >>> evdev.ecodes.bytype[EV_REL][0]
+    >>> evdev.ecodes.bytype[evdev.ecodes.EV_REL][0]
     'REL_X'
 
 Values in reverse mappings may point to one or more ecodes. For example::
