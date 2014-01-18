@@ -1,4 +1,4 @@
 # make github and sdist happy
 include README.rst
-include evdev/ecodes.sh
+include evdev/genecodes.py
 include LICENSE

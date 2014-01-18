@@ -75,10 +75,9 @@ def create_ecodes():
 
     from subprocess import check_call
 
-    print('writing ecodes.c (using {})'.format(header))
-    check_call('bash ./ecodes.sh {} > ecodes.c'.format(header),
-               cwd='{}/evdev'.format(here),
-               shell=True)
+    print('writing ecodes.c (using %s)' % header)
+    cmd = '%s genecodes.py %s > ecodes.c' % (sys.executable, header)
+    check_call(cmd, cwd="%s/evdev" % here, shell=True)
 
 
 # :todo: figure out a smarter way to do this
