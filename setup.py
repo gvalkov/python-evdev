@@ -36,7 +36,7 @@ kw = {
     'name'                 : 'evdev',
     'version'              : '0.4.3',
 
-    'description'          : 'bindings for the linux input handling subsystem',
+    'description'          : 'Bindings for the linux input handling subsystem',
     'long_description'     : open(pjoin(here, 'README.rst')).read(),
 
     'author'               : 'Georgi Valkov',
