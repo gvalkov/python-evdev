@@ -67,7 +67,7 @@ def resolve_ecodes(typecodemap, unknown='?'):
     :class:`AbsInfo <evdev.device.AbsInfo>` ) the result would look
     like::
 
-        resove_ecodes({ 3: [(0, AbsInfo(...))] })
+        resolve_ecodes({ 3: [(0, AbsInfo(...))] })
         { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
     '''
 
