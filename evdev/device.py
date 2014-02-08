@@ -78,7 +78,7 @@ class InputDevice(object):
     '''
 
     __slots__ = ('fn', 'fd', 'info', 'name', 'phys', '_rawcapabilities',
-                 'version')
+                 'version', 'ff_effects_count')
 
     def __init__(self, dev):
         '''
@@ -108,6 +108,9 @@ class InputDevice(object):
 
         #: The raw dictionary of device capabilities - see `:func:capabilities()`.
         self._rawcapabilities = _input.ioctl_capabilities(self.fd)
+
+        #: The number of force feedback effects the device can keep in its memory.
+        self.ff_effects_count = _input.ioctl_EVIOCGEFFECTS(self.fd)
 
     def __del__(self):
         if hasattr(self, 'fd') and self.fd is not None:

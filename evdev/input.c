@@ -33,17 +33,6 @@ int test_bit(const char* bitmask, int bit) {
 }
 
 
-// Useful for comparing input events as seen in the extension module
-// and as seen in python
-// static void
-// print_event(struct input_event *ev) {
-//     fprintf(stderr, "[so] event: time %ld.%06ld, code %02d, type %02d, val %02d\n",
-//             ev->time.tv_sec, ev->time.tv_usec,
-//             ev->code, ev->type, ev->value
-//     );
-// }
-
-
 // Read input event from a device and return a tuple that mimics input_event
 static PyObject *
 device_read(PyObject *self, PyObject *args)
@@ -354,6 +343,18 @@ get_sw_led_snd(PyObject *self, PyObject *args)
 }
 
 
+static PyObject *
+ioctl_EVIOCGEFFECTS(PyObject *self, PyObject *args)
+{
+    int fd, ret, res;
+    ret = PyArg_ParseTuple(args, "i", &fd);
+    if (!ret) return NULL;
+
+    ret = ioctl(fd, EVIOCGEFFECTS, &res);
+    return Py_BuildValue("i", res);
+}
+
+
 static PyMethodDef MethodTable[] = {
     { "unpack",               event_unpack,         METH_VARARGS, "unpack a single input event" },
     { "ioctl_devinfo",        ioctl_devinfo,        METH_VARARGS, "fetch input device info" },
@@ -362,6 +363,7 @@ static PyMethodDef MethodTable[] = {
     { "ioctl_EVIOCSREP",      ioctl_EVIOCSREP,      METH_VARARGS},
     { "ioctl_EVIOCGVERSION",  ioctl_EVIOCGVERSION,  METH_VARARGS},
     { "ioctl_EVIOCGRAB",      ioctl_EVIOCGRAB,      METH_VARARGS},
+    { "ioctl_EVIOCGEFFECTS",  ioctl_EVIOCGEFFECTS,  METH_VARARGS, "fetch the number of effects the device can keep in its memory." },
     { "get_sw_led_snd",       get_sw_led_snd,       METH_VARARGS},
     { "device_read",          device_read,          METH_VARARGS, "read an input event from a device" },
     { "device_read_many",     device_read_many,     METH_VARARGS, "read all available input events from a device" },
