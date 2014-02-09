@@ -354,6 +354,75 @@ ioctl_EVIOCGEFFECTS(PyObject *self, PyObject *args)
     return Py_BuildValue("i", res);
 }
 
+void print_ff_effect(struct ff_effect* effect) {
+    fprintf(stderr,
+            "ff_effect:\n"
+            "  type: %d     \n"
+            "  id:   %d     \n"
+            "  direction: %d\n"
+            "  trigger: (%d, %d)\n"
+            "  replay:  (%d, %d)\n",
+            effect->type, effect->id, effect->direction,
+            effect->trigger.button, effect->trigger.interval,
+            effect->replay.length, effect->replay.delay
+        );
+
+
+    switch (effect->type) {
+    case FF_CONSTANT:
+        fprintf(stderr, "  constant: (%d, (%d, %d, %d, %d))\n", effect->u.constant.level,
+                effect->u.constant.envelope.attack_length,
+                effect->u.constant.envelope.attack_level,
+                effect->u.constant.envelope.fade_length,
+                effect->u.constant.envelope.fade_level);
+        break;
+    }
+}
+
+
+static PyObject *
+upload_effect(PyObject *self, PyObject *args)
+{
+    int fd, ret;
+    PyObject* effect_data;
+    ret = PyArg_ParseTuple(args, "iO", &fd, &effect_data);
+    if (!ret) return NULL;
+
+    void* data = PyBytes_AsString(effect_data);
+    struct ff_effect effect = {};
+    memmove(&effect, data, sizeof(struct ff_effect));
+
+    // print_ff_effect(&effect);
+
+    ret = ioctl(fd, EVIOCSFF, &effect);
+    if (ret != 0) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
+
+    return Py_BuildValue("i", effect.id);
+}
+
+
+static PyObject *
+erase_effect(PyObject *self, PyObject *args)
+{
+    int fd, ret;
+    PyObject* ff_id_obj;
+    ret = PyArg_ParseTuple(args, "iO", &fd, &ff_id_obj);
+    if (!ret) return NULL;
+
+    long ff_id = PyLong_AsLong(ff_id_obj);
+    ret = ioctl(fd, EVIOCRMFF, ff_id);
+    if (ret != 0) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 
 static PyMethodDef MethodTable[] = {
     { "unpack",               event_unpack,         METH_VARARGS, "unpack a single input event" },
@@ -367,6 +436,8 @@ static PyMethodDef MethodTable[] = {
     { "get_sw_led_snd",       get_sw_led_snd,       METH_VARARGS},
     { "device_read",          device_read,          METH_VARARGS, "read an input event from a device" },
     { "device_read_many",     device_read_many,     METH_VARARGS, "read all available input events from a device" },
+    { "upload_effect",        upload_effect,        METH_VARARGS, "" },
+    { "erase_effect",         erase_effect,         METH_VARARGS, "" },
 
     { NULL, NULL, 0, NULL}
 };

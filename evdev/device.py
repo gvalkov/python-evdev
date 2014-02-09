@@ -287,6 +287,19 @@ class InputDevice(object):
 
         _input.ioctl_EVIOCGRAB(self.fd, 0)
 
+    def upload_effect(self, effect):
+        '''Upload a force feedback effect to a force feedback device.'''
+
+        data = bytes(buffer(effect)[:])
+        ff_id = _input.upload_effect(self.fd, data)
+        return ff_id
+
+    def erase_effect(self, ff_id):
+        '''Erase a force effect from a force feedback device. This
+        also stops the effect.'''
+
+        _input.erase_effect(self.fd, ff_id)
+
     @property
     def repeat(self):
         '''Get or set the keyboard repeat rate (in characters per
