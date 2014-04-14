@@ -68,7 +68,7 @@ class KbdInfo(_KbdInfo):
 
 class DeviceInfo(_DeviceInfo):
     def __str__(self):
-        msg = 'bus: {:04x}, product {:04x}, vendor {:04x}, version {:04x}'
+        msg = 'bus: {:04x}, vendor {:04x}, product {:04x}, version {:04x}'
         return msg.format(*self)
 
 
