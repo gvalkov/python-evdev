@@ -3,8 +3,9 @@
 import os
 import stat
 import time
+import select
 
-from evdev import _uinput
+from evdev import _uinput, _input, ff
 from evdev import ecodes, util, device
 
 
@@ -20,14 +21,15 @@ class UInput(object):
 
     __slots__ = (
         'name', 'vendor', 'product', 'version', 'bustype',
-        'events', 'devnode', 'fd', 'device',
+        'events', 'devnode', 'fd', 'device', 'ff_effects_max',
+        'ff_effects', 'ff_callback',
     )
 
     def __init__(self,
                  events=None,
                  name='py-evdev-uinput',
                  vendor=0x1, product=0x1, version=0x1, bustype=0x3,
-                 devnode='/dev/uinput'):
+                 devnode='/dev/uinput', ff_effects_max=0, ff_callback=None):
         '''
         :param events: the event types and codes that the uinput
                        device will be able to inject - defaults to all
@@ -41,6 +43,8 @@ class UInput(object):
         :param product: product identifier.
         :param version: version identifier.
         :param bustype: bustype identifier.
+        :param ff_effects_max: number of force-feedback effects that
+                               can be kept in memory
 
         .. note:: If you do not specify any events, the uinput device
                   will be able to inject only ``KEY_*`` and ``BTN_*``
@@ -53,6 +57,16 @@ class UInput(object):
         self.version = version   #: Device version identifier.
         self.bustype = bustype   #: Device bustype - eg. ``BUS_USB``.
         self.devnode = devnode   #: Uinput device node - eg. ``/dev/uinput/``.
+
+        #: The number of force feedback effects the device can keep in its memory.
+        self.ff_effects_max = ff_effects_max
+
+        self.ff_effects = []
+        self.ff_callback = ff_callback
+
+        if ecodes.EV_FF in events and ff_effects_max < 1:
+            msg = 'EV_FF capabilities specified without setting ff_effects_max'
+            raise UInputError(msg)
 
         if not events:
             events = {ecodes.EV_KEY: ecodes.keys.keys()}
@@ -72,7 +86,8 @@ class UInput(object):
                 # handle max, min, fuzz, flat
                 if isinstance(code, (tuple, list, device.AbsInfo)):
                     # flatten (ABS_Y, (0, 255, 0, 0)) to (ABS_Y, 0, 255, 0, 0)
-                    f = [code[0]]; f += code[1]
+                    f = [code[0]]
+                    f += code[1]
                     absinfo.append(f)
                     code = code[0]
 
@@ -80,7 +95,8 @@ class UInput(object):
                 _uinput.enable(self.fd, etype, code)
 
         # create uinput device
-        _uinput.create(self.fd, name, vendor, product, version, bustype, absinfo)
+        _uinput.create(self.fd, name, vendor, product, version,
+                       bustype, absinfo, ff_effects_max)
 
         #: An :class:`InputDevice <evdev.device.InputDevice>` instance
         #: for the fake input device. ``None`` if the device cannot be
@@ -95,10 +111,10 @@ class UInput(object):
             self.close()
 
     def __repr__(self):
-        # :todo:
-        v = (repr(getattr(self, i)) for i in
-             ('name', 'bustype', 'vendor', 'product', 'version'))
-        return '{}({})'.format(self.__class__.__name__, ', '.join(v))
+        attr = 'name', 'bustype', 'vendor', 'product', 'version'
+        vals = (repr(getattr(self, i)) for i in attr)
+        vals = ', '.join(vals)
+        return '%s(%s)' % (self.__class__.__name__, vals)
 
     def __str__(self):
         msg = ('name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}"\n'
@@ -159,23 +175,33 @@ class UInput(object):
 
         _uinput.write(self.fd, etype, code, value)
 
-    def read(self):
+    def read_loop(self):
         '''
-        Read a queued event from the uinput device. Returns None if no events
-        are available.
+        Read a queued event from the uinput device. Returns ``None``
+        if no events are available.
         '''
-        event = _uinput.read(self.fd)
+        while True:
+            r, w, x = select.select([self.fd], [], [])
+            if r:
+                event = _input.device_read(self.fd)
+                _, _, etype, code, value = event
 
-        # Return values from uinput.h
-        UI_FF_UPLOAD = 1 # start rumble
-        UI_FF_ERASE  = 2 # stop rumble
+                if etype == ecodes.EV_FF:
+                    print('callback:', event)
 
-        if event == UI_FF_UPLOAD:
-            return ecodes.FF_STATUS_PLAYING
-        elif event == UI_FF_ERASE:
-            return ecodes.FF_STATUS_STOPPED
+                if etype == ecodes.EV_UINPUT:
+                    if code == ecodes.UI_FF_UPLOAD:
+                        data = _uinput.upload_effect(self.fd, value)
+                        print(data)
+                        effect = ff.Effect.from_buffer(data)
+                        if len(self.ff_effects) > ecodes.FF_EFFECT_MAX:
+                            self.ff_effects.pop()
+                        self.ff_effects.append(effect)
+                    elif code == ecodes.UI_FF_ERASE:
+                        pass
+                    else:
+                        print('unknown')
 
-        # No supported events available
 
     def syn(self):
         '''
