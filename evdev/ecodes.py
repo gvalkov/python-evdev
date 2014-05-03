@@ -1,12 +1,13 @@
 # encoding: utf-8
 
 '''
-This modules exposes the integer constants defined in ``linux/input.h``.
+This modules exposes integer constants defined in ``linux/input.h``
+and ``linux/uinput.h``.
 
 Exposed constants::
 
     KEY, ABS, REL, SW, MSC, LED, BTN, REP, SND, ID, EV,
-    BUS, SYN, FF, FF_STATUS
+    BUS, SYN, FF, FF_STATUS, UI, UINPUT
 
 This module also provides numerous reverse and forward mappings that are best
 illustrated by a few examples::

@@ -59,12 +59,14 @@ kw = {
 
 def create_ecodes():
     # :todo: expose as a command option
-    header = '/usr/include/linux/input.h'
+    input_header  = '/usr/include/linux/input.h'
+    uinput_header = '/usr/include/linux/uinput.h'
 
-    if not os.path.isfile(header):
+    if not all(map(os.path.isfile, (input_header, uinput_header))):
         msg = '''\
-        The linux/input.h header file is missing. You will have to
-        install the headers for your kernel in order to continue:
+        The linux/input.h and linux/uinput.h header files are
+        missing. You will have to install the headers for your kernel
+        in order to continue:
 
             yum install kernel-headers-$(uname -r)
             apt-get intall linux-headers-$(uname -r)
@@ -75,8 +77,9 @@ def create_ecodes():
 
     from subprocess import check_call
 
-    print('writing ecodes.c (using %s)' % header)
-    cmd = '%s genecodes.py %s > ecodes.c' % (sys.executable, header)
+    headers = (input_header, uinput_header)
+    print('writing ecodes.c (using %s and %s)' % headers)
+    cmd = '%s genecodes.py %s > ecodes.c' % (sys.executable, ' '.join(headers))
     check_call(cmd, cwd="%s/evdev" % here, shell=True)
 
 
