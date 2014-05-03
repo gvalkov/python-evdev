@@ -3,14 +3,30 @@
 import os
 import stat
 import time
+import ctypes
 import select
 
 from evdev import _uinput, _input, ff
-from evdev import ecodes, util, device
+from evdev import ecodes, util, device, InputEvent
 
 
 class UInputError(Exception):
     pass
+
+class uinput_ff_upload(ctypes.Structure):
+    _fields_ = [
+        ('request_id', ff._u32),
+        ('retval',     ff._s32),
+        ('effect',     ff.Effect),
+        ('old',        ff.Effect),
+    ]
+
+class uinput_ff_erase(ctypes.Structure):
+    _fields_ = [
+        ('request_id', ff._u32),
+        ('retval',     ff._s32),
+        ('effect_id',  ff._u32)
+    ]
 
 
 class UInput(object):
@@ -175,32 +191,34 @@ class UInput(object):
 
         _uinput.write(self.fd, etype, code, value)
 
-    def read_loop(self):
+    def read(self):
         '''
         Read a queued event from the uinput device. Returns ``None``
         if no events are available.
         '''
-        while True:
-            r, w, x = select.select([self.fd], [], [])
-            if r:
-                event = _input.device_read(self.fd)
-                _, _, etype, code, value = event
+        event = _input.device_read(self.fd)
+        _, _, etype, code, value = event
 
-                if etype == ecodes.EV_FF:
-                    print('callback:', event)
+        if etype == ecodes.EV_FF:
+            if self.ff_callback:
+                self.ff_callback(InputEvent(*event))
 
-                if etype == ecodes.EV_UINPUT:
-                    if code == ecodes.UI_FF_UPLOAD:
-                        data = _uinput.upload_effect(self.fd, value)
-                        print(data)
-                        effect = ff.Effect.from_buffer(data)
-                        if len(self.ff_effects) > ecodes.FF_EFFECT_MAX:
-                            self.ff_effects.pop()
-                        self.ff_effects.append(effect)
-                    elif code == ecodes.UI_FF_ERASE:
-                        pass
-                    else:
-                        print('unknown')
+        if etype == ecodes.EV_UINPUT:
+            if code == ecodes.UI_FF_UPLOAD:
+                data = _uinput.upload_effect(self.fd, value)
+                up_effect = uinput_ff_upload.from_buffer_copy(buffer(data))
+
+                if len(self.ff_effects) > ecodes.FF_EFFECT_MAX:
+                    self.ff_effects.pop()
+                self.ff_effects.append(up_effect.effect)
+
+            elif code == ecodes.UI_FF_ERASE:
+                data = _uinput.erase_effect(self.fd, value)
+                er_effect = uinput_ff_erase.from_buffer_copy(buffer(data))
+
+                for n, effect in enumerate(self.ff_effects):
+                    if er_effect.effect_id == effect.id:
+                        del self.ff_effects[n]
 
 
     def syn(self):

@@ -6,7 +6,7 @@ evdev example - uinput force feedback event monitor
 '''
 
 from __future__ import print_function
-import time, sys
+import time, sys, select
 
 from evdev import UInput, UInputError, ecodes
 
@@ -24,7 +24,11 @@ cap = {
     ]
 }
 
-ui = UInput(cap, ff_effects_max=10)
+def ffcb(event):
+    import ipdb ; ipdb.set_trace()
+    print(event)
+
+ui = UInput(cap, ff_effects_max=10, ff_callback=ffcb)
 
 try:
     print('uinput device created - run "fftest %s" to test' % ui.device.fn)
@@ -33,17 +37,7 @@ except AttributeError:
     sys.exit(1)
 
 print('waiting for events:')
-ui.read_loop()
-# while True:
-#     status, event = ui.read()
-
-#     if status is not None:
-#         print(event)
-#         # if status == ecodes.FF_STATUS_PLAYING:
-#         #     print("rumble playing")
-#         # elif status == ecodes.FF_STATUS_STOPPED:
-#         #     print("rumble stopped")
-#         # else:
-#         #     print("received an unknown event!")
-
-#     time.sleep(0.2)
+while True:
+    r, w, x = select.select([ui.fd], [], [])
+    if r:
+        ui.read()

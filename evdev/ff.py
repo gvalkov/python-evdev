@@ -8,6 +8,7 @@ _u8  = ctypes.c_uint8
 _u16 = ctypes.c_uint16
 _u32 = ctypes.c_uint32
 _s16 = ctypes.c_int16
+_s32 = ctypes.c_int32
 
 class Replay(ctypes.Structure):
     '''
@@ -152,7 +153,9 @@ class EffectType(ctypes.Union):
         ('ff_constant_effect', Constant),
         ('ff_ramp_effect', Ramp),
         ('ff_periodic_effect', Periodic),
-        ('ff_condition_effect', Condition * 2),  # one for each axis
+        # ('ff_condition_effect', Condition * 2),  # one for each axis
+        ('ff_condition_effect_1', Condition),
+        ('ff_condition_effect_2', Condition),
         ('ff_rumble_effect', Rumble),
     ]
 

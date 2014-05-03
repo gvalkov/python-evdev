@@ -11,6 +11,7 @@
 #include <linux/input.h>
 #include <linux/uinput.h>
 
+#include "util.h"
 
 int _uinput_close(int fd) {
     if (ioctl(fd, UI_DEV_DESTROY) < 0) {
@@ -155,7 +156,32 @@ uinput_upload_effect(PyObject *self, PyObject *args)
     if (ioctl(fd, UI_END_FF_UPLOAD, &upload) < 0)
         return NULL;
 
-    return Py_BuildValue("s#", &upload.effect, sizeof(struct ff_effect));
+    // print_ff_effect(&upload.effect);
+
+    return Py_BuildValue("s#", &upload, sizeof(struct uinput_ff_upload)); // y# for bytes in 3.x
+}
+
+
+static PyObject *
+uinput_erase_effect(PyObject *self, PyObject *args)
+{
+    int fd;
+    __u32 request_id;
+    int ret = PyArg_ParseTuple(args, "ii", &fd, &request_id);
+    if (!ret) return NULL;
+
+    struct uinput_ff_erase erase;
+
+    erase.request_id = request_id;
+    if (ioctl(fd, UI_BEGIN_FF_ERASE, &erase) < 0)
+        return NULL;
+
+    if (ioctl(fd, UI_END_FF_ERASE, &erase) < 0)
+        return NULL;
+
+    // print_ff_effect(&erase.effect);
+
+    return Py_BuildValue("s#", &erase, sizeof(struct uinput_ff_erase)); // y# for bytes in 3.x
 }
 
 
@@ -218,6 +244,7 @@ static PyMethodDef MethodTable[] = {
     { "close",  uinput_close,  METH_VARARGS, "Destroy uinput device."},
     { "write",  uinput_write,  METH_VARARGS, "Write event to uinput device."},
     { "upload_effect", uinput_upload_effect, METH_VARARGS, ""},
+    { "erase_effect",  uinput_erase_effect,  METH_VARARGS, ""},
     { "enable", uinput_enable_event, METH_VARARGS, "Enable a type of event."},
 
     { NULL, NULL, 0, NULL}
