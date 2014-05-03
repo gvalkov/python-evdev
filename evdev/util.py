@@ -3,21 +3,28 @@
 import os
 import stat
 import glob
+import functools
 
 from evdev import ecodes
 from evdev.events import event_factory
 
 
-def list_devices(input_device_dir='/dev/input'):
+def list_devices(input_device_dir='/dev/input', mode='rw'):
     '''List readable, character devices.'''
 
-    fns = glob.glob('{}/event*'.format(input_device_dir))
-    fns = list(filter(is_device, fns))
+    if isinstance(mode, str):
+        modemap = {'r': os.R_OK, 'w': os.W_OK}
+        mode = [modemap[i] for i in mode]
+        mode = functools.reduce(lambda x,y: x|y, mode)
 
-    return fns
+    files = glob.glob('%s/event*' % input_device_dir)
+    pred  = functools.partial(is_device, mode=mode)
+    files = list(filter(pred, files))
+
+    return files
 
 
-def is_device(fn):
+def is_device(fn, mode=os.R_OK | os.W_OK):
     '''Check if ``fn`` is a readable and writable character device.'''
 
     if not os.path.exists(fn):
@@ -27,7 +34,7 @@ def is_device(fn):
     if not stat.S_ISCHR(m):
         return False
 
-    if not os.access(fn, os.R_OK | os.W_OK):
+    if not os.access(fn, mode):
         return False
 
     return True
