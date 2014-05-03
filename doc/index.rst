@@ -30,6 +30,7 @@ Similar Projects
 ================
 
 * `python-uinput`_
+* `uinput-mapper`_
 * `ruby-evdev`_
 * `evdev`_ (ctypes)
 
@@ -69,3 +70,4 @@ Indices and Tables
 .. _python-uinput:     https://github.com/tuomasjjrasanen/python-uinput
 .. _ruby-evdev:        http://technofetish.net/repos/buffaloplay/ruby_evdev/doc/
 .. _evdev:             http://svn.navi.cx/misc/trunk/python/evdev/
+.. _uinput-mapper:     https://github.com/MerlijnWajer/uinput-mapper
