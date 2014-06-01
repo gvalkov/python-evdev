@@ -31,9 +31,10 @@ uinput_open(PyObject *self, PyObject *args)
     const char* devnode;
 
     int ret = PyArg_ParseTuple(args, "s", &devnode);
+    int fd = open(devnode, O_WRONLY | O_NONBLOCK);
+
     if (!ret) return NULL;
 
-    int fd = open(devnode, O_WRONLY | O_NONBLOCK);
     if (fd < 0) {
         PyErr_SetString(PyExc_IOError, "could not open uinput device in write mode");
         return NULL;
@@ -122,9 +123,10 @@ uinput_write(PyObject *self, PyObject *args)
     int fd, type, code, value;
 
     int ret = PyArg_ParseTuple(args, "iiii", &fd, &type, &code, &value);
-    if (!ret) return NULL;
 
     struct input_event event;
+
+    if (!ret) return NULL;
     memset(&event, 0, sizeof(event));
     gettimeofday(&event.time, 0);
     event.type = type;
