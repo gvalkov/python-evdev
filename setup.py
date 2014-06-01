@@ -28,9 +28,10 @@ classifiers = (
     'Programming Language :: Python :: Implementation :: CPython',
 )
 
-input_c  = Extension('evdev._input',  sources=['evdev/input.c'],  )  # extra_compile_args=['-O0'])
-uinput_c = Extension('evdev._uinput', sources=['evdev/uinput.c'], )  # extra_compile_args=['-O0'])
-ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], )  # extra_compile_args=['-O0'])
+cflags   = ['-std=c99']
+input_c  = Extension('evdev._input',  sources=['evdev/input.c'],  extra_compile_args=cflags)
+uinput_c = Extension('evdev._uinput', sources=['evdev/uinput.c'], extra_compile_args=cflags)
+ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_args=cflags)
 
 kw = {
     'name'                 : 'evdev',
