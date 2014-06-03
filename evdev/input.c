@@ -39,22 +39,21 @@ device_read(PyObject *self, PyObject *args)
 {
     int fd;
     struct input_event event;
-
-    // get device file descriptor (O_RDONLY|O_NONBLOCK)
-    if (PyArg_ParseTuple(args, "i", &fd) < 0)
-        return NULL;
-
     int n = read(fd, &event, sizeof(event));
-
-    if (n < 0) {
-        PyErr_SetFromErrno(PyExc_IOError);
-        return NULL;
-    }
 
     PyObject* sec  = PyLong_FromLong(event.time.tv_sec);
     PyObject* usec = PyLong_FromLong(event.time.tv_usec);
     PyObject* val  = PyLong_FromLong(event.value);
     PyObject* py_input_event = NULL;
+
+    // get device file descriptor (O_RDONLY|O_NONBLOCK)
+    if (PyArg_ParseTuple(args, "i", &fd) < 0)
+        return NULL;
+
+    if (n < 0) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
 
     py_input_event = Py_BuildValue("OOhhO", sec, usec, event.type, event.code, val);
     Py_DECREF(sec);
@@ -73,7 +72,6 @@ device_read_many(PyObject *self, PyObject *args)
 
     // get device file descriptor (O_RDONLY|O_NONBLOCK)
     int ret = PyArg_ParseTuple(args, "i", &fd);
-    if (!ret) return NULL;
 
     PyObject* event_list = PyList_New(0);
     PyObject* py_input_event = NULL;
@@ -85,6 +83,8 @@ device_read_many(PyObject *self, PyObject *args)
 
     size_t event_size = sizeof(struct input_event);
     ssize_t nread = read(fd, event, event_size*64);
+
+    if (!ret) return NULL;
 
     if (nread < 0) {
         PyErr_SetFromErrno(PyExc_IOError);
@@ -138,7 +138,6 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     struct input_absinfo absinfo;
 
     int ret = PyArg_ParseTuple(args, "i", &fd);
-    if (!ret) return NULL;
 
     // @todo: figure out why fd gets zeroed on an ioctl after the
     // refactoring and get rid of this workaround
@@ -152,6 +151,8 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     PyObject* capability = NULL;
     PyObject* py_absinfo = NULL;
     PyObject* absitem = NULL;
+
+    if (!ret) return NULL;
 
     memset(&ev_bits, 0, sizeof(ev_bits));
 
@@ -310,6 +311,7 @@ get_sw_led_snd(PyObject *self, PyObject *args)
 {
     int i, max, fd, evtype, ret;
     PyObject* res = PyList_New(0);
+    char bytes[(max+7)/8];
 
     ret = PyArg_ParseTuple(args, "ii", &fd, &evtype);
     if (!ret) return NULL;
@@ -323,7 +325,6 @@ get_sw_led_snd(PyObject *self, PyObject *args)
     else
         return NULL;
 
-    char bytes[(max+7)/8];
     memset(bytes, 0, sizeof bytes);
 
     if (evtype == EV_LED)
@@ -385,11 +386,12 @@ upload_effect(PyObject *self, PyObject *args)
 {
     int fd, ret;
     PyObject* effect_data;
-    ret = PyArg_ParseTuple(args, "iO", &fd, &effect_data);
-    if (!ret) return NULL;
 
     void* data = PyBytes_AsString(effect_data);
     struct ff_effect effect = {};
+
+    ret = PyArg_ParseTuple(args, "iO", &fd, &effect_data);
+    if (!ret) return NULL;
     memmove(&effect, data, sizeof(struct ff_effect));
 
     // print_ff_effect(&effect);
@@ -409,10 +411,12 @@ erase_effect(PyObject *self, PyObject *args)
 {
     int fd, ret;
     PyObject* ff_id_obj;
+
+    long ff_id = PyLong_AsLong(ff_id_obj);
+
     ret = PyArg_ParseTuple(args, "iO", &fd, &ff_id_obj);
     if (!ret) return NULL;
 
-    long ff_id = PyLong_AsLong(ff_id_obj);
     ret = ioctl(fd, EVIOCRMFF, ff_id);
     if (ret != 0) {
         PyErr_SetFromErrno(PyExc_IOError);
