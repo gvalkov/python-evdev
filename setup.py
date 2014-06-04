@@ -33,27 +33,27 @@ uinput_c = Extension('evdev._uinput', sources=['evdev/uinput.c'], extra_compile_
 ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_args=cflags)
 
 kw = {
-    'name'                 : 'evdev',
-    'version'              : '0.4.4',
+    'name':                 'evdev',
+    'version':              '0.4.4',
 
-    'description'          : 'Bindings for the linux input handling subsystem',
-    'long_description'     : open(pjoin(here, 'README.rst')).read(),
+    'description':          'Bindings for the linux input handling subsystem',
+    'long_description':     open(pjoin(here, 'README.rst')).read(),
 
-    'author'               : 'Georgi Valkov',
-    'author_email'         : 'georgi.t.valkov@gmail.com',
-    'license'              : 'Revised BSD License',
+    'author':               'Georgi Valkov',
+    'author_email':         'georgi.t.valkov@gmail.com',
+    'license':              'Revised BSD License',
 
-    'keywords'             : 'evdev input uinput',
-    'classifiers'          : classifiers,
-    'url'                  : 'https://github.com/gvalkov/python-evdev',
+    'keywords':             'evdev input uinput',
+    'classifiers':          classifiers,
+    'url':                  'https://github.com/gvalkov/python-evdev',
 
-    'packages'             : ['evdev'],
-    'ext_modules'          : [input_c, uinput_c, ecodes_c],
-    'tests_require'        : ['pytest'],
+    'packages':             ['evdev'],
+    'ext_modules':          [input_c, uinput_c, ecodes_c],
+    'tests_require':        ['pytest'],
 
-    'include_package_data' : False,
-    'zip_safe'             : True,
-    'cmdclass'             : {},
+    'include_package_data': False,
+    'zip_safe':             True,
+    'cmdclass':             {},
 }
 
 
