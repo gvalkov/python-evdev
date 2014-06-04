@@ -15,8 +15,7 @@ from setuptools import setup, Extension, Command
 here = abspath(dirname(__file__))
 
 classifiers = (
-    'Development Status :: 4 - Beta',
-    # 'Development Status :: 5 - Production/Stable',
+    'Development Status :: 5 - Production/Stable',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.2',
@@ -35,7 +34,7 @@ ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_
 
 kw = {
     'name'                 : 'evdev',
-    'version'              : '0.4.3',
+    'version'              : '0.4.4',
 
     'description'          : 'Bindings for the linux input handling subsystem',
     'long_description'     : open(pjoin(here, 'README.rst')).read(),
