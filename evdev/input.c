@@ -47,6 +47,11 @@ device_read(PyObject *self, PyObject *args)
     int n = read(fd, &event, sizeof(event));
 
     if (n < 0) {
+        if (errno == EAGAIN) {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
         PyErr_SetFromErrno(PyExc_IOError);
         return NULL;
     }

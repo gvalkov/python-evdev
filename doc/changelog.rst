@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.4.4 (Jun 04, 2014)
+^^^^^^^^^^^^^^^^^^^^
+
+Fixes:
+    - Calling ``InputDevice.read_one()`` should always return
+      ``None``, when there is nothing to be read, even in case of a
+      ``EAGAIN`` errno (thanks JPP).
+
 0.4.3 (Dec 19, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
