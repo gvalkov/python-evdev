@@ -139,7 +139,7 @@ static PyObject *
 ioctl_capabilities(PyObject *self, PyObject *args)
 {
     int fd, ev_type, ev_code;
-    char ev_bits[EV_MAX/8], code_bits[KEY_MAX/8];
+    char ev_bits[EV_MAX/8 + 1], code_bits[KEY_MAX/8 + 1];
     struct input_absinfo absinfo;
 
     int ret = PyArg_ParseTuple(args, "i", &fd);
