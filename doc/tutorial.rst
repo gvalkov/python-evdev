@@ -74,6 +74,18 @@ Getting and setting LED states
     >>> dev.set_led(ecodes.LED_NUML, 0)  # disable numlock
 
 
+Getting currently active keys
+=============================
+
+::
+
+    >>> dev.active_keys(verbose=True)
+    ... [('KEY_3', 4), ('KEY_LEFTSHIFT', 42)]
+
+    >>> dev.active_keys()
+    ... [4, 42]
+
+
 Accessing input subsystem constants
 ===================================
 
