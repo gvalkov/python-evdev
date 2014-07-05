@@ -309,6 +309,33 @@ ioctl_EVIOCGRAB(PyObject *self, PyObject *args)
 }
 
 
+static PyObject *
+ioctl_EVIOCGKEY(PyObject *self, PyObject *args)
+{
+    int fd, ret, key;
+    char keys_bitmask[KEY_MAX/8 + 1];
+    PyObject* res = PyList_New(0);
+
+    ret = PyArg_ParseTuple(args, "i", &fd);
+    if (!ret) return NULL;
+
+    memset(&keys_bitmask, 0, sizeof(keys_bitmask));
+    ret = ioctl(fd, EVIOCGKEY(sizeof(keys_bitmask)), keys_bitmask);
+    if (ret < 0) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
+
+    for (key = 0; key < KEY_MAX; key++) {
+        if (test_bit(keys_bitmask, key)) {
+            PyList_Append(res, Py_BuildValue("i", key));
+        }
+    }
+
+    return res;
+}
+
+
 // todo: this function needs a better name
 static PyObject *
 get_sw_led_snd(PyObject *self, PyObject *args)
@@ -437,6 +464,7 @@ static PyMethodDef MethodTable[] = {
     { "ioctl_EVIOCSREP",      ioctl_EVIOCSREP,      METH_VARARGS},
     { "ioctl_EVIOCGVERSION",  ioctl_EVIOCGVERSION,  METH_VARARGS},
     { "ioctl_EVIOCGRAB",      ioctl_EVIOCGRAB,      METH_VARARGS},
+    { "ioctl_EVIOCGKEY",      ioctl_EVIOCGKEY,      METH_VARARGS, "get global key state" },
     { "ioctl_EVIOCGEFFECTS",  ioctl_EVIOCGEFFECTS,  METH_VARARGS, "fetch the number of effects the device can keep in its memory." },
     { "get_sw_led_snd",       get_sw_led_snd,       METH_VARARGS},
     { "device_read",          device_read,          METH_VARARGS, "read an input event from a device" },

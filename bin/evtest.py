@@ -76,6 +76,8 @@ print('Repeat settings: {}'.format(device.repeat))
 if ('EV_LED', ecodes.EV_LED) in capabs:
     print('Active LEDs: {}\n'.format(','.join(i[0] for i in device.leds(True))))
 
+print('Currently active keys: {}\n'.format(','.join(k[0] for k in device.active_keys(True))))
+
 print('Device capabilities:')
 for type, codes in capabs.items():
     print('  Type {} {}:'.format(*type))

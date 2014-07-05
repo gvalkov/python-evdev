@@ -310,3 +310,21 @@ class InputDevice(object):
     @repeat.setter
     def repeat(self, value):
         return _input.ioctl_EVIOCSREP(self.fd, *value)
+
+    def active_keys(self, verbose=False):
+        '''
+        Return currently active keys. Example::
+
+          [1, 42]
+
+        If ``verbose`` is ``True``, keys codes are resolved to
+        their names. Unknown codes are resolved to ``'?'``. Example::
+
+          [('KEY_ESC', 1), ('KEY_LEFTSHIFT', 42)]
+
+        '''
+        active_keys = _input.ioctl_EVIOCGKEY(self.fd)
+        if verbose:
+            return [(ecodes.KEY[k] if k in ecodes.KEY else '?', k) for k in active_keys]
+
+        return active_keys
