@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.4.5 (Jul 06, 2014)
+^^^^^^^^^^^^^^^^^^^^
+
+Enhancements:
+    - Add method for returning a list of the currently active keys -
+      ``InputDevice.active_keys()`` (thanks `@spasche`_).
+
+Fixes:
+    - Fix a potential buffer overflow in ``ioctl_capabilities`` (thanks `@spasche`_).
+
 0.4.4 (Jun 04, 2014)
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -25,7 +35,7 @@ Enhancements:
     - Rework documentation and docstrings.
 
 Fixes:
-    - Call ``InputDevice.close()`` in ``InputDevice.__del__()``.
+    - Call ``InputDevice.close()`` from ``InputDevice.__del__()``.
 
 0.4.1 (Jul 24, 2013)
 ^^^^^^^^^^^^^^^^^^^^
@@ -171,3 +181,4 @@ Fixes:
 .. _`@bgilbert`: https://github.com/bgilbert
 .. _`@accek`: https://github.com/accek
 .. _`@kived`: https://github.com/kived
+.. _`@spasche`: https://github.com/spasche
