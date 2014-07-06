@@ -317,8 +317,9 @@ class InputDevice(object):
 
           [1, 42]
 
-        If ``verbose`` is ``True``, keys codes are resolved to
-        their names. Unknown codes are resolved to ``'?'``. Example::
+        If ``verbose`` is ``True``, key codes are resolved to their
+        verbose names. Unknown codes are resolved to ``'?'``. For
+        example::
 
           [('KEY_ESC', 1), ('KEY_LEFTSHIFT', 42)]
 
