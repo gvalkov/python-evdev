@@ -71,12 +71,14 @@ capabs = device.capabilities(verbose=True)
 
 print('Device name: {.name}'.format(device))
 print('Device info: {.info}'.format(device))
-print('Repeat settings: {}'.format(device.repeat))
+print('Repeat settings: {}\n'.format(device.repeat))
 
 if ('EV_LED', ecodes.EV_LED) in capabs:
-    print('Active LEDs: {}\n'.format(','.join(i[0] for i in device.leds(True))))
+    leds = ','.join(i[0] for i in device.leds(True))
+    print('Active LEDs: %s' % leds)
 
-print('Currently active keys: {}\n'.format(','.join(k[0] for k in device.active_keys(True))))
+active_keys = ','.join(k[0] for k in device.active_keys(True))
+print('Active keys: %s\n' % active_keys)
 
 print('Device capabilities:')
 for type, codes in capabs.items():
