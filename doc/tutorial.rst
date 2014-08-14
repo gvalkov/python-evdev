@@ -240,8 +240,9 @@ Specifying ``uinput`` device options
     >>> cap = {
     ...     e.EV_KEY : [e.KEY_A, e.KEY_B],
     ...     e.EV_ABS : [
-    ...         (e.ABS_X, AbsInfo(min=0, max=255, fuzz=0, flat=0)),
-    ...         (e.ABS_Y, AbsInfo(0, 255, 0, 0)),
+    ...         (e.ABS_X, AbsInfo(value=0, min=0, max=255,
+    ...                           fuzz=0, flat=0, resolution=0)),
+    ...         (e.ABS_Y, AbsInfo(0, 0, 255, 0, 0, 0)),
     ...         (e.ABS_MT_POSITION_X, (0, 255, 128, 0)) ]
     ... }
 
@@ -251,10 +252,11 @@ Specifying ``uinput`` device options
     event types: EV_KEY EV_ABS EV_SYN
 
     >>> print(ui.capabilities())
-    ... { 0: [0, 1, 3], 1: [30, 48],
-    ...   3: [(0,  AbsInfo(min=0, max=255, fuzz=0, flat=0)),
-    ...       (1,  AbsInfo(min=0, max=255, fuzz=0, flat=0)),
-    ...       (53, AbsInfo(min=0, max=255, fuzz=128, flat=0))] }
+    {0: [0, 1, 3],
+     1: [30, 48],
+     3: [(0,  AbsInfo(value=0, min=0, max=0,   fuzz=255, flat=0, resolution=0)),
+         (1,  AbsInfo(value=0, min=0, max=0,   fuzz=255, flat=0, resolution=0)),
+         (53, AbsInfo(value=0, min=0, max=255, fuzz=128, flat=0, resolution=0))]}
 
     >>> # move mouse cursor
     >>> ui.write(e.EV_ABS, e.ABS_X, 20)
