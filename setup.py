@@ -27,7 +27,7 @@ classifiers = (
     'Programming Language :: Python :: Implementation :: CPython',
 )
 
-cflags   = ['-std=c99']
+cflags   = ['-std=c99', '-Wno-error=declaration-after-statement']
 input_c  = Extension('evdev._input',  sources=['evdev/input.c'],  extra_compile_args=cflags)
 uinput_c = Extension('evdev._uinput', sources=['evdev/uinput.c'], extra_compile_args=cflags)
 ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_args=cflags)
