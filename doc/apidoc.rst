@@ -1,5 +1,5 @@
-API documentation
------------------
+API Reference
+-------------
 
 ``events``
 ============
@@ -23,8 +23,8 @@ API documentation
 ``uinput``
 ============
 
-.. autoclass:: evdev.uinput.UInput
-   :members:
+.. automodule:: evdev.uinput
+   :members: UInput
    :special-members:
    :exclude-members: __dict__, __str__, __module__, __del__, __slots__, __repr__
    :member-order: bysource

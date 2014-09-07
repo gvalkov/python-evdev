@@ -8,6 +8,7 @@ from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
 
 
+#--------------------------------------------------------------------------
 _AbsInfo = namedtuple('AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
 _KbdInfo = namedtuple('KbdInfo', ['repeat', 'delay'])
 _DeviceInfo = namedtuple('DeviceInfo', ['bustype', 'vendor', 'product', 'version'])
@@ -18,24 +19,24 @@ class AbsInfo(_AbsInfo):
     A ``namedtuple`` for storing absolut axis information -
     corresponds to the ``input_absinfo`` struct:
 
-     - value
+     **value**
         Latest reported value for the axis.
 
-     - min
+     **min**
         Specifies minimum value for the axis.
 
-     - max
+     **max**
         Specifies maximum value for the axis.
 
-     - fuzz
+     **fuzz**
         Specifies fuzz value that is used to filter noise from the
         event stream.
 
-     - flat
+     **flat**
         Values that are within this value will be discarded by joydev
         interface and reported as 0 instead.
 
-     - resolution
+     **resolution**
         Specifies resolution for the values reported for the axis.
         Resolution for main axes (``ABS_X, ABS_Y, ABS_Z``) is reported
         in units per millimeter (units/mm), resolution for rotational
@@ -54,10 +55,10 @@ class KbdInfo(_KbdInfo):
     '''
     Keyboard repeat rate:
 
-    - repeat:
+    **repeat**
        Keyboard repeat rate in characters per second.
 
-    - delay:
+    **delay**
        Amount of time that a key must be depressed before it will start
        to repeat (in milliseconds).
     '''
@@ -178,12 +179,12 @@ class InputDevice(object):
 
     def leds(self, verbose=False):
         '''
-        Return currently set LED keys. Example::
+        Return currently set LED keys. For example::
 
           [0, 1, 8, 9]
 
-        If ``verbose`` is ``True``, event codes are resolved to
-        their names. Unknown codes are resolved to ``'?'``. Example::
+        If ``verbose`` is ``True``, event codes are resolved to their
+        names. Unknown codes are resolved to ``'?'``. For example::
 
           [('LED_NUML', 0), ('LED_CAPSL', 1), ('LED_MISC', 8), ('LED_MAIL', 9)]
 
@@ -196,7 +197,7 @@ class InputDevice(object):
 
     def set_led(self, led_num, value):
         '''
-        Set the state of the selected LED. Example::
+        Set the state of the selected LED. For example::
 
            device.set_led(ecodes.LED_NUML, 1)
 
@@ -205,7 +206,7 @@ class InputDevice(object):
         _uinput.write(self.fd, ecodes.EV_LED, led_num, value)
 
     def __eq__(self, other):
-        '''Two devices are considered equal if their :data:`info` attributes are equal.'''
+        '''Two devices are equal if their :data:`info` attributes are equal.'''
         return self.info == other.info
 
     def __str__(self):

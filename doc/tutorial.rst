@@ -8,10 +8,9 @@ Listing accessible event devices
 
     >>> from evdev import InputDevice, list_devices
 
-    >>> devices = map(InputDevice, list_devices())
-
+    >>> devices = [InputDevice(fn) for fn in list_devices()]
     >>> for dev in devices:
-    ...    print( '%-20s %-32s %s' % (dev.fn, dev.name, dev.phys) )
+    ...    print(dev.fn, dev.name, dev.phys)
     /dev/input/event1    Dell Dell USB Keyboard   usb-0000:00:12.1-2/input0
     /dev/input/event0    Dell USB Optical Mouse   usb-0000:00:12.0-2/input0
 
@@ -21,8 +20,9 @@ Listing device capabilities
 
 ::
 
-    >>> dev = InputDevice('/dev/input/event0')
+    >>> from evdev import InputDevice
 
+    >>> dev = InputDevice('/dev/input/event0')
     >>> print(dev)
     device /dev/input/event0, name "Dell USB Optical Mouse", phys "usb-0000:00:12.0-2/input0"
 
@@ -39,8 +39,9 @@ Listing device capabilities for devices with absolute axes
 
 ::
 
-    >>> dev = InputDevice('/dev/input/event7')
+    >>> from evdev import InputDevice
 
+    >>> dev = InputDevice('/dev/input/event7')
     >>> print(dev)
     device /dev/input/event7, name "Wacom Bamboo 2FG 4x5 Finger", phys ""
 
@@ -84,23 +85,6 @@ Getting currently active keys
 
     >>> dev.active_keys()
     ... [4, 42]
-
-
-Accessing input subsystem constants
-===================================
-
-::
-
-    >>> from evdev import ecodes
-    >>> ecodes.KEY_A, ecodes.ecodes['KEY_A']
-    ... (30, 30)
-    >>> ecodes.KEY[30]
-    ... 'KEY_A'
-    >>> ecodes.bytype[ecodes.EV_KEY][30]
-    ... 'KEY_A'
-    # a single value in the reverse mappings may correspond to multiple codes
-    >>> ecodes.KEY[152]
-    ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
 
 
 Reading events
@@ -149,6 +133,23 @@ Reading events from multiple devices
     event at 1351116708.002234, code 00, type 00, val 00
     event at 1351116708.782231, code 04, type 04, val 458782
     event at 1351116708.782237, code 02, type 01, val 01
+
+
+Accessing evdev constants
+=========================
+
+::
+
+    >>> from evdev import ecodes
+
+    >>> ecodes.KEY_A, ecodes.ecodes['KEY_A']
+    ... (30, 30)
+    >>> ecodes.KEY[30]
+    ... 'KEY_A'
+    >>> ecodes.bytype[ecodes.EV_KEY][30]
+    ... 'KEY_A'
+    >>> ecodes.KEY[152]  # a single value may correspond to multiple codes
+    ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
 
 
 Reading events with asyncore
@@ -202,9 +203,8 @@ Associating classes with event types
 
 See :mod:`events <evdev.events.event_factory>` for more information.
 
-
-Injecting events
-================
+Injecting input events
+======================
 
 ::
 
@@ -232,7 +232,7 @@ Injecting events (2)
 
 
 Specifying ``uinput`` device options
-======================================
+====================================
 ::
 
     >>> from evdev import UInput, AbsInfo, ecodes as e

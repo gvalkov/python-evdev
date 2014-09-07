@@ -14,18 +14,19 @@ from setuptools import setup, Extension, Command
 
 here = abspath(dirname(__file__))
 
-classifiers = (
+classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
     'Operating System :: POSIX :: Linux',
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Libraries',
     'License :: OSI Approved :: BSD License',
     'Programming Language :: Python :: Implementation :: CPython',
-)
+]
 
 cflags   = ['-std=c99', '-Wno-error=declaration-after-statement']
 input_c  = Extension('evdev._input',  sources=['evdev/input.c'],  extra_compile_args=cflags)
@@ -36,7 +37,7 @@ kw = {
     'name':                 'evdev',
     'version':              '0.4.5',
 
-    'description':          'Bindings for the linux input handling subsystem',
+    'description':          'Bindings to the Linux input handling subsystem',
     'long_description':     open(pjoin(here, 'README.rst')).read(),
 
     'author':               'Georgi Valkov',

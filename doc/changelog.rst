@@ -1,6 +1,13 @@
 Changelog
 =========
 
+HEAD
+^^^^^^^^^^^^^^^^^^^^
+
+- Rework documentation and docstrings once more.
+
+- Fix install on Python 3.4 (works around issue21121_).
+
 0.4.5 (Jul 06, 2014)
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -162,3 +169,5 @@ Changelog
 .. _`@accek`: https://github.com/accek
 .. _`@kived`: https://github.com/kived
 .. _`@spasche`: https://github.com/spasche
+
+.. _issue21121: http://bugs.python.org/issue21121

@@ -41,10 +41,12 @@ help:
 clean:
 	-rm -rf $(BUILDDIR)/*
 
+
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+	@sed -i $(BUILDDIR)/html/index.html -e 's,<span>Synopsis</span>,<span>Python Bindings</span>,'
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
@@ -151,6 +153,13 @@ doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+
+
+# .PHONY: news.rst
+# news.rst: changelog.rst
+# 	cat $< | grep -FB1 '^^^^^^^^^' \
+# 	| sed -e '/^\^/d;/--/d' -e 's,\(.*\)(\(.*\)),* **\2**: Version \1released.\n,' \
+# 	> $@
 
 $(BUILDDIR)/html/evdev-doc.zip: html
 	cd $(BUILDDIR)/html/ &&  zip -x \*.zip -r evdev-doc.zip .

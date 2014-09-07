@@ -36,7 +36,7 @@ class UInput(object):
         :type events: dictionary of event types mapping to lists of
                       event codes.
 
-        :param name: the name of the input device.
+        :param name:    the name of the input device.
         :param vendor:  vendor identifier.
         :param product: product identifier.
         :param version: version identifier.

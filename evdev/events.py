@@ -13,8 +13,8 @@ resembles the ``input_event`` struct defined in ``linux/input.h``:
         __s32 value;
     };
 
-This module also defines :class:`InputEvent` sub-classes that know
-more about the different types of events (key, abs, rel etc). The
+This module also defines several :class:`InputEvent` sub-classes that
+know more about the different types of events (key, abs, rel etc). The
 :data:`event_factory` dictionary maps event types to these classes.
 
 Assuming you use the :func:`evdev.util.categorize()` function to
@@ -171,7 +171,7 @@ class SynEvent(object):
 
 
 #: A mapping of event types to :class:`InputEvent` sub-classes. Used
-#: by:func:`evdev.util.categorize()`
+#: by :func:`evdev.util.categorize()`
 event_factory = {
     EV_KEY: KeyEvent,
     EV_REL: RelEvent,

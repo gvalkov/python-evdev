@@ -1,6 +1,8 @@
 # encoding: utf-8
 
+#--------------------------------------------------------------------------
 # Gather everything into a convenient namespace
+#--------------------------------------------------------------------------
 
 from evdev.device import DeviceInfo, InputDevice, AbsInfo
 from evdev.events import InputEvent, KeyEvent, RelEvent, SynEvent, AbsEvent, event_factory

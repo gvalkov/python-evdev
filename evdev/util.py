@@ -9,7 +9,7 @@ from evdev.events import event_factory
 
 
 def list_devices(input_device_dir='/dev/input'):
-    '''List readable, character devices.'''
+    '''List readable character devices in ``input_device_dir``.'''
 
     fns = glob.glob('{}/event*'.format(input_device_dir))
     fns = list(filter(is_device, fns))
@@ -39,9 +39,8 @@ def categorize(event):
 
     The :data:`event_factory <evdev.events.event_factory>` dictionary
     maps event types to sub-classes of :class:`InputEvent
-    <evdev.events.InputEvent>`. If there is no corresponding key, the
-    event is returned as it is.
-    '''
+    <evdev.events.InputEvent>`. If the event cannot be categorized, it
+    is returned unmodified.'''
 
     if event.type in event_factory:
         return event_factory[event.type](event)
@@ -63,7 +62,7 @@ def resolve_ecodes(typecodemap, unknown='?'):
                           ('BTN_RIGHT',  273),
                           ('BTN_MIDDLE', 274)] }
 
-    If typecodemap contains absolute axis info (instances of
+    If ``typecodemap`` contains absolute axis info (instances of
     :class:`AbsInfo <evdev.device.AbsInfo>` ) the result would look
     like::
 
