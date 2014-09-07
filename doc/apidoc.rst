@@ -7,7 +7,8 @@ API documentation
 .. automodule:: evdev.events
    :members: InputEvent, KeyEvent, AbsEvent, RelEvent, SynEvent, event_factory
    :undoc-members:
-   :member-order: groupwise
+   :exclude-members: __dict__, __str__, __module__, __del__, __slots__, __repr__
+   :member-order: bysource
 
 ``device``
 ============
@@ -16,7 +17,8 @@ API documentation
    :members: InputDevice, DeviceInfo, AbsInfo, KbdInfo
    :undoc-members:
    :special-members:
-   :member-order: groupwise
+   :exclude-members: __dict__, __str__, __module__, __del__, __slots__, __repr__
+   :member-order: bysource
 
 ``uinput``
 ============
@@ -24,17 +26,29 @@ API documentation
 .. autoclass:: evdev.uinput.UInput
    :members:
    :special-members:
-   :member-order: groupwise
+   :exclude-members: __dict__, __str__, __module__, __del__, __slots__, __repr__
+   :member-order: bysource
 
 ``util``
 ==========
 
 .. automodule:: evdev.util
    :members: list_devices, is_device, categorize, resolve_ecodes
-   :member-order: groupwise
+   :member-order: bysource
 
 ``ecodes``
 ============
 
 .. automodule:: evdev.ecodes
    :members:
+   :exclude-members: __module__, keys, ecodes, bytype
+   :member-order: bysource
+
+.. autodata:: evdev.ecodes.keys
+   :annotation: {0: 'KEY_RESERVED', 1: 'KEY_ESC', 2: 'KEY_1', ...}
+
+.. autodata:: evdev.ecodes.ecodes
+   :annotation: {'KEY_END': 107, 'FF_RUMBLE': 80, 'KEY_KPDOT': 83, 'KEY_CNT': 768, ...}'
+
+.. autodata:: evdev.ecodes.bytype
+   :annotation: {0: {0: 'SYN_REPORT', 1: 'SYN_CONFIG', 2: 'SYN_MT_REPORT', 3: 'SYN_DROPPED'}, ...}
