@@ -1,12 +1,14 @@
 Changelog
 =========
 
-HEAD
+0.4.6 (Oct 07, 2014)
 ^^^^^^^^^^^^^^^^^^^^
 
 - Rework documentation and docstrings once more.
 
 - Fix install on Python 3.4 (works around issue21121_).
+
+- Fix ioctl() requested buffer size (thanks Jakub Wojciech Klama).
 
 0.4.5 (Jul 06, 2014)
 ^^^^^^^^^^^^^^^^^^^^
