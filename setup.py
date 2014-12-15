@@ -68,7 +68,7 @@ def create_ecodes():
         install the headers for your kernel in order to continue:
 
             yum install kernel-headers-$(uname -r)
-            apt-get intall linux-headers-$(uname -r)
+            apt-get install linux-headers-$(uname -r)
             pacman -S kernel-headers\n\n'''
 
         sys.stderr.write(textwrap.dedent(msg))
