@@ -9,16 +9,17 @@ from os.path import abspath, dirname, join as pjoin
 from distutils.command.build import build
 from setuptools.command.develop import develop
 from setuptools.command.bdist_egg import bdist_egg
-from setuptools import setup, Extension, Command
+from setuptools import setup, Extension
 
 
+#-----------------------------------------------------------------------------
 here = abspath(dirname(__file__))
 
+#-----------------------------------------------------------------------------
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
     'Operating System :: POSIX :: Linux',
@@ -28,11 +29,13 @@ classifiers = [
     'Programming Language :: Python :: Implementation :: CPython',
 ]
 
+#-----------------------------------------------------------------------------
 cflags   = ['-std=c99', '-Wno-error=declaration-after-statement']
 input_c  = Extension('evdev._input',  sources=['evdev/input.c'],  extra_compile_args=cflags)
 uinput_c = Extension('evdev._uinput', sources=['evdev/uinput.c'], extra_compile_args=cflags)
 ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_args=cflags)
 
+#-----------------------------------------------------------------------------
 kw = {
     'name':                 'evdev',
     'version':              '0.4.6',
@@ -50,7 +53,6 @@ kw = {
 
     'packages':             ['evdev'],
     'ext_modules':          [input_c, uinput_c, ecodes_c],
-    'tests_require':        ['pytest'],
 
     'include_package_data': False,
     'zip_safe':             True,
@@ -98,24 +100,7 @@ class BdistEggCommand(bdist_egg):
         create_ecodes()
         bdist_egg.run(self)
 
-
-class PyTest(Command):
-    '''setup.py test -> py.test tests'''
-
-    user_options = []
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        from subprocess import call
-        errno = call(('py.test', 'tests'))
-        raise SystemExit(errno)
-
-
-kw['cmdclass']['test'] = PyTest
+#-----------------------------------------------------------------------------
 kw['cmdclass']['build'] = BuildCommand
 kw['cmdclass']['develop'] = DevelopCommand
 kw['cmdclass']['bdist_egg'] = BdistEggCommand
