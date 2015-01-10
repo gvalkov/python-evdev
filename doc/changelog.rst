@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Development
+0.4.7 (Oct 07, 2015)
 ^^^^^^^^^^^^^^^^^^^^
 
 - Fallback to distutils if setuptools is not available.
