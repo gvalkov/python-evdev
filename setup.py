@@ -6,11 +6,16 @@ import sys
 import textwrap
 
 from os.path import abspath, dirname, join as pjoin
-from distutils.command.build import build
-from setuptools.command.develop import develop
-from setuptools.command.bdist_egg import bdist_egg
-from setuptools import setup, Extension
+from distutils.command import build
 
+#-----------------------------------------------------------------------------
+try:
+    from setuptools import setup, Extension
+    from setuptools.command import bdist_egg, develop
+except ImportError:
+    from distutils.core import setup, Extension
+    from distutils.command import build
+    develop, bdist_egg = None, None
 
 #-----------------------------------------------------------------------------
 here = abspath(dirname(__file__))
@@ -46,22 +51,20 @@ kw = {
     'author':               'Georgi Valkov',
     'author_email':         'georgi.t.valkov@gmail.com',
     'license':              'Revised BSD License',
-
     'keywords':             'evdev input uinput',
-    'classifiers':          classifiers,
     'url':                  'https://github.com/gvalkov/python-evdev',
+    'classifiers':          classifiers,
 
     'packages':             ['evdev'],
     'ext_modules':          [input_c, uinput_c, ecodes_c],
-
     'include_package_data': False,
     'zip_safe':             True,
     'cmdclass':             {},
 }
 
 
+#-----------------------------------------------------------------------------
 def create_ecodes():
-    # :todo: expose as a command option
     header = '/usr/include/linux/input.h'
 
     if not os.path.isfile(header):
@@ -83,27 +86,20 @@ def create_ecodes():
     check_call(cmd, cwd="%s/evdev" % here, shell=True)
 
 
-# :todo: figure out a smarter way to do this
-# :note: subclassing build_ext doesn't really cut it
-class BuildCommand(build):
-    def run(self):
-        create_ecodes()
-        build.run(self)
-
-class DevelopCommand(develop):
-    def run(self):
-        create_ecodes()
-        develop.run(self)
-
-class BdistEggCommand(bdist_egg):
-    def run(self):
-        create_ecodes()
-        bdist_egg.run(self)
+def cmdfactory(cmd):
+    class cls(cmd):
+        def run(self):
+            create_ecodes()
+            cmd.run(self)
+    return cls
 
 #-----------------------------------------------------------------------------
-kw['cmdclass']['build'] = BuildCommand
-kw['cmdclass']['develop'] = DevelopCommand
-kw['cmdclass']['bdist_egg'] = BdistEggCommand
+kw['cmdclass']['build'] = cmdfactory(build.build)
 
+if develop and bdist_egg:
+    kw['cmdclass']['develop']   = cmdfactory(develop.develop)
+    kw['cmdclass']['bdist_egg'] = cmdfactory(bdist_egg.bdist_egg)
+
+#-----------------------------------------------------------------------------
 if __name__ == '__main__':
     setup(**kw)
