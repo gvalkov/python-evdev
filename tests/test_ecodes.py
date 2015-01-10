@@ -2,6 +2,7 @@
 
 from evdev import ecodes
 
+
 prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF'
 
 def to_tuples(l):

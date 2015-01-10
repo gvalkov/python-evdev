@@ -1,11 +1,12 @@
 # encoding: utf-8
 
 from select import select
-from pytest import raises
+from pytest import raises, fixture
 
 from evdev import uinput, ecodes, events, device, util
 
 
+#-----------------------------------------------------------------------------
 uinput_options = {
     'name'      : 'test-py-evdev-uinput',
     'bustype'   : ecodes.BUS_USB,
@@ -14,21 +15,21 @@ uinput_options = {
     'version'   : 0x3300,
 }
 
-
-def pytest_funcarg__c(request):
+@fixture
+def c():
     return uinput_options.copy()
 
-
 def device_exists(bustype, vendor, product, version):
-    match = 'I: Bus=%04hx Vendor=%04hx Product=%04hx Version=%04hx' % \
-            (bustype, vendor, product, version)
+    match = 'I: Bus=%04hx Vendor=%04hx Product=%04hx Version=%04hx'
+    match = match % (bustype, vendor, product, version)
 
     for line in open('/proc/bus/input/devices'):
-        if line.strip() == match: return True
+        if line.strip() == match:
+            return True
 
     return False
 
-
+#-----------------------------------------------------------------------------
 def test_open(c):
     ui = uinput.UInput(**c)
     args = (c['bustype'], c['vendor'], c['product'], c['version'])
@@ -59,15 +60,16 @@ def test_enable_events(c):
 def test_abs_values(c):
     e = ecodes
     c['events'] = {
-        e.EV_KEY : [e.KEY_A, e.KEY_B],
-        e.EV_ABS : [(e.ABS_X, (0, 255, 0, 0)),
-                    (e.ABS_Y, device.AbsInfo(0, 255, 5, 10, 0, 0))],
+        e.EV_KEY: [e.KEY_A, e.KEY_B],
+        e.EV_ABS: [(e.ABS_X, (0, 255, 0, 0)),
+                   (e.ABS_Y, device.AbsInfo(0, 255, 5, 10, 0, 0))],
     }
 
     with uinput.UInput(**c) as ui:
         c = ui.capabilities()
         abs = device.AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)
         assert c[e.EV_ABS][0] == (0, abs)
+
         abs = device.AbsInfo(value=0, min=0, max=255, fuzz=5, flat=10, resolution=0)
         assert c[e.EV_ABS][1] == (1, abs)
 
