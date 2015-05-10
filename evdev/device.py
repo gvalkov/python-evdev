@@ -257,9 +257,9 @@ class InputDevice(object):
 
     def read(self):
         '''
-        Read multiple input events from device. Return a generator
-        object that yields :class:`InputEvent
-        <evdev.events.InputEvent>` instances.
+        Read multiple input events from device. Return a generator object that
+        yields :class:`InputEvent <evdev.events.InputEvent>` instances. Raises
+        `BlockingIOError` if there are no available events at the moment.
         '''
 
         # events -> [(sec, usec, type, code, val), ...]
