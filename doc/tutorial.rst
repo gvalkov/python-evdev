@@ -203,6 +203,42 @@ Reading events with asyncore
     InputEvent(1337255905L, 358857L, 0, 0, 0L)
 
 
+Reading events with asyncio
+===========================
+
+An example program that prints the number of events by type every 5
+seconds:
+
+::
+
+    import asyncio
+
+    from collections import Counter
+    from functools import partial
+    from evdev import InputDevice, ecodes
+
+    mouse = InputDevice('/dev/input/event1')
+    keybd = InputDevice('/dev/input/event2')
+    counter = Counter()
+
+    def read_events(device):
+        events = device.read()
+        counter.update([ev.type for ev in events])
+
+    @asyncio.coroutine
+    def summarize():
+        while True:
+            yield from asyncio.sleep(5)
+            print('Number of events by type in the last 5 seconds:')
+            print({ecodes.EV[k]: v for k,v in counter.items()})
+            counter.clear()
+
+    loop = asyncio.get_event_loop()
+    loop.add_reader(mouse, partial(read_events, mouse))
+    loop.add_reader(keybd, partial(read_events, keybd))
+    loop.run_until_complete(summarize())
+
+
 Getting exclusive access to a device
 ====================================
 

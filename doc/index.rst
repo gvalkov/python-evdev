@@ -91,7 +91,7 @@ On Arch Linux and derivatives:
 
 .. code-block:: bash
 
-    $ pacman -S core/linux-headers python-pip gcc
+    $ pacman -S core/linux-api-headers python-pip gcc
 
 Installing *python-evdev* with pip_:
 
