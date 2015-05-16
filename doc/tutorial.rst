@@ -117,15 +117,16 @@ Reading events from multiple devices
     >>> from evdev import InputDevice
     >>> from select import select
 
+    # A mapping of file descriptors (integers) to InputDevice instances.
     >>> devices = map(InputDevice, ('/dev/input/event1', '/dev/input/event2'))
-    >>> devices = {dev.fd : dev for dev in devices}
+    >>> devices = {dev.fd: dev for dev in devices}
 
     >>> for dev in devices.values(): print(dev)
     device /dev/input/event1, name "Dell Dell USB Keyboard", phys "usb-0000:00:12.1-2/input0"
     device /dev/input/event2, name "Logitech USB Laser Mouse", phys "usb-0000:00:12.0-2/input0"
 
     >>> while True:
-    ...    r,w,x = select(devices, [], [])
+    ...    r, w, x = select(devices, [], [])
     ...    for fd in r:
     ...        for event in devices[fd].read():
     ...            print(event)
@@ -133,6 +134,29 @@ Reading events from multiple devices
     event at 1351116708.002234, code 00, type 00, val 00
     event at 1351116708.782231, code 04, type 04, val 458782
     event at 1351116708.782237, code 02, type 01, val 01
+
+
+This can also be achieved using the selectors_ module in Python 3.4:
+
+::
+
+   from evdev import InputDevice
+   from selectors import DefaultSelector, EVENT_READ
+
+   selector = selectors.DefaultSelector()
+
+   mouse = evdev.InputDevice('/dev/input/event1')
+   keybd = evdev.InputDevice('/dev/input/event2')
+
+   # This works because InputDevice has a `fileno()` method.
+   selector.register(mouse, selectors.EVENT_READ)
+   selector.register(keybd, selectors.EVENT_READ)
+
+   while True:
+       for key, mask in selector.select():
+           device = key.fileobj
+           for event in device.read():
+               print(event)
 
 
 Accessing evdev constants
@@ -262,3 +286,6 @@ Specifying ``uinput`` device options
     >>> ui.write(e.EV_ABS, e.ABS_X, 20)
     >>> ui.write(e.EV_ABS, e.ABS_Y, 20)
     >>> ui.syn()
+
+
+.. _selectors:   https://docs.python.org/3/library/selectors.html
