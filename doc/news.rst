@@ -1,3 +1,5 @@
+* ``Jun 16, 2015:`` Version 0.5.0 released.
+
 * ``Oct 07, 2014:`` Version 0.4.6 released.
 
 * ``Jul 06, 2014:`` Version 0.4.5 released.
