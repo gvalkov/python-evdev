@@ -1,12 +1,17 @@
 # encoding: utf-8
 
 import os
+import fcntl
 from select import select
 from collections import namedtuple
 
 from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
 
+
+#--------------------------------------------------------------------------
+class EvdevError(Exception):
+    pass
 
 #--------------------------------------------------------------------------
 _AbsInfo = namedtuple('AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
@@ -89,8 +94,15 @@ class InputDevice(object):
         #: Path to input device.
         self.fn = dev
 
+        # Certain operations are possible only when the device is opened in
+        # read-write mode.
+        try:
+            fd = os.open(dev, os.O_RDWR | os.O_NONBLOCK)
+        except OSError:
+            fd = os.open(dev, os.O_RDONLY | os.O_NONBLOCK)
+
         #: A non-blocking file descriptor to the device file.
-        self.fd = os.open(dev, os.O_RDWR | os.O_NONBLOCK)
+        self.fd = fd
 
         # Returns (bustype, vendor, product, version, name, phys, capabilities).
         info_res = _input.ioctl_devinfo(self.fd)
@@ -177,6 +189,19 @@ class InputDevice(object):
         else:
             return self._capabilities(absinfo)
 
+    def need_write(func):
+        '''
+        Decorator that raises EvdevError() if there is no write access to the
+        input device.
+        '''
+        def wrapper(*args):
+            fd = args[0].fd
+            if fcntl.fcntl(fd, fcntl.F_GETFL) & os.O_RDWR:
+                return func(*args)
+            msg = 'no write access to device "%s"' % args[0].fn
+            raise EvdevError(msg)
+        return wrapper
+
     def leds(self, verbose=False):
         '''
         Return currently set LED keys. For example::
@@ -195,6 +220,7 @@ class InputDevice(object):
 
         return leds
 
+    @need_write
     def set_led(self, led_num, value):
         '''
         Set the state of the selected LED. For example::

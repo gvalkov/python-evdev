@@ -1,7 +1,15 @@
 Changelog
 =========
 
-0.4.7 (Oct 07, 2015)
+0.5.0 (Jun 16, 2015)
+^^^^^^^^^^^^^^^^^^^^
+
+- Write access to the input device is no longer mandatory. Evdev will
+  first try to open the device for reading and writing and fallback to
+  read-only. Methods that require write access (e.g. ``set_led()``)
+  will raise ``EvdevError`` if the device is open only for reading.
+
+0.4.7 (Oct 07, 2014)
 ^^^^^^^^^^^^^^^^^^^^
 
 - Fallback to distutils if setuptools is not available.
@@ -13,7 +21,7 @@ Changelog
 
 - Fix install on Python 3.4 (works around issue21121_).
 
-- Fix ioctl() requested buffer size (thanks Jakub Wojciech Klama).
+- Fix ``ioctl()`` requested buffer size (thanks Jakub Wojciech Klama).
 
 0.4.5 (Jul 06, 2014)
 ^^^^^^^^^^^^^^^^^^^^
