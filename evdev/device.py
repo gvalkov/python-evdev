@@ -233,7 +233,7 @@ class InputDevice(object):
 
     def __eq__(self, other):
         '''Two devices are equal if their :data:`info` attributes are equal.'''
-        return isinstance(other, InputDevice) and self.info == other.info
+        return isinstance(other, self.__class__) and self.info == other.info
 
     def __str__(self):
         msg = 'device {}, name "{}", phys "{}"'
