@@ -71,7 +71,7 @@ class UInput(object):
             for code in codes:
                 # handle max, min, fuzz, flat
                 if isinstance(code, (tuple, list, device.AbsInfo)):
-                    # flatten (ABS_Y, (0, 255, 0, 0)) to (ABS_Y, 0, 255, 0, 0)
+                    # flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0)
                     f = [code[0]]; f += code[1]
                     absinfo.append(f)
                     code = code[0]

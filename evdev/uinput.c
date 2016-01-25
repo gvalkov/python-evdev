@@ -70,14 +70,15 @@ uinput_create(PyObject *self, PyObject *args) {
 
     len = PyList_Size(absinfo);
     for (i=0; i<len; i++) {
-        // item -> (ABS_X, 0, 255, 0, 0)
+        // item -> (ABS_X, 0, 255, 0, 0, 0, 0)
         item = PyList_GetItem(absinfo, i);
         abscode = (int)PyLong_AsLong(PyList_GetItem(item, 0));
 
-        uidev.absmin[abscode]  = PyLong_AsLong(PyList_GetItem(item, 1));
-        uidev.absmax[abscode]  = PyLong_AsLong(PyList_GetItem(item, 2));
-        uidev.absfuzz[abscode] = PyLong_AsLong(PyList_GetItem(item, 3));
-        uidev.absflat[abscode] = PyLong_AsLong(PyList_GetItem(item, 4));
+		/* min/max/fuzz/flat start from index 2 because index 1 is value */
+        uidev.absmin[abscode]  = PyLong_AsLong(PyList_GetItem(item, 2));
+        uidev.absmax[abscode]  = PyLong_AsLong(PyList_GetItem(item, 3));
+        uidev.absfuzz[abscode] = PyLong_AsLong(PyList_GetItem(item, 4));
+        uidev.absflat[abscode] = PyLong_AsLong(PyList_GetItem(item, 5));
     }
 
     if (write(fd, &uidev, sizeof(uidev)) != sizeof(uidev))
