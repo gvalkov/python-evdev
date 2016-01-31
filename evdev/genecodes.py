@@ -2,13 +2,33 @@
 # -*- coding: utf-8; -*-
 
 '''
-Generate a Python extension module that exports macros from
-/usr/include/linux/input.h
+Generate a Python extension module with the constants defined in linux/input.h.
 '''
 
+from __future__ import print_function
 import os, sys, re
 
 
+#-----------------------------------------------------------------------------
+# The default header file locations to try.
+headers = [
+    '/usr/include/linux/input.h',
+    '/usr/include/linux/input-event-codes.h',
+]
+
+if sys.argv[1:]:
+    headers = sys.argv[1:]
+
+
+#-----------------------------------------------------------------------------
+macro_regex = r'#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF)_\w+)'
+macro_regex = re.compile(macro_regex)
+
+uname = list(os.uname()); del uname[1]
+uname = ' '.join(uname)
+
+
+#-----------------------------------------------------------------------------
 template = r'''
 #include <Python.h>
 #ifdef __FreeBSD__
@@ -73,22 +93,24 @@ init_ecodes(void)
 #endif
 '''
 
-header = '/usr/include/linux/input.h' if len(sys.argv) == 1 else sys.argv[1]
-regex = r'#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF)_\w+)'
-regex = re.compile(regex)
-
-if not os.path.exists(header):
-    print('no such file: %s' % header)
-    sys.exit(1)
-
-def getmacros():
+def parse_header(header):
     for line in open(header):
-        macro = regex.search(line)
+        macro = macro_regex.search(line)
         if macro:
             yield '    PyModule_AddIntMacro(m, %s);' % macro.group(1)
 
-uname = list(os.uname()); del uname[1]
-uname = ' '.join(uname)
+all_macros = []
+for header in headers:
+    try:
+        fh = open(header)
+    except (IOError, OSError):
+        continue
+    all_macros += parse_header(header)
 
-macros = os.linesep.join(getmacros())
+if not all_macros:
+    print('no input macros found in: %s' % ' '.join(headers), file=sys.stderr)
+    sys.exit(1)
+
+
+macros = os.linesep.join(all_macros)
 print(template % (uname, macros))
