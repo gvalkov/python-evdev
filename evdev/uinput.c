@@ -74,7 +74,7 @@ uinput_create(PyObject *self, PyObject *args) {
         item = PyList_GetItem(absinfo, i);
         abscode = (int)PyLong_AsLong(PyList_GetItem(item, 0));
 
-		/* min/max/fuzz/flat start from index 2 because index 1 is value */
+        /* min/max/fuzz/flat start from index 2 because index 1 is value */
         uidev.absmin[abscode]  = PyLong_AsLong(PyList_GetItem(item, 2));
         uidev.absmax[abscode]  = PyLong_AsLong(PyList_GetItem(item, 3));
         uidev.absfuzz[abscode] = PyLong_AsLong(PyList_GetItem(item, 4));
@@ -84,15 +84,15 @@ uinput_create(PyObject *self, PyObject *args) {
     if (write(fd, &uidev, sizeof(uidev)) != sizeof(uidev))
         goto on_err;
 
-	/* if (ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0) */
+    /* if (ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0) */
     /*     goto on_err; */
     /* int i; */
-	/* for (i=0; i<KEY_MAX && fd; i++) { */
-	/* 	if (ioctl(fd, UI_SET_KEYBIT, i) < 0) */
+    /* for (i=0; i<KEY_MAX && fd; i++) { */
+    /*      if (ioctl(fd, UI_SET_KEYBIT, i) < 0) */
     /*         goto on_err; */
-	/* } */
+    /* } */
 
-	if (ioctl(fd, UI_DEV_CREATE) < 0)
+    if (ioctl(fd, UI_DEV_CREATE) < 0)
         goto on_err;
 
     Py_RETURN_NONE;
