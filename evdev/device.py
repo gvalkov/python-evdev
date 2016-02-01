@@ -229,7 +229,18 @@ class InputDevice(object):
 
         ..
         '''
-        _uinput.write(self.fd, ecodes.EV_LED, led_num, value)
+        self.set(ecodes.EV_LED, led_num, value)
+
+    @need_write
+    def set(self, etype, code, value):
+        '''
+        Set the state of the selected component. For example::
+
+           device.set(ecodes.EV_LED, ecodes.LED_NUML, 1)
+
+        ..
+        '''
+        _uinput.write(self.fd, etype, code, value)
 
     def __eq__(self, other):
         '''Two devices are equal if their :data:`info` attributes are equal.'''
