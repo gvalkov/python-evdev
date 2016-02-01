@@ -4,9 +4,9 @@ import os
 import stat
 import time
 
-from evdev import _uinput
+from evdev import _input, _uinput
 from evdev import ecodes, util, device
-
+from evdev.events import InputEvent
 
 class UInputError(Exception):
     pass
@@ -120,6 +120,50 @@ class UInput(object):
         if self.fd > -1:
             _uinput.close(self.fd)
             self.fd = -1
+
+    def fileno(self):
+        '''
+        Return the file descriptor to the open event device. This
+        makes it possible to pass pass ``InputDevice`` instances
+        directly to :func:`select.select()` and
+        :class:`asyncore.file_dispatcher`.'''
+
+        return self.fd
+
+    def read_one(self):
+        '''
+        Read and return a single input event as an instance of
+        :class:`InputEvent <evdev.events.InputEvent>`.
+
+        Return ``None`` if there are no pending input events.
+        '''
+
+        # event -> (sec, usec, type, code, val)
+        event = _input.device_read(self.fd)
+
+        if event:
+            return InputEvent(*event)
+
+    def read_loop(self):
+        '''Enter an endless ``select()`` loop that yields input events.'''
+
+        while True:
+            r, w, x = select([self.fd], [], [])
+            for event in self.read():
+                yield event
+
+    def read(self):
+        '''
+        Read multiple input events from device. Return a generator object that
+        yields :class:`InputEvent <evdev.events.InputEvent>` instances. Raises
+        `BlockingIOError` if there are no available events at the moment.
+        '''
+
+        # events -> [(sec, usec, type, code, val), ...]
+        events = _input.device_read_many(self.fd)
+
+        for i in events:
+            yield InputEvent(*i)
 
     def write_event(self, event):
         '''

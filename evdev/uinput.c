@@ -37,7 +37,7 @@ uinput_open(PyObject *self, PyObject *args)
     int ret = PyArg_ParseTuple(args, "s", &devnode);
     if (!ret) return NULL;
 
-    int fd = open(devnode, O_WRONLY | O_NONBLOCK);
+    int fd = open(devnode, O_RDWR | O_NONBLOCK);
     if (fd < 0) {
         PyErr_SetString(PyExc_IOError, "could not open uinput device in write mode");
         return NULL;
