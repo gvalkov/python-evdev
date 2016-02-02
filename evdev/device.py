@@ -2,6 +2,7 @@
 
 import os
 import fcntl
+
 from select import select
 from collections import namedtuple
 
@@ -214,7 +215,7 @@ class InputDevice(object):
           [('LED_NUML', 0), ('LED_CAPSL', 1), ('LED_MISC', 8), ('LED_MAIL', 9)]
 
         '''
-        leds = _input.get_sw_led_snd(self.fd, ecodes.EV_LED)
+        leds = _input.ioctl_EVIOCG_bits(self.fd, ecodes.EV_LED)
         if verbose:
             return [(ecodes.LED[l] if l in ecodes.LED else '?', l) for l in leds]
 
@@ -362,7 +363,7 @@ class InputDevice(object):
           [('KEY_ESC', 1), ('KEY_LEFTSHIFT', 42)]
 
         '''
-        active_keys = _input.ioctl_EVIOCGKEY(self.fd)
+        active_keys = _input.ioctl_EVIOCG_bits(self.fd, ecodes.EV_KEY)
         if verbose:
             return [(ecodes.KEY[k] if k in ecodes.KEY else '?', k) for k in active_keys]
 

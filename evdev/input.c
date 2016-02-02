@@ -314,62 +314,46 @@ ioctl_EVIOCGRAB(PyObject *self, PyObject *args)
 
 
 static PyObject *
-ioctl_EVIOCGKEY(PyObject *self, PyObject *args)
+ioctl_EVIOCG_bits(PyObject *self, PyObject *args)
 {
-    int fd, ret, key;
-    char keys_bitmask[KEY_MAX/8 + 1];
-    PyObject* res = PyList_New(0);
-
-    ret = PyArg_ParseTuple(args, "i", &fd);
-    if (!ret) return NULL;
-
-    memset(&keys_bitmask, 0, sizeof(keys_bitmask));
-    ret = ioctl(fd, EVIOCGKEY(sizeof(keys_bitmask)), keys_bitmask);
-    if (ret < 0) {
-        PyErr_SetFromErrno(PyExc_IOError);
-        return NULL;
-    }
-
-    for (key = 0; key < KEY_MAX; key++) {
-        if (test_bit(keys_bitmask, key)) {
-            PyList_Append(res, Py_BuildValue("i", key));
-        }
-    }
-
-    return res;
-}
-
-
-// todo: this function needs a better name
-static PyObject *
-get_sw_led_snd(PyObject *self, PyObject *args)
-{
-    int i, max, fd, evtype, ret;
-    PyObject* res = PyList_New(0);
+    int max, fd, evtype, ret;
 
     ret = PyArg_ParseTuple(args, "ii", &fd, &evtype);
     if (!ret) return NULL;
 
-    if (evtype == EV_LED)
-        max = LED_MAX;
-    else if (evtype == EV_SW)
-        max = SW_MAX;
-    else if (evtype == EV_SND)
-        max = SND_MAX;
-    else
+    switch (evtype) {
+    case EV_LED:
+        max = LED_MAX; break;
+    case EV_SND:
+        max = SND_MAX; break;
+    case EV_KEY:
+        max = KEY_MAX; break;
+    case EV_SW:
+        max = SW_MAX; break;
+    default:
         return NULL;
+    }
 
     char bytes[(max+7)/8];
     memset(bytes, 0, sizeof bytes);
 
-    if (evtype == EV_LED)
+    switch (evtype) {
+    case EV_LED:
         ret = ioctl(fd, EVIOCGLED(sizeof(bytes)), &bytes);
-    else if (evtype == EV_SW)
-        ret = ioctl(fd, EVIOCGSW(sizeof(bytes)), &bytes);
-    else if (evtype == EV_SND)
+        break;
+    case EV_SND:
         ret = ioctl(fd, EVIOCGSND(sizeof(bytes)), &bytes);
+        break;
+    case EV_KEY:
+        ret = ioctl(fd, EVIOCGKEY(sizeof(bytes)), &bytes);
+        break;
+    case EV_SW:
+        ret = ioctl(fd, EVIOCGSW(sizeof(bytes)), &bytes);
+        break;
+    }
 
-    for (i=0 ; i<max ; i++) {
+    PyObject* res = PyList_New(0);
+    for (int i=0; i<max; i++) {
         if (test_bit(bytes, i)) {
             PyList_Append(res, Py_BuildValue("i", i));
         }
@@ -468,9 +452,8 @@ static PyMethodDef MethodTable[] = {
     { "ioctl_EVIOCSREP",      ioctl_EVIOCSREP,      METH_VARARGS},
     { "ioctl_EVIOCGVERSION",  ioctl_EVIOCGVERSION,  METH_VARARGS},
     { "ioctl_EVIOCGRAB",      ioctl_EVIOCGRAB,      METH_VARARGS},
-    { "ioctl_EVIOCGKEY",      ioctl_EVIOCGKEY,      METH_VARARGS, "get global key state" },
     { "ioctl_EVIOCGEFFECTS",  ioctl_EVIOCGEFFECTS,  METH_VARARGS, "fetch the number of effects the device can keep in its memory." },
-    { "get_sw_led_snd",       get_sw_led_snd,       METH_VARARGS},
+    { "ioctl_EVIOCG_bits",    ioctl_EVIOCG_bits,    METH_VARARGS, "get state of KEY|LED|SND|SW"},
     { "device_read",          device_read,          METH_VARARGS, "read an input event from a device" },
     { "device_read_many",     device_read_many,     METH_VARARGS, "read all available input events from a device" },
     { "upload_effect",        upload_effect,        METH_VARARGS, "" },
