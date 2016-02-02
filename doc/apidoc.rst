@@ -33,7 +33,7 @@ API Reference
 ==========
 
 .. automodule:: evdev.util
-   :members: list_devices, is_device, categorize, resolve_ecodes
+   :members: list_devices, is_device, categorize, resolve_ecodes, resolve_ecodes_dict
    :member-order: bysource
 
 ``ecodes``

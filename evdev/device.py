@@ -186,7 +186,7 @@ class InputDevice(object):
         '''
 
         if verbose:
-            return dict(util.resolve_ecodes(self._capabilities(absinfo)))
+            return dict(util.resolve_ecodes_dict(self._capabilities(absinfo)))
         else:
             return self._capabilities(absinfo)
 
@@ -217,7 +217,7 @@ class InputDevice(object):
         '''
         leds = _input.ioctl_EVIOCG_bits(self.fd, ecodes.EV_LED)
         if verbose:
-            return [(ecodes.LED[l] if l in ecodes.LED else '?', l) for l in leds]
+            return util.resolve_ecodes(ecodes.LED, leds)
 
         return leds
 
@@ -365,6 +365,6 @@ class InputDevice(object):
         '''
         active_keys = _input.ioctl_EVIOCG_bits(self.fd, ecodes.EV_KEY)
         if verbose:
-            return [(ecodes.KEY[k] if k in ecodes.KEY else '?', k) for k in active_keys]
+            return util.resolve_ecodes(ecodes.KEY, active_keys)
 
         return active_keys

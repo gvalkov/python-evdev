@@ -48,7 +48,7 @@ def categorize(event):
         return event
 
 
-def resolve_ecodes(typecodemap, unknown='?'):
+def resolve_ecodes_dict(typecodemap, unknown='?'):
     '''
     Resolve event codes and types to their verbose names.
 
@@ -57,7 +57,7 @@ def resolve_ecodes(typecodemap, unknown='?'):
 
     Example::
 
-        resolve_ecodes({ 1: [272, 273, 274] })
+        resolve_ecodes_dict({ 1: [272, 273, 274] })
         { ('EV_KEY', 1): [('BTN_MOUSE',  272),
                           ('BTN_RIGHT',  273),
                           ('BTN_MIDDLE', 274)] }
@@ -66,7 +66,7 @@ def resolve_ecodes(typecodemap, unknown='?'):
     :class:`AbsInfo <evdev.device.AbsInfo>` ) the result would look
     like::
 
-        resolve_ecodes({ 3: [(0, AbsInfo(...))] })
+        resolve_ecodes_dict({ 3: [(0, AbsInfo(...))] })
         { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
     '''
 
@@ -75,24 +75,41 @@ def resolve_ecodes(typecodemap, unknown='?'):
 
         # ecodes.keys are a combination of KEY_ and BTN_ codes
         if etype == ecodes.EV_KEY:
-            code_names = ecodes.keys
+            ecode_dict = ecodes.keys
         else:
-            code_names = getattr(ecodes, type_name.split('_')[-1])
+            ecode_dict = getattr(ecodes, type_name.split('_')[-1])
 
-        res = []
-        for i in codes:
-            # elements with AbsInfo(), eg { 3 : [(0, AbsInfo(...)), (1, AbsInfo(...))] }
-            if isinstance(i, tuple):
-                l = ((code_names[i[0]], i[0]), i[1]) if i[0] in code_names \
-                    else ((unknown, i[0]), i[1])
+        resolved = resolve_ecodes(ecode_dict, codes, unknown)
+        yield (type_name, etype), resolved
 
-            # just ecodes { 0 : [0, 1, 3], 1 : [30, 48] }
+
+def resolve_ecodes(ecode_dict, ecode_list, unknown='?'):
+    '''
+    Resolve event codes and types to their verbose names.
+
+    Example::
+
+        resolve_ecodes([272, 273, 274])
+        [('BTN_MOUSE',  272), ('BTN_RIGHT',  273), ('BTN_MIDDLE', 274)]
+    '''
+    res = []
+    for ecode in ecode_list:
+        # elements with AbsInfo(), eg { 3 : [(0, AbsInfo(...)), (1, AbsInfo(...))] }
+        if isinstance(ecode, tuple):
+            if ecode[0] in ecode_dict:
+                l = ((ecode_dict[ecode[0]], ecode[0]), ecode[1])
             else:
-                l = (code_names[i], i) if i in code_names else (unknown, i)
+                l = ((unknown, ecode[0]), ecode[1])
 
-            res.append(l)
+        # just ecodes, e.g: { 0 : [0, 1, 3], 1 : [30, 48] }
+        else:
+            if ecode in ecode_dict:
+                l = (ecode_dict[ecode], ecode)
+            else:
+                l = (unknown, ecode)
+        res.append(l)
 
-        yield (type_name, etype), res
+    return res
 
 
-__all__ = ('list_devices', 'is_device', 'categorize', 'resolve_ecodes')
+__all__ = ('list_devices', 'is_device', 'categorize', 'resolve_ecodes', 'resolve_ecodes_dict')
