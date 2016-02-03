@@ -21,36 +21,42 @@ _DeviceInfo = namedtuple('DeviceInfo', ['bustype', 'vendor', 'product', 'version
 
 
 class AbsInfo(_AbsInfo):
-    '''
-    A ``namedtuple`` for storing absolut axis information -
+    '''Absolute axis information.
+
+    A ``namedtuple`` used for storing absolute axis information -
     corresponds to the ``input_absinfo`` struct:
 
-     **value**
-        Latest reported value for the axis.
+    Attributes
+    ---------
+    value
+      Latest reported value for the axis.
 
-     **min**
-        Specifies minimum value for the axis.
+    min
+      Specifies minimum value for the axis.
 
-     **max**
-        Specifies maximum value for the axis.
+    max
+      Specifies maximum value for the axis.
 
-     **fuzz**
-        Specifies fuzz value that is used to filter noise from the
-        event stream.
+    fuzz
+      Specifies fuzz value that is used to filter noise from the
+      event stream.
 
-     **flat**
-        Values that are within this value will be discarded by joydev
-        interface and reported as 0 instead.
+    flat
+      Values that are within this value will be discarded by joydev
+      interface and reported as 0 instead.
 
-     **resolution**
-        Specifies resolution for the values reported for the axis.
-        Resolution for main axes (``ABS_X, ABS_Y, ABS_Z``) is reported
-        in units per millimeter (units/mm), resolution for rotational
-        axes (``ABS_RX, ABS_RY, ABS_RZ``) is reported in units per
-        radian.
+    resolution
+      Specifies resolution for the values reported for the axis.
+      Resolution for main axes (``ABS_X, ABS_Y, ABS_Z``) is reported
+      in units per millimeter (units/mm), resolution for rotational
+      axes (``ABS_RX, ABS_RY, ABS_RZ``) is reported in units per
+      radian.
 
-    .. note: The input core does not clamp reported values to the
-       ``[minimum, maximum]`` limits, such task is left to userspace.
+    Note
+    ----
+    The input core does not clamp reported values to the ``[minimum,
+    maximum]`` limits, such task is left to userspace.
+
     '''
 
     def __str__(self):
@@ -58,15 +64,16 @@ class AbsInfo(_AbsInfo):
 
 
 class KbdInfo(_KbdInfo):
-    '''
-    Keyboard repeat rate:
+    '''Keyboard repeat rate.
 
-    **repeat**
-       Keyboard repeat rate in characters per second.
+    Attributes
+    ----------
+    repeat
+      Keyboard repeat rate in characters per second.
 
-    **delay**
-       Amount of time that a key must be depressed before it will start
-       to repeat (in milliseconds).
+    delay
+      Amount of time that a key must be depressed before it will start
+      to repeat (in milliseconds).
     '''
 
     def __str__(self):
@@ -74,6 +81,15 @@ class KbdInfo(_KbdInfo):
 
 
 class DeviceInfo(_DeviceInfo):
+    '''
+    Attributes
+    ----------
+    bustype
+    vendor
+    product
+    version
+    '''
+
     def __str__(self):
         msg = 'bus: {:04x}, vendor {:04x}, product {:04x}, version {:04x}'
         return msg.format(*self)
@@ -89,7 +105,10 @@ class InputDevice(object):
 
     def __init__(self, dev):
         '''
-        :param dev: path to input device
+        Arguments
+        ---------
+        dev : str
+          Path to input device
         '''
 
         #: Path to input device.
@@ -153,13 +172,18 @@ class InputDevice(object):
     def capabilities(self, verbose=False, absinfo=True):
         '''
         Return the event types that this device supports as a mapping of
-        supported event types to lists of handled event codes. Example::
+        supported event types to lists of handled event codes.
 
-          { 1: [272, 273, 274],
-            2: [0, 1, 6, 8] }
+        Example
+        --------
+        >>> device.capabilities()
+        { 1: [272, 273, 274],
+          2: [0, 1, 6, 8] }
 
         If ``verbose`` is ``True``, event codes and types will be resolved
-        to their names. Example::
+        to their names.
+
+        ::
 
           { ('EV_KEY', 1): [('BTN_MOUSE', 272),
                             ('BTN_RIGHT', 273),
@@ -192,7 +216,7 @@ class InputDevice(object):
 
     def need_write(func):
         '''
-        Decorator that raises EvdevError() if there is no write access to the
+        Decorator that raises :class:`EvdevError` if there is no write access to the
         input device.
         '''
         def wrapper(*args):
@@ -205,14 +229,17 @@ class InputDevice(object):
 
     def leds(self, verbose=False):
         '''
-        Return currently set LED keys. For example::
+        Return currently set LED keys.
 
-          [0, 1, 8, 9]
+        Example
+        -------
+        >>> device.leds()
+        [0, 1, 8, 9]
 
         If ``verbose`` is ``True``, event codes are resolved to their
-        names. Unknown codes are resolved to ``'?'``. For example::
+        names. Unknown codes are resolved to ``'?'``::
 
-          [('LED_NUML', 0), ('LED_CAPSL', 1), ('LED_MISC', 8), ('LED_MAIL', 9)]
+        [('LED_NUML', 0), ('LED_CAPSL', 1), ('LED_MISC', 8), ('LED_MAIL', 9)]
 
         '''
         leds = _input.ioctl_EVIOCG_bits(self.fd, ecodes.EV_LED)
@@ -224,27 +251,29 @@ class InputDevice(object):
     @need_write
     def set_led(self, led_num, value):
         '''
-        Set the state of the selected LED. For example::
+        Set the state of the selected LED.
 
-           device.set_led(ecodes.LED_NUML, 1)
-
-        ..
+        Example
+        -------
+        >>> device.set_led(ecodes.LED_NUML, 1)
         '''
         self.set(ecodes.EV_LED, led_num, value)
 
     @need_write
     def set(self, etype, code, value):
         '''
-        Set the state of the selected component. For example::
+        Set the state of the selected component.
 
-           device.set(ecodes.EV_LED, ecodes.LED_NUML, 1)
-
-        ..
+        Example
+        -------
+        >>> device.set(ecodes.EV_LED, ecodes.LED_NUML, 1)
         '''
         _uinput.write(self.fd, etype, code, value)
 
     def __eq__(self, other):
-        '''Two devices are equal if their :data:`info` attributes are equal.'''
+        '''
+        Two devices are equal if their :data:`info` attributes are equal.
+        '''
         return isinstance(other, self.__class__) and self.info == other.info
 
     def __str__(self):
@@ -264,10 +293,10 @@ class InputDevice(object):
 
     def fileno(self):
         '''
-        Return the file descriptor to the open event device. This
-        makes it possible to pass pass ``InputDevice`` instances
-        directly to :func:`select.select()` and
-        :class:`asyncore.file_dispatcher`.'''
+        Return the file descriptor to the open event device. This makes
+        it possible to pass :class:`InputDevice` instances directly to
+        :func:`select.select()` and :class:`asyncore.file_dispatcher`.
+        '''
 
         return self.fd
 
@@ -286,10 +315,12 @@ class InputDevice(object):
             return InputEvent(*event)
 
     def read_loop(self):
-        '''Enter an endless ``select()`` loop that yields input events.'''
+        '''
+        Enter an endless :func:`select.select()` loop that yields input events.
+        '''
 
         while True:
-            r, w, x = select([self.fd], [], [])
+            r, w, x = select.select([self.fd], [], [])
             for event in self.read():
                 yield event
 
@@ -312,37 +343,48 @@ class InputDevice(object):
         be unable to receive events until the device is released. Only
         one process can hold a ``EVIOCGRAB`` on a device.
 
-        .. warning:: Grabbing an already grabbed device will raise an
-                     ``IOError``.'''
+        Warning
+        -------
+        Grabbing an already grabbed device will raise an ``IOError``.
+        '''
 
         _input.ioctl_EVIOCGRAB(self.fd, 1)
 
     def ungrab(self):
-        '''Release device if it has been already grabbed (uses
-        `EVIOCGRAB`).
+        '''
+        Release device if it has been already grabbed (uses `EVIOCGRAB`).
 
-        .. warning:: Releasing an already released device will raise an
-                     ``IOError('Invalid argument')``.'''
+        Warning
+        -------
+        Releasing an already released device will raise an
+        ``IOError('Invalid argument')``.
+        '''
 
         _input.ioctl_EVIOCGRAB(self.fd, 0)
 
     def upload_effect(self, effect):
-        '''Upload a force feedback effect to a force feedback device.'''
+        '''
+        Upload a force feedback effect to a force feedback device.
+        '''
 
         data = bytes(buffer(effect)[:])
         ff_id = _input.upload_effect(self.fd, data)
         return ff_id
 
     def erase_effect(self, ff_id):
-        '''Erase a force effect from a force feedback device. This
-        also stops the effect.'''
+        '''
+        Erase a force effect from a force feedback device. This also
+        stops the effect.
+        '''
 
         _input.erase_effect(self.fd, ff_id)
 
     @property
     def repeat(self):
-        '''Get or set the keyboard repeat rate (in characters per
-        minute) and delay (in milliseconds).'''
+        '''
+        Get or set the keyboard repeat rate (in characters per
+        minute) and delay (in milliseconds).
+        '''
 
         return KbdInfo(*_input.ioctl_EVIOCGREP(self.fd))
 
@@ -352,9 +394,13 @@ class InputDevice(object):
 
     def active_keys(self, verbose=False):
         '''
-        Return currently active keys. Example::
+        Return currently active keys.
 
-          [1, 42]
+        Example
+        -------
+
+        >>> device.active_keys()
+        [1, 42]
 
         If ``verbose`` is ``True``, key codes are resolved to their
         verbose names. Unknown codes are resolved to ``'?'``. For

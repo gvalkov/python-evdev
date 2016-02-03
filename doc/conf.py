@@ -31,7 +31,12 @@ KEY_MAX, KEY_CNT = 1, 2''')
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx']
+extensions = [
+	'sphinx.ext.autodoc',
+	'sphinx.ext.viewcode',
+	'sphinx.ext.intersphinx',
+	'sphinx.ext.napoleon',
+]
 
 autodoc_member_order = 'bysource'
 
@@ -49,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'python-evdev'
-copyright = u'2012-2015, Georgi Valkov'
+copyright = u'2012-2016, Georgi Valkov'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -246,7 +251,7 @@ texinfo_documents = [
    'Miscellaneous'),
 ]
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.3', None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/3.5', None)}
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []

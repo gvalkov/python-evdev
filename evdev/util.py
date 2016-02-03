@@ -55,19 +55,19 @@ def resolve_ecodes_dict(typecodemap, unknown='?'):
     :param typecodemap: mapping of event types to lists of event codes.
     :param unknown: symbol to which unknown types or codes will be resolved.
 
-    Example::
-
-        resolve_ecodes_dict({ 1: [272, 273, 274] })
-        { ('EV_KEY', 1): [('BTN_MOUSE',  272),
-                          ('BTN_RIGHT',  273),
-                          ('BTN_MIDDLE', 274)] }
+    Example
+    -------
+    >>> resolve_ecodes_dict({ 1: [272, 273, 274] })
+    { ('EV_KEY', 1): [('BTN_MOUSE',  272),
+                      ('BTN_RIGHT',  273),
+                      ('BTN_MIDDLE', 274)] }
 
     If ``typecodemap`` contains absolute axis info (instances of
     :class:`AbsInfo <evdev.device.AbsInfo>` ) the result would look
-    like::
+    like:
 
-        resolve_ecodes_dict({ 3: [(0, AbsInfo(...))] })
-        { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
+    >>> resolve_ecodes_dict({ 3: [(0, AbsInfo(...))] })
+    { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
     '''
 
     for etype, codes in typecodemap.items():
@@ -87,10 +87,10 @@ def resolve_ecodes(ecode_dict, ecode_list, unknown='?'):
     '''
     Resolve event codes and types to their verbose names.
 
-    Example::
-
-        resolve_ecodes([272, 273, 274])
-        [('BTN_MOUSE',  272), ('BTN_RIGHT',  273), ('BTN_MIDDLE', 274)]
+    Example
+    -------
+    >>> resolve_ecodes([272, 273, 274])
+    [('BTN_MOUSE',  272), ('BTN_RIGHT',  273), ('BTN_MIDDLE', 274)]
     '''
     res = []
     for ecode in ecode_list:
