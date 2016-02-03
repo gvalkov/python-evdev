@@ -81,6 +81,14 @@ uinput_create(PyObject *self, PyObject *args) {
         uidev.absflat[abscode] = PyLong_AsLong(PyList_GetItem(item, 5));
     }
 
+    uidev.ff_effects_max = 1;
+
+    if (ioctl(fd, UI_SET_EVBIT, EV_FF) < 0)
+        goto on_err;
+
+    if (ioctl(fd, UI_SET_FFBIT, FF_RUMBLE) < 0)
+        goto on_err;
+
     if (write(fd, &uidev, sizeof(uidev)) != sizeof(uidev))
         goto on_err;
 
@@ -148,6 +156,58 @@ uinput_write(PyObject *self, PyObject *args)
 
 
 static PyObject *
+uinput_read(PyObject *self, PyObject *args)
+{
+    int fd;
+
+    int ret = PyArg_ParseTuple(args, "i", &fd);
+    if (!ret) return NULL;
+
+    size_t len;
+    struct input_event event;
+
+    struct uinput_ff_upload upload;
+    struct uinput_ff_erase erase;
+
+    len = read(fd, &event, sizeof(event));
+    if (len == -1) {
+        if (errno == EAGAIN) {
+            // No events available
+            Py_RETURN_NONE;
+        } else {
+            PyErr_SetFromErrno(PyExc_IOError);
+            return NULL;
+        }
+    } else if (len != sizeof(event)) {
+        return NULL;
+    }
+
+    switch (event.type) {
+        case EV_UINPUT:
+            switch (event.code) {
+                case UI_FF_UPLOAD:
+                    upload.request_id = event.value;
+                    if (ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload) < 0) return NULL;
+                    if (ioctl(fd, UI_END_FF_UPLOAD, &upload) < 0) return NULL;
+                    return Py_BuildValue("i", UI_FF_UPLOAD);
+
+                case UI_FF_ERASE:
+                    erase.request_id = event.value;
+                    if (ioctl(fd, UI_BEGIN_FF_ERASE, &erase) < 0) return NULL;
+                    if (ioctl(fd, UI_END_FF_ERASE, &erase) < 0) return NULL;
+                    return Py_BuildValue("i", UI_FF_ERASE);
+
+                default: break;
+            }
+
+        default: break;
+    }
+
+    Py_RETURN_NONE;
+}
+
+
+static PyObject *
 uinput_enable_event(PyObject *self, PyObject *args)
 {
     int fd;
@@ -201,6 +261,9 @@ static PyMethodDef MethodTable[] = {
 
     { "write",  uinput_write, METH_VARARGS,
       "Write event to uinput device."},
+
+    { "read", uinput_read, METH_VARARGS,
+      "Read event from uinput device."},
 
     { "enable", uinput_enable_event, METH_VARARGS,
       "Enable a type of event."},

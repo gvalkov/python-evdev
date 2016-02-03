@@ -225,6 +225,24 @@ class UInput(object):
 
         _uinput.write(self.fd, etype, code, value)
 
+    def read(self):
+        '''
+        Read a queued event from the uinput device. Returns None if no events
+        are available.
+        '''
+        event = _uinput.read(self.fd)
+
+        # Return values from uinput.h
+        UI_FF_UPLOAD = 1 # start rumble
+        UI_FF_ERASE  = 2 # stop rumble
+
+        if event == UI_FF_UPLOAD:
+            return ecodes.FF_STATUS_PLAYING
+        elif event == UI_FF_ERASE:
+            return ecodes.FF_STATUS_STOPPED
+
+        # No supported events available
+
     def syn(self):
         '''
         Inject a ``SYN_REPORT`` event into the input subsystem. Events
