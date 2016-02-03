@@ -13,7 +13,7 @@ tags
 TAGS
 evdev/*.so
 evdev/ecodes.c
-doc/_build
+docs/_build
 .#*
 __pycache__
 
