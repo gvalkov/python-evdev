@@ -2,9 +2,9 @@
 
 import os
 import fcntl
-
-from select import select
-from collections import namedtuple
+import functools
+import select
+import collections
 
 from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
@@ -15,9 +15,14 @@ class EvdevError(Exception):
     pass
 
 #--------------------------------------------------------------------------
-_AbsInfo = namedtuple('AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
-_KbdInfo = namedtuple('KbdInfo', ['repeat', 'delay'])
-_DeviceInfo = namedtuple('DeviceInfo', ['bustype', 'vendor', 'product', 'version'])
+_AbsInfo = collections.namedtuple(
+    'AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
+
+_KbdInfo = collections.namedtuple(
+    'KbdInfo', ['repeat', 'delay'])
+
+_DeviceInfo = collections.namedtuple(
+    'DeviceInfo', ['bustype', 'vendor', 'product', 'version'])
 
 
 class AbsInfo(_AbsInfo):
@@ -219,6 +224,7 @@ class InputDevice(object):
         Decorator that raises :class:`EvdevError` if there is no write access to the
         input device.
         '''
+        @functools.wraps(func)
         def wrapper(*args):
             fd = args[0].fd
             if fcntl.fcntl(fd, fcntl.F_GETFL) & os.O_RDWR:

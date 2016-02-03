@@ -3,6 +3,7 @@
 import os
 import stat
 import time
+import select
 
 from evdev import _input, _uinput
 from evdev import ecodes, util, device
@@ -160,7 +161,7 @@ class UInput(object):
         '''
 
         while True:
-            r, w, x = select([self.fd], [], [])
+            r, w, x = select.select([self.fd], [], [])
             for event in self.read():
                 yield event
 
