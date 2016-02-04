@@ -3,17 +3,17 @@
 import os
 import stat
 import time
-import select
 
-from evdev import _input, _uinput
+from evdev import _uinput
 from evdev import ecodes, util, device
 from evdev.events import InputEvent
+from evdev.eventio import EventIO
 
 class UInputError(Exception):
     pass
 
 
-class UInput(object):
+class UInput(EventIO):
     '''
     A userland input device and that can inject input events into the
     linux input subsystem.
@@ -131,99 +131,6 @@ class UInput(object):
         if self.fd > -1:
             _uinput.close(self.fd)
             self.fd = -1
-
-    def fileno(self):
-        '''
-        Return the file descriptor to the open event device. This
-        makes it possible to pass pass ``InputDevice`` instances
-        directly to :func:`select.select()` and
-        :class:`asyncore.file_dispatcher`.'''
-
-        return self.fd
-
-    def read_one(self):
-        '''
-        Read and return a single input event as an instance of
-        :class:`InputEvent <evdev.events.InputEvent>`.
-
-        Return ``None`` if there are no pending input events.
-        '''
-
-        # event -> (sec, usec, type, code, val)
-        event = _input.device_read(self.fd)
-
-        if event:
-            return InputEvent(*event)
-
-    def read_loop(self):
-        '''
-        Enter an endless :func:`select.select()` loop that yields input events.
-        '''
-
-        while True:
-            r, w, x = select.select([self.fd], [], [])
-            for event in self.read():
-                yield event
-
-    def read(self):
-        '''
-        Read multiple input events from device. Return a generator object that
-        yields :class:`InputEvent <evdev.events.InputEvent>` instances. Raises
-        `BlockingIOError` if there are no available events at the moment.
-        '''
-
-        # events -> [(sec, usec, type, code, val), ...]
-        events = _input.device_read_many(self.fd)
-
-        for event in events:
-            yield InputEvent(*event)
-
-    def write_event(self, event):
-        '''
-        Inject an input event into the input subsystem. Events are
-        queued until a synchronization event is received.
-
-        Arguments
-        ---------
-        event: InputEvent
-          InputEvent instance or an object with an ``event`` attribute
-          (:class:`KeyEvent <evdev.events.KeyEvent>`, :class:`RelEvent
-          <evdev.events.RelEvent>` etc).
-
-        Example
-        -------
-        >>> ev = InputEvent(1334414993, 274296, ecodes.EV_KEY, ecodes.KEY_A, 1)
-        >>> ui.write_event(ev)
-        '''
-
-        if hasattr(event, 'event'):
-            event = event.event
-
-        self.write(event.type, event.code, event.value)
-
-    def write(self, etype, code, value):
-        '''
-        Inject an input event into the input subsystem. Events are
-        queued until a synchronization event is received.
-
-        Arguments
-        ---------
-        etype
-          event type (e.g. ``EV_KEY``).
-
-        code
-          event code (e.g. ``KEY_A``).
-
-        value
-          event value (e.g. 0 1 2 - depends on event type).
-
-        Example
-        ---------
-        >>> ui.write(e.EV_KEY, e.KEY_A, 1) # key A - down
-        >>> ui.write(e.EV_KEY, e.KEY_A, 0) # key A - up
-        '''
-
-        _uinput.write(self.fd, etype, code, value)
 
     def syn(self):
         '''

@@ -6,8 +6,9 @@ import functools
 import select
 import collections
 
-from evdev import _input, _uinput, ecodes, util
+from evdev import _input, ecodes, util
 from evdev.events import InputEvent
+from evdev.eventio import EventIO
 
 
 #--------------------------------------------------------------------------
@@ -100,7 +101,7 @@ class DeviceInfo(_DeviceInfo):
         return msg.format(*self)
 
 
-class InputDevice(object):
+class InputDevice(EventIO):
     '''
     A linux input device from which input events can be read.
     '''
@@ -219,20 +220,6 @@ class InputDevice(object):
         else:
             return self._capabilities(absinfo)
 
-    def need_write(func):
-        '''
-        Decorator that raises :class:`EvdevError` if there is no write access to the
-        input device.
-        '''
-        @functools.wraps(func)
-        def wrapper(*args):
-            fd = args[0].fd
-            if fcntl.fcntl(fd, fcntl.F_GETFL) & os.O_RDWR:
-                return func(*args)
-            msg = 'no write access to device "%s"' % args[0].fn
-            raise EvdevError(msg)
-        return wrapper
-
     def leds(self, verbose=False):
         '''
         Return currently set LED keys.
@@ -254,7 +241,6 @@ class InputDevice(object):
 
         return leds
 
-    @need_write
     def set_led(self, led_num, value):
         '''
         Set the state of the selected LED.
@@ -263,18 +249,7 @@ class InputDevice(object):
         -------
         >>> device.set_led(ecodes.LED_NUML, 1)
         '''
-        self.set(ecodes.EV_LED, led_num, value)
-
-    @need_write
-    def set(self, etype, code, value):
-        '''
-        Set the state of the selected component.
-
-        Example
-        -------
-        >>> device.set(ecodes.EV_LED, ecodes.LED_NUML, 1)
-        '''
-        _uinput.write(self.fd, etype, code, value)
+        self.write(ecodes.EV_LED, led_num, value)
 
     def __eq__(self, other):
         '''
@@ -296,52 +271,6 @@ class InputDevice(object):
                 os.close(self.fd)
             finally:
                 self.fd = -1
-
-    def fileno(self):
-        '''
-        Return the file descriptor to the open event device. This makes
-        it possible to pass :class:`InputDevice` instances directly to
-        :func:`select.select()` and :class:`asyncore.file_dispatcher`.
-        '''
-
-        return self.fd
-
-    def read_one(self):
-        '''
-        Read and return a single input event as an instance of
-        :class:`InputEvent <evdev.events.InputEvent>`.
-
-        Return ``None`` if there are no pending input events.
-        '''
-
-        # event -> (sec, usec, type, code, val)
-        event = _input.device_read(self.fd)
-
-        if event:
-            return InputEvent(*event)
-
-    def read_loop(self):
-        '''
-        Enter an endless :func:`select.select()` loop that yields input events.
-        '''
-
-        while True:
-            r, w, x = select.select([self.fd], [], [])
-            for event in self.read():
-                yield event
-
-    def read(self):
-        '''
-        Read multiple input events from device. Return a generator object that
-        yields :class:`InputEvent <evdev.events.InputEvent>` instances. Raises
-        `BlockingIOError` if there are no available events at the moment.
-        '''
-
-        # events -> [(sec, usec, type, code, val), ...]
-        events = _input.device_read_many(self.fd)
-
-        for i in events:
-            yield InputEvent(*i)
 
     def grab(self):
         '''
