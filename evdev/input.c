@@ -119,25 +119,6 @@ device_read_many(PyObject *self, PyObject *args)
 }
 
 
-// Unpack a single event (this is essentially a struct.unpack(), without having
-// to worry about word size.
-static PyObject *
-event_unpack(PyObject *self, PyObject *args)
-{
-    struct input_event event;
-
-    const char *data;
-    int len;
-
-    int ret = PyArg_ParseTuple(args, "s#", &data, &len);
-    if (!ret) return NULL;
-
-    memcpy(&event, data, sizeof(event));
-
-    Py_RETURN_NONE;
-}
-
-
 // Get the event types and event codes that the input device supports
 static PyObject *
 ioctl_capabilities(PyObject *self, PyObject *args)
@@ -445,7 +426,6 @@ erase_effect(PyObject *self, PyObject *args)
 
 
 static PyMethodDef MethodTable[] = {
-    { "unpack",               event_unpack,         METH_VARARGS, "unpack a single input event" },
     { "ioctl_devinfo",        ioctl_devinfo,        METH_VARARGS, "fetch input device info" },
     { "ioctl_capabilities",   ioctl_capabilities,   METH_VARARGS, "fetch input device capabilities" },
     { "ioctl_EVIOCGREP",      ioctl_EVIOCGREP,      METH_VARARGS},
