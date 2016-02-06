@@ -48,6 +48,27 @@ uinput_open(PyObject *self, PyObject *args)
 
 
 static PyObject *
+uinput_set_phys(PyObject *self, PyObject *args)
+{
+    int fd;
+    const char* phys;
+
+    int ret = PyArg_ParseTuple(args, "is", &fd, &phys);
+    if (!ret) return NULL;
+
+    if (ioctl(fd, UI_SET_PHYS, phys) < 0)
+        goto on_err;
+
+    Py_RETURN_NONE;
+
+    on_err:
+        _uinput_close(fd);
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+}
+
+
+static PyObject *
 uinput_create(PyObject *self, PyObject *args) {
     int fd, len, i, abscode;
     uint16_t vendor, product, version, bustype;
@@ -205,6 +226,9 @@ static PyMethodDef MethodTable[] = {
     { "enable", uinput_enable_event, METH_VARARGS,
       "Enable a type of event."},
 
+    { "set_phys", uinput_set_phys, METH_VARARGS,
+      "Set physical path"},
+      
     { NULL, NULL, 0, NULL}
 };
 
