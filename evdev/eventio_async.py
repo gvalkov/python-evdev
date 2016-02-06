@@ -76,7 +76,10 @@ class ReadIterator(object):
             future.set_result(next(self.current_batch))
         except StopIteration:
             def next_batch_ready(batch):
-                self.current_batch = batch.result()
-                future.set_result(next(self.current_batch))
+                try:
+                    self.current_batch = batch.result()
+                    future.set_result(next(self.current_batch))
+                except Exception as e:
+                    future.set_exception(e)
             self.device.async_read().add_done_callback(next_batch_ready)
         return future
