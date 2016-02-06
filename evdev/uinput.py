@@ -14,6 +14,7 @@ except ImportError:
     from evdev.eventio import EventIO
 
 
+
 class UInputError(Exception):
     pass
 
@@ -33,7 +34,7 @@ class UInput(EventIO):
                  events=None,
                  name='py-evdev-uinput',
                  vendor=0x1, product=0x1, version=0x1, bustype=0x3,
-                 devnode='/dev/uinput'):
+                 devnode='/dev/uinput', phys='py-evdev-uinput'):
         '''
         Arguments
         ---------
@@ -57,6 +58,9 @@ class UInput(EventIO):
         bustype
           bustype identifier.
 
+        phys
+          physical path.
+          
         Note
         ----
         If you do not specify any events, the uinput device will be able
@@ -68,6 +72,7 @@ class UInput(EventIO):
         self.product = product   #: Device product identifier.
         self.version = version   #: Device version identifier.
         self.bustype = bustype   #: Device bustype - e.g. ``BUS_USB``.
+        self.phys    = phys      #: Uinput device physical path.
         self.devnode = devnode   #: Uinput device node - e.g. ``/dev/uinput/``.
 
         if not events:
@@ -81,6 +86,9 @@ class UInput(EventIO):
 
         #: Write-only, non-blocking file descriptor to the uinput device node.
         self.fd = _uinput.open(devnode)
+        
+        # Set phys name
+        _uinput.set_phys(self.fd, phys)
 
         # Set device capabilities.
         for etype, codes in events.items():
@@ -113,17 +121,17 @@ class UInput(EventIO):
     def __repr__(self):
         # TODO:
         v = (repr(getattr(self, i)) for i in
-             ('name', 'bustype', 'vendor', 'product', 'version'))
+             ('name', 'bustype', 'vendor', 'product', 'version', 'phys'))
         return '{}({})'.format(self.__class__.__name__, ', '.join(v))
 
     def __str__(self):
-        msg = ('name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}"\n'
+        msg = ('name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}", phys "{}"\n'
                'event types: {}')
 
         evtypes = [i[0] for i in self.capabilities(True).keys()]
         msg = msg.format(self.name, ecodes.BUS[self.bustype],
                          self.vendor, self.product,
-                         self.version, ' '.join(evtypes))
+                         self.version, self.phys, ' '.join(evtypes))
 
         return msg
 
