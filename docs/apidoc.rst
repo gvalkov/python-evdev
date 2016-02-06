@@ -10,6 +10,17 @@ API Reference
    :exclude-members: __dict__, __str__, __module__, __del__, __slots__, __repr__
    :member-order: bysource
 
+
+``eventio``
+============
+
+.. automodule:: evdev.eventio_async
+   :members: EventIO
+   :undoc-members:
+   :special-members:
+   :exclude-members: __dict__, __str__, __module__, __del__, __slots__, __repr__
+   :member-order: bysource
+   
 ``device``
 ============
 

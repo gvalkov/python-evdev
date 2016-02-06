@@ -158,6 +158,34 @@ This can also be achieved using the selectors_ module in Python 3.4:
            for event in device.read():
                print(event)
 
+               
+Yet another possibility is asyncio in Python 3.4:
+
+::
+
+    import asyncio
+    from evdev import list_devices, InputDevice, categorize
+
+    # Python 3.5 syntax, using "async for"
+    async def dump_events(device):    
+        async for ev in device.read_loop():
+            print(device.name, categorize(ev))
+
+    ## Python 3.4 syntax, using "yield from" in an infinite loop
+    #@asyncio.coroutine
+    #def dump_events(device):    
+    #    while True:
+    #        evs = yield from device.async_read()
+    #        for ev in evs:
+    #            print(device.name, categorize(ev))
+
+    for file in list_devices():
+        device = InputDevice(file)
+        asyncio.ensure_future( dump_events( device ) )
+
+    asyncio.get_event_loop().run_forever()
+
+
 
 Accessing evdev constants
 =========================
@@ -206,37 +234,27 @@ Reading events with asyncore
 Reading events with asyncio
 ===========================
 
-An example program that prints the number of events by type every 5
-seconds:
+To read a single event, you can use device.async_read_one()
 
 ::
 
-    import asyncio
+    event = await dev.async_read_one()    
 
-    from collections import Counter
-    from functools import partial
-    from evdev import InputDevice, ecodes
+To read a batch of events, you can use device.async_read():
 
-    mouse = InputDevice('/dev/input/event1')
-    keybd = InputDevice('/dev/input/event2')
-    counter = Counter()
+::
 
-    def read_events(device):
-        events = device.read()
-        counter.update([ev.type for ev in events])
+    ev_batch = await dev.async_read()
+    for ev in ev_batch:
+        print(categorize(ev))
 
-    @asyncio.coroutine
-    def summarize():
-        while True:
-            yield from asyncio.sleep(5)
-            print('Number of events by type in the last 5 seconds:')
-            print({ecodes.EV[k]: v for k,v in counter.items()})
-            counter.clear()
+To read all events in an infinite loop, use dev.read_loop() and `async for`:
 
-    loop = asyncio.get_event_loop()
-    loop.add_reader(mouse, partial(read_events, mouse))
-    loop.add_reader(keybd, partial(read_events, keybd))
-    loop.run_until_complete(summarize())
+::
+    async for ev in dev.read_loop():
+        print(categorize(ev))
+        
+See "Reading events from multiple devices" for a complete example using asyncio.
 
 
 Getting exclusive access to a device
