@@ -1,16 +1,12 @@
 # encoding: utf-8
 
 import os
-import fcntl
-import select
-import functools
 import collections
 
 from evdev import _input, ecodes, util
 from evdev.events import InputEvent
 
 try:
-    import asyncio
     from evdev.eventio_async import EventIO
 except ImportError:
     from evdev.eventio import EventIO
