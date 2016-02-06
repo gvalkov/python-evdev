@@ -1,0 +1,81 @@
+# encoding: utf-8
+
+import asyncio
+
+from evdev import eventio
+
+
+class EventIO(eventio.EventIO):
+    def _do_when_readable(self, callback):
+        loop = asyncio.get_event_loop()
+        def ready():
+            loop.remove_reader(self.fileno())
+            callback()
+        loop.add_reader(self.fileno(), ready)
+
+    def async_read_one(self):
+        '''
+        Asyncio coroutine to read and return a single input event as
+        an instance of :class:`InputEvent <evdev.events.InputEvent>`.
+        '''
+        future = asyncio.Future()
+        self._do_when_readable(lambda: future.set_result(self.read_one()))
+        return future
+
+    def async_read(self):
+        '''
+        Asyncio coroutine to read multiple input events from device. Return
+        a generator object that yields :class:`InputEvent <evdev.events.InputEvent>`
+        instances.
+        '''
+        future = asyncio.Future()
+        self._do_when_readable(lambda: future.set_result(self.read()))
+        return future
+
+    def read_loop(self):
+        '''
+        Enter an endless loop that yields input events.
+
+        The returned iterator is compatible with the ``async for`` syntax
+        '''
+        return ReadItertor(self)
+
+
+class ReadIterator(object):
+    def __init__(self, device):
+        self.current_batch = iter(())
+        self.device = device
+
+    # Standard iterator protocol.
+    def __iter__(self):
+        return self
+
+    # Python 2.x compatibility.
+    def next(self):
+        return self.__next__()
+
+    def __next__(self):
+        try:
+            # Read from the previous batch of events.
+            return next(self.current_batch)
+        except StopIteration:
+            r, w, x = select.select([self.device.fd], [], [])
+            self.current_batch = self.device.read()
+            return next(self.current_batch)
+
+    @asyncio.coroutine
+    def __aiter__(self):
+        return self
+
+    @asyncio.coroutine
+    def __anext__(self):
+        future = asyncio.Future()
+        try:
+            # Read from the previous batch of events.
+            future.set_result(next(self.current_batch))
+        except StopIteration:
+            def next_batch_ready(batch):
+                self.current_batch = batch.result()
+                future.set_result(next(self.current_batch))
+            self.device.async_read().add_done_callback(next_batch_ready)
+        return future

@@ -9,106 +9,39 @@ import collections
 from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
 
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
 
 class EventIO(object):
     '''
-    Class capable of read and write input events.
-    
-    This is used as as a base class for both device and uinput:
-    
-    - On ``device``, you read user-generated events (keys pressed, mouse moved, etc) and write feedback events (leds, beeps)
-    
-    - On ``uinput``, you write user-generated events (keys pressed, mouse moved, etc) and read feedback events (leds, beeps)
+    Base class for reading and writing input events.
+
+    This class is used by :class:`InputDevice` and :class:`UInput`.
+
+    - On, :class:`InputDevice` it used for reading user-generated events (e.g.
+      key presses, mouse movements) and writing feedback events (e.g. leds,
+      beeps).
+
+    - On, :class:`UInput` it used for writing user-generated events (e.g.
+      key presses, mouse movements) and reading feedback events (e.g. leds,
+      beeps).
     '''
 
     def fileno(self):
         '''
         Return the file descriptor to the open event device. This makes
-        it possible to pass instances directly to :func:`select.select()` and 
+        it possible to pass instances directly to :func:`select.select()` and
         :class:`asyncore.file_dispatcher`.
         '''
         return self.fd
 
     def read_loop(self):
         '''
-        Enter an endless loop that yields input events.
-        
-        The returned iterator is compatible with `async for` syntax
+        Enter an endless :func:`select.select()` loop that yields input events.
         '''
-        class ReadIterator:
-            def __init__(self, device):
-                self.current_batch = iter(())
-                self.device = device
 
-            # Standard iterator
-            def __iter__(self):
-                return self
-
-            def next(self):  # Python 2.x
-                return self.__next__()
-
-            def __next__(self):  # Python 3.x
-                try:
-                    # Try to read from previous batch
-                    return  next(self.current_batch)
-                except StopIteration:
-                    # Fetch next batch
-                    r, w, x = select.select([self.device.fd], [], [])
-                    self.current_batch = self.device.read()
-                    return  next(self.current_batch)
-
-            # Async iteration - Python 3.5
-            if asyncio is not None:
-                @asyncio.coroutine
-                def __aiter__(self):
-                    return self
-
-                @asyncio.coroutine
-                def __anext__(self):
-                    future = asyncio.Future()
-                    try:
-                        # Try to read from previous batch
-                        future.set_result(next(self.current_batch))
-                    except StopIteration:
-                        # Fetch next batch
-                        def next_batch_ready(batch):
-                            self.current_batch = batch.result()
-                            future.set_result(next(self.current_batch))
-                        self.device.async_read().add_done_callback(next_batch_ready)
-                    return future
-        
-        return ReadIterator(self)
-
-    if asyncio is not None:
-        def _do_when_readable(self, callback):
-            loop = asyncio.get_event_loop()
-            def ready():
-                loop.remove_reader(self.fileno())
-                callback()
-            loop.add_reader(self.fileno(), ready)
-
-        def async_read_one(self):
-            '''
-            asyncio coroutine to read and return a single input event as an instance of
-            :class:`InputEvent <evdev.events.InputEvent>`.
-            '''
-            future = asyncio.Future()
-            self._do_when_readable(lambda: future.set_result(self.read_one()))
-            return future
-
-        def async_read(self):
-            '''
-            asyncio coroutine to read multiple input events from device. Return a generator object that
-            yields :class:`InputEvent <evdev.events.InputEvent>` instances.
-            '''
-            future = asyncio.Future()
-            self._do_when_readable(lambda: future.set_result(self.read()))
-            return future
-
+        while True:
+            r, w, x = select([self.fd], [], [])
+            for event in self.read():
+                yield event
 
     def read_one(self):
         '''
@@ -123,7 +56,7 @@ class EventIO(object):
 
         if event:
             return InputEvent(*event)
-          
+
     def read(self):
         '''
         Read multiple input events from device. Return a generator object that
@@ -134,12 +67,10 @@ class EventIO(object):
         # events -> [(sec, usec, type, code, val), ...]
         events = _input.device_read_many(self.fd)
 
-        for i in events:
-            yield InputEvent(*i)
+        for event in events:
+            yield InputEvent(*event)
 
-
-
-    def _need_write(func):
+    def need_write(func):
         '''
         Decorator that raises :class:`EvdevError` if there is no write access to the
         input device.
@@ -176,7 +107,7 @@ class EventIO(object):
 
         self.write(event.type, event.code, event.value)
 
-    @_need_write
+    @need_write
     def write(self, etype, code, value):
         '''
         Inject an input event into the input subsystem. Events are

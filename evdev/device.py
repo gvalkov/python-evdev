@@ -2,13 +2,18 @@
 
 import os
 import fcntl
-import functools
 import select
+import functools
 import collections
 
 from evdev import _input, ecodes, util
 from evdev.events import InputEvent
-from evdev.eventio import EventIO
+
+try:
+    import asyncio
+    from evdev.eventio_async import EventIO
+except ImportError:
+    from evdev.eventio import EventIO
 
 
 #--------------------------------------------------------------------------
