@@ -7,7 +7,12 @@ import time
 from evdev import _uinput
 from evdev import ecodes, util, device
 from evdev.events import InputEvent
-from evdev.eventio import EventIO
+
+try:
+    from evdev.eventio_async import EventIO
+except ImportError:
+    from evdev.eventio import EventIO
+
 
 class UInputError(Exception):
     pass

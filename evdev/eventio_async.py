@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import asyncio
+import select
 
 from evdev import eventio
 
@@ -38,7 +39,7 @@ class EventIO(eventio.EventIO):
 
         The returned iterator is compatible with the ``async for`` syntax
         '''
-        return ReadItertor(self)
+        return ReadIterator(self)
 
 
 class ReadIterator(object):

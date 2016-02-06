@@ -4,7 +4,6 @@ import os
 import fcntl
 import functools
 import select
-import collections
 
 from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
