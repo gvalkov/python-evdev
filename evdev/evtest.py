@@ -22,6 +22,7 @@ Examples:
 
 from __future__ import print_function
 
+import re
 import sys
 import select
 import optparse
@@ -72,7 +73,11 @@ def select_devices(device_dir='/dev/input'):
     Select one or more devices from a list of accessible input devices.
     '''
 
-    devices = reversed(list_devices(device_dir))
+    def devicenum(device_path):
+        digits = re.findall('\d+$', device_path)
+        return [int(i) for i in digits]
+
+    devices = sorted(list_devices(device_dir), key=devicenum)
     devices = [InputDevice(path) for path in devices]
     if not devices:
         msg = 'error: no input devices found (do you have rw permission on %s/*?)'
