@@ -2,8 +2,8 @@
 
 import os
 import fcntl
-import functools
 import select
+import functools
 
 from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
@@ -38,7 +38,7 @@ class EventIO(object):
         '''
 
         while True:
-            r, w, x = select([self.fd], [], [])
+            r, w, x = select.select([self.fd], [], [])
             for event in self.read():
                 yield event
 
