@@ -1,6 +1,7 @@
 Tutorial
 --------
 
+
 Listing accessible event devices
 ================================
 
@@ -158,33 +159,49 @@ This can also be achieved using the selectors_ module in Python 3.4:
            for event in device.read():
                print(event)
 
-               
-Yet another possibility is asyncio in Python 3.4:
+
+Yet another possibility is the :mod:`asyncio` module from Python 3.4:
 
 ::
 
-    import asyncio
-    from evdev import list_devices, InputDevice, categorize
+    import asyncio, evdev
 
-    # Python 3.5 syntax, using "async for"
-    async def dump_events(device):    
-        async for ev in device.read_loop():
-            print(device.name, categorize(ev))
+    @asyncio.coroutine
+    def print_events(device):
+        while True:
+            events = yield from device.async_read()
+            for event in events:
+                print(device.fn, evdev.categorize(event), sep=': ')
 
-    ## Python 3.4 syntax, using "yield from" in an infinite loop
-    #@asyncio.coroutine
-    #def dump_events(device):    
-    #    while True:
-    #        evs = yield from device.async_read()
-    #        for ev in evs:
-    #            print(device.name, categorize(ev))
+    mouse = evdev.InputDevice('/dev/input/eventX')
+    keybd = evdev.InputDevice('/dev/input/eventY')
 
-    for file in list_devices():
-        device = InputDevice(file)
-        asyncio.ensure_future( dump_events( device ) )
+    for device in mouse, keybd:
+        asyncio.async(print_events(device))
 
-    asyncio.get_event_loop().run_forever()
+    loop = asyncio.get_event_loop()
+    loop.run_forever()
 
+Since Python 3.5, the `async/await
+<https://docs.python.org/3/library/asyncio-task.html>`_ syntax makes this
+even simpler:
+
+::
+
+    import asyncio, evdev
+
+    mouse = evdev.InputDevice('/dev/input/event4')
+    keybd = evdev.InputDevice('/dev/input/event5')
+
+    async def print_events(device):
+        async for event in device.read_iter():
+            print(device.fn, evdev.categorize(event), sep=': ')
+
+    for device in mouse, keybd:
+        asyncio.ensure_future(print_events(device))
+
+    loop = asyncio.get_event_loop()
+    loop.run_forever()
 
 
 Accessing evdev constants
@@ -238,7 +255,7 @@ To read a single event, you can use device.async_read_one()
 
 ::
 
-    event = await dev.async_read_one()    
+    event = await dev.async_read_one()
 
 To read a batch of events, you can use device.async_read():
 
@@ -253,7 +270,7 @@ To read all events in an infinite loop, use dev.read_loop() and `async for`:
 ::
     async for ev in dev.read_loop():
         print(categorize(ev))
-        
+
 See "Reading events from multiple devices" for a complete example using asyncio.
 
 

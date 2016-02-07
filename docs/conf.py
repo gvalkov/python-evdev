@@ -249,7 +249,7 @@ texinfo_documents = [
    'Miscellaneous'),
 ]
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.5', None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/3', None)}
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
