@@ -1,13 +1,24 @@
 Changelog
 =========
 
+In developement
+^^^^^^^^^^^^^^^
+
+- Asyncio and async/await support (many thanks to `@paulo-raca`_).
+- Add the ability to set the `phys` of uinput devices (thanks `@paulo-raca`_).
+- Add a generic :func:`InputDevice.set` method (thanks `@paulo-raca`_).
+- Distribute evtest along with evtest.
+- Fix issue with generating :mod:`ecodes.c` in recent kernels (``>= 4.4.0``).
+- Fix absinfo item indexes in :func:`UInput.uinput_create()` (thanks `@forsenonlhaimaisentito`_).
+- More robust comparison of :class:`InputDevice` objects  (thanks `@isia`_).
+
 0.5.0 (Jun 16, 2015)
 ^^^^^^^^^^^^^^^^^^^^
 
 - Write access to the input device is no longer mandatory. Evdev will
   first try to open the device for reading and writing and fallback to
-  read-only. Methods that require write access (e.g. ``set_led()``)
-  will raise ``EvdevError`` if the device is open only for reading.
+  read-only. Methods that require write access (e.g. :func:`set_led()`)
+  will raise :class:`EvdevError` if the device is open only for reading.
 
 0.4.7 (Oct 07, 2014)
 ^^^^^^^^^^^^^^^^^^^^
@@ -21,47 +32,47 @@ Changelog
 
 - Fix install on Python 3.4 (works around issue21121_).
 
-- Fix ``ioctl()`` requested buffer size (thanks Jakub Wojciech Klama).
+- Fix :func:`ioctl()` requested buffer size (thanks Jakub Wojciech Klama).
 
 0.4.5 (Jul 06, 2014)
 ^^^^^^^^^^^^^^^^^^^^
 
 - Add method for returning a list of the currently active keys -
-  ``InputDevice.active_keys()`` (thanks `@spasche`_).
+  :func:`InputDevice.active_keys()` (thanks `@spasche`_).
 
-- Fix a potential buffer overflow in ``ioctl_capabilities`` (thanks `@spasche`_).
+- Fix a potential buffer overflow in :func:`ioctl_capabilities()` (thanks `@spasche`_).
 
 0.4.4 (Jun 04, 2014)
 ^^^^^^^^^^^^^^^^^^^^
 
-- Calling ``InputDevice.read_one()`` should always return ``None``,
+- Calling :func:`InputDevice.read_one()` should always return ``None``,
   when there is nothing to be read, even in case of a ``EAGAIN`` errno
   (thanks JPP).
 
 0.4.3 (Dec 19, 2013)
 ^^^^^^^^^^^^^^^^^^^^
-- Silence ``OSError`` in destructor (thanks `@polyphemus`_).
+- Silence :class:`OSError` in destructor (thanks `@polyphemus`_).
 
-- Make ``InputDevice.close()`` work in cases in which stdin (fd 0) has
-  been closed (thanks `@polyphemus`_).
+- Make :func:`InputDevice.close()` work in cases in which stdin (fd 0)
+  has been closed (thanks `@polyphemus`_).
 
 0.4.2 (Dec 13, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
 - Rework documentation and docstrings.
 
-- Call ``InputDevice.close()`` from ``InputDevice.__del__()``.
+- Call :func:`InputDevice.close()` from :func:`InputDevice.__del__()`.
 
 0.4.1 (Jul 24, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
-- Fix reference counting in ``device_read``, ``device_read_many`` and
-  ``ioctl_capabilities``.
+- Fix reference counting in :func:`InputDevice.device_read()`,
+:func:`InputDevice.device_read_many()` and :func:`ioctl_capabilities`.
 
 0.4.0 (Jul 01, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
-- Add ``FF_*`` and ``FF_STATUS`` codes to ``ecodes`` (thanks `@bgilbert`_).
+- Add ``FF_*`` and ``FF_STATUS`` codes to :func:`ecodes` (thanks `@bgilbert`_).
 
 - Reverse event code mappings (``ecodes.{KEY,FF,REL,ABS}`` and etc.)
   will now map to a list of codes, whenever a value corresponds to
@@ -72,29 +83,32 @@ Changelog
     >>> ecodes.KEY[30]
     ... 'KEY_A'
 
-- Set the state of a LED through ``device.set_led()`` (thanks
-  `@accek`_). ``device.fd`` is opened in ``O_RDWR`` mode from now on.
+- Set the state of a LED through :func:`InputDevice.set_led()` (thanks
+  `@accek`_).
 
-- Fix segfault in ``device_read_many()`` (thanks `@bgilbert`_).
+- Open :attr:`InputDevice.fd` in ``O_RDWR`` mode from now on.
+
+- Fix segfault in :func:`InputDevice.device_read_many()` (thanks `@bgilbert`_).
 
 0.3.3 (May 29, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
-- Raise ``IOError`` from ``device_read()`` and ``device_read_many()`` when
-  ``read()`` fails.
+- Raise :class:`IOError` from :func:`InputDevice.device_read()` and
+:func:`InputDevice.device_read_many()` when :func:`InputDevice.read()`
+fails.
 
 - Several stability and style changes (thank you debian code reviewers).
 
 0.3.2 (Apr 05, 2013)
 ^^^^^^^^^^^^^^^^^^^^
 
-- Fix vendor id and product id order in ``DeviceInfo`` (thanks `@kived`_).
+- Fix vendor id and product id order in :func:`DeviceInfo` (thanks `@kived`_).
 
 0.3.1 (Nov 23, 2012)
 ^^^^^^^^^^^^^^^^^^^^
 
-- ``device.read()`` will return an empty tuple if the device has
-  nothing to offer (instead of segfaulting).
+- :func:`InputDevice.read()` will return an empty tuple if the device
+  has nothing to offer (instead of segfaulting).
 
 - Exclude unnecessary package data in sdist and bdist.
 
@@ -103,19 +117,20 @@ Changelog
 
 - Add ability to set/get auto-repeat settings with ``EVIOC{SG}REP``.
 
-- Add ``device.version`` - the value of ``EVIOCGVERSION``.
+- Add :func:`InputDevice.version` - the value of ``EVIOCGVERSION``.
 
-- Add ``device.read_loop()``.
+- Add :func:`InputDevice.read_loop()`.
 
-- Add ``device.grab()`` and ``device.ungrab()`` - exposes ``EVIOCGRAB``.
+- Add :func:`InputDevice.grab()` and :func:`InputDevice.ungrab()` -
+  exposes ``EVIOCGRAB``.
 
-- Add ``device.leds`` - exposes ``EVIOCGLED``.
+- Add :func:`InputDevice.leds` - exposes ``EVIOCGLED``.
 
-- Replace ``DeviceInfo`` class with a namedtuple.
+- Replace :class:`DeviceInfo` class with a namedtuple.
 
-- Prevent ``device.read_one()`` from skipping events.
+- Prevent :func:`InputDevice.read_one()` from skipping events.
 
-- Rename ``AbsData`` to ``AbsInfo`` (as in ``struct input_absinfo``).
+- Rename :class:`AbsData` to :class:`AbsInfo` (as in ``struct input_absinfo``).
 
 
 0.2.0 (Aug 22, 2012)
@@ -124,17 +139,17 @@ Changelog
 - Add the ability to set arbitrary device capabilities on uinput
   devices (defaults to all ``EV_KEY`` ecodes).
 
-- Add ``UInput.device`` which is an open ``InputDevice`` to the
-  input device that uinput 'spawns'.
+- Add :attr:`UInput.device` which is an open :class:`InputDevice` to
+  the input device that uinput 'spawns'.
 
-- Add ``UInput.capabilities()`` which is just a shortcut to
-  ``UInput.device.capabilities()``.
+- Add :func:`UInput.capabilities()` which is just a shortcut to
+  :func:`UInput.device.capabilities()`.
 
-- Rename ``UInput.write()`` to ``UInput.write_event()``.
+- Rename :func:`UInput.write()` to :func:`UInput.write_event()`.
 
-- Add a simpler ``UInput.write(type, code, value)`` method.
+- Add a simpler :func:`UInput.write(type, code, value)` method.
 
-- Make all ``UInput`` constructor arguments optional (default
+- Make all :func:`UInput` constructor arguments optional (default
   device name is now ``py-evdev-uinput``).
 
 - Add the ability to set ``absmin``, ``absmax``, ``absfuzz`` and
@@ -143,26 +158,27 @@ Changelog
 - Remove the ``nophys`` argument - if a device fails the
   ``EVIOCGPHYS`` ioctl, phys will equal the empty string.
 
-- Make ``InputDevice.capabilities()`` perform a ``EVIOCGABS`` ioctl
-  for devices that support ``EV_ABS`` and return that info wrapped in
-  an ``AbsData`` namedtuple.
+- Make :func:`InputDevice.capabilities()` perform a ``EVIOCGABS``
+  ioctl for devices that support ``EV_ABS`` and return that info
+  wrapped in an ``AbsData`` namedtuple.
 
 - Split ``ioctl_devinfo`` into ``ioctl_devinfo`` and
   ``ioctl_capabilities``.
 
-- Split ``uinput_open()`` to ``uinput_open()`` and ``uinput_create()``
+- Split :func:`UInput.uinput_open()` to :func:`UInput.uinput_open()`
+  and :func:`UInput.uinput_create()`
 
 - Add more uinput usage examples and documentation.
 
 - Rewrite uinput tests.
 
-- Remove ``mouserel`` and ``mouseabs`` from ``UInput``.
+- Remove ``mouserel`` and ``mouseabs`` from :class:`UInput`.
 
 - Tie the sphinx version and release to the distutils version.
 
 - Set 'methods-before-attributes' sorting in the docs.
 
-- Remove ``KEY_CNT`` and ``KEY_MAX`` from ``ecodes.keys``.
+- Remove ``KEY_CNT`` and ``KEY_MAX`` from :func:`ecodes.keys`.
 
 
 0.1.1 (May 18, 2012)
@@ -184,5 +200,8 @@ Changelog
 .. _`@accek`: https://github.com/accek
 .. _`@kived`: https://github.com/kived
 .. _`@spasche`: https://github.com/spasche
+.. _`@isia`:    https://github.com/isia
+.. _`@forsenonlhaimaisentito`: https://github.com/forsenonlhaimaisentito
+.. _`@paulo-raca`: https://github.com/paulo-raca
 
 .. _issue21121: http://bugs.python.org/issue21121
