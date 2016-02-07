@@ -11,9 +11,10 @@
     <strong>Links</strong><br/>
     <ul>
     <li><a href="#news"  title="Jump to News">News</a></li>
-    <li><a href="search.html"  title="Jump to Search">Search</a></li>
-    <li><a href="#quick-start" title="Jump to quick start">Quick Start</a></li>
-    <li><a href="apidoc.html"  title="Jump to API reference">API Reference</a></li>
+    <li><a href="search.html"   title="Jump to Search">Search</a></li>
+    <li><a href="#quick-start"  title="Jump to quick start">Quick Start</a></li>
+    <li><a href="tutorial.html" title="Jump to turorial page">Tutorial</a></li>
+    <li><a href="apidoc.html"   title="Jump to API reference">API Reference</a></li>
     <li><a href="https://github.com/gvalkov/python-evdev"  title="Jump to Github">Github</a></li>
     </ul>
     <!--
@@ -50,15 +51,17 @@ movement or a tap on a touchscreen.
 Quick Start
 -----------
 
-**Installing:**
+Installing:
+^^^^^^^^^^^
 
-The following GNU/Linux distributions have *python-evdev* in their repositories:
+The following GNU/Linux distributions have *python-evdev* in their package
+repositories:
 
 .. raw:: html
 
     <div style="margin:1em;">
     <a href="https://aur.archlinux.org/packages/python-evdev/"><img height="40px" src="_static/pacifica-icon-set/distributor-logo-archlinux.png"></a>
-    <a href="http://packages.ubuntu.com/saucy/python-evdev">   <img height="40px" src="_static/pacifica-icon-set/distributor-logo-ubuntu.png"></a>
+    <a href="http://packages.ubuntu.com/wily/python-evdev">   <img height="40px" src="_static/pacifica-icon-set/distributor-logo-ubuntu.png"></a>
     <!--
     <a href=""><img height="40px" src="_static/pacifica-icon-set/distributor-logo-raspbian.png"></a>
     <a href=""><img height="40px" src="_static/pacifica-icon-set/distributor-logo-fedora.png"></a>
@@ -68,10 +71,10 @@ The following GNU/Linux distributions have *python-evdev* in their repositories:
     --!>
     </div>
 
-The latest stable version of *python-evdev* can be installed from
-pypi_, provided that you have gcc/clang, pip_ and the Python and Linux
-development headers installed on your system. Installing them is
-distribution specific and usually falls in one of these categories:
+The latest stable version of *python-evdev* can be installed from pypi_,
+provided that you have gcc/clang, pip_ and the Python and Linux development
+headers installed on your system. Installing them is distribution specific and
+typically falls in one of the following categories:
 
 On a Debian compatible OS:
 
@@ -99,31 +102,33 @@ Installing *python-evdev* with pip_:
 
     $ sudo pip install evdev
 
-**Listing accessible event devices:**
+Listing accessible event devices:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-    >>> from evdev import InputDevice, list_devices
+    >>> import evdev
 
-    >>> devices = [InputDevice(fn) for fn in list_devices()]
-    >>> for dev in devices:
-    ...    print(dev.fn, dev.name, dev.phys)
+    >>> devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+    >>> for device in devices:
+    ...    print(device.fn, device.name, device.phys)
     /dev/input/event1    Dell Dell USB Keyboard   usb-0000:00:12.1-2/input0
     /dev/input/event0    Dell USB Optical Mouse   usb-0000:00:12.0-2/input0
 
 
-**Reading events from a device:**
+Reading events from a device:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-    >>> from evdev import InputDevice, categorize, ecodes
+    >>> import evdev
 
-    >>> dev = InputDevice('/dev/input/event1')
-    >>> print(dev)
+    >>> device = evdev.InputDevice('/dev/input/event1')
+    >>> print(device)
     device /dev/input/event1, name "Dell Dell USB Keyboard", phys "usb-0000:00:12.1-2/input0"
 
-    >>> for event in dev.read_loop():
-    ...     if event.type == ecodes.EV_KEY:
+    >>> for event in device.read_loop():
+    ...     if event.type == evdev.ecodes.EV_KEY:
     ...         print(categorize(event))
     ... # pressing 'a' and holding 'space'
     key event at 1337016188.396030, 30 (KEY_A), down
@@ -132,7 +137,27 @@ Installing *python-evdev* with pip_:
     key event at 1337016190.275396, 57 (KEY_SPACE), hold
     key event at 1337016190.284160, 57 (KEY_SPACE), up
 
-**Accessing evdev constants:**
+Reading events using async/await:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Python-evdev* proudly supports the new `async/await`_ syntax in Python 3.5:
+
+::
+
+    import asyncio, evdev
+
+    async def print_events(device):
+        async for event in device.read_iter():
+            print(device.fn, evdev.categorize(event), sep=': ')
+
+    device = evdev.InputDevice('/dev/input/event4')
+    asyncio.ensure_future(print_events(device))
+
+    loop = asyncio.get_event_loop()
+    loop.run_forever()
+
+Accessing evdev constants:
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -147,7 +172,18 @@ Installing *python-evdev* with pip_:
     >>> ecodes.KEY[152]  # a single value may correspond to multiple codes
     ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
 
-**Further information:**
+Listing and monitoring input devices:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The *python-evdev* package also comes with a small command-line program for
+listing and monitoring input devices:
+
+.. code-block:: bash
+
+   $ python -m evdev.evtest
+
+More information:
+^^^^^^^^^^^^^^^^^
 
 - Read the full :doc:`tutorial <tutorial>`.
 
@@ -175,6 +211,14 @@ Installing *python-evdev* with pip_:
 
     - :class:`SynEvent <evdev.events.SynEvent>`
 
+  * :mod:`eventio <evdev.eventio>`
+
+    - :class:`EventIO <evdev.eventio.EventIO>`
+
+  * :mod:`eventio_async <evdev.eventio_async>`
+
+    - :class:`EventIO <evdev.eventio_async.EventIO>`
+
   * :mod:`util <evdev.util>`
 
     - :class:`list_devices() <evdev.util.list_devices>`
@@ -196,7 +240,7 @@ News
 ----
 .. include:: news.rst
 
-See :doc:`changelog <changelog>` for a full list of changes.
+Please refer to the :doc:`changelog <changelog>` for a full list of changes.
 
 
 License
@@ -212,4 +256,5 @@ The :mod:`evdev` package is released under the terms of the `Revised BSD License
 .. _pypi:              http://pypi.python.org/pypi/evdev
 .. _github:            https://github.com/gvalkov/python-evdev
 .. _pip:               http://pip.readthedocs.org/en/latest/installing.html
-.. _example:           https://github.com/gvalkov/python-evdev/tree/master/bin
+.. _example:           https://github.com/gvalkov/python-evdev/tree/master/examples
+.. _`async/await`:     https://docs.python.org/3/library/asyncio-task.html

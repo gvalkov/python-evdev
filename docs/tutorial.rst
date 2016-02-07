@@ -1,17 +1,17 @@
-Tutorial
---------
 
+.. contents:: Examples
+   :depth: 2
 
 Listing accessible event devices
 ================================
 
 ::
 
-    >>> from evdev import InputDevice, list_devices
+    >>> import evdev
 
-    >>> devices = [InputDevice(fn) for fn in list_devices()]
-    >>> for dev in devices:
-    ...    print(dev.fn, dev.name, dev.phys)
+    >>> devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+    >>> for device in devices:
+    >>>     print(device.fn, device.name, device.phys)
     /dev/input/event1    Dell Dell USB Keyboard   usb-0000:00:12.1-2/input0
     /dev/input/event0    Dell USB Optical Mouse   usb-0000:00:12.0-2/input0
 
@@ -21,42 +21,42 @@ Listing device capabilities
 
 ::
 
-    >>> from evdev import InputDevice
+    >>> import evdev
 
-    >>> dev = InputDevice('/dev/input/event0')
-    >>> print(dev)
+    >>> device = evdev.InputDevice('/dev/input/event0')
+    >>> print(device)
     device /dev/input/event0, name "Dell USB Optical Mouse", phys "usb-0000:00:12.0-2/input0"
 
-    >>> dev.capabilities()
+    >>> device.capabilities()
     ... { 0: [0, 1, 2], 1: [272, 273, 274, 275], 2: [0, 1, 6, 8], 4: [4] }
 
-    >>> dev.capabilities(verbose=True)
+    >>> device.capabilities(verbose=True)
     ... { ('EV_SYN', 0): [('SYN_REPORT', 0), ('SYN_CONFIG', 1), ('SYN_MT_REPORT', 2)],
     ...   ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274), ('BTN_SIDE', 275)], ...
 
 
-Listing device capabilities for devices with absolute axes
-==========================================================
+Listing device capabilities (devices with absolute axes)
+========================================================
 
 ::
 
-    >>> from evdev import InputDevice
+    >>> import evdev
 
-    >>> dev = InputDevice('/dev/input/event7')
-    >>> print(dev)
+    >>> device = evdev.InputDevice('/dev/input/event7')
+    >>> print(device)
     device /dev/input/event7, name "Wacom Bamboo 2FG 4x5 Finger", phys ""
 
-    >>> dev.capabilities()
+    >>> device.capabilities()
     ... { 1: [272, 273, 277, 278, 325, 330, 333] ,
     ...   3: [(0, AbsInfo(min=0, max=15360, fuzz=128, flat=0)),
     ...       (1, AbsInfo(min=0, max=10240, fuzz=128, flat=0))] }
 
-    >>> dev.capabilities(verbose=True)
+    >>> device.capabilities(verbose=True)
     ... { ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ...],
     ...   ('EV_ABS', 3): [(('ABS_X', 0), AbsInfo(min=0, max=15360, fuzz=128, flat=0)),
     ...                   (('ABS_Y', 1), AbsInfo(min=0, max=10240, fuzz=128, flat=0)),] }
 
-    >>> dev.capabilities(absinfo=False)
+    >>> device.capabilities(absinfo=False)
     ... { 1: [272, 273, 277, 278, 325, 330, 333],
     ...   3: [0, 1, 47, 53, 54, 57] }
 
@@ -91,6 +91,8 @@ Getting currently active keys
 Reading events
 ==============
 
+Reading events from a single device in an endless loop.
+
 ::
 
     >>> from evdev import InputDevice, categorize, ecodes
@@ -110,8 +112,40 @@ Reading events
     key event at 1337016190.284160, 57 (KEY_SPACE), up
 
 
-Reading events from multiple devices
-====================================
+Reading events (using :mod:`asyncore`)
+======================================
+
+::
+
+    >>> from asyncore import file_dispatcher, loop
+    >>> from evdev import InputDevice, categorize, ecodes
+    >>> dev = InputDevice('/dev/input/event1')
+
+    >>> class InputDeviceDispatcher(file_dispatcher):
+    ...     def __init__(self, device):
+    ...         self.device = device
+    ...         file_dispatcher.__init__(self, device)
+    ...
+    ...     def recv(self, ign=None):
+    ...         return self.device.read()
+    ...
+    ...     def handle_read(self):
+    ...         for event in self.recv():
+    ...             print(repr(event))
+
+    >>> InputDeviceDispatcher(dev)
+    >>> loop()
+    InputEvent(1337255905L, 358854L, 1, 30, 0L)
+    InputEvent(1337255905L, 358857L, 0, 0, 0L)
+
+.. note::
+
+   The :mod:`asyncore` module is deprecated in recent versions of Python.
+   Please consider using :mod:`asyncio`.
+
+
+Reading events from multiple devices (using :mod:`select`)
+==========================================================
 
 ::
 
@@ -137,7 +171,10 @@ Reading events from multiple devices
     event at 1351116708.782237, code 02, type 01, val 01
 
 
-This can also be achieved using the selectors_ module in Python 3.4:
+Reading events from multiple devices (using :mod:`selectors`)
+=============================================================
+
+This can also be achieved using the :mod:`selectors` module in Python 3.4:
 
 ::
 
@@ -159,6 +196,9 @@ This can also be achieved using the selectors_ module in Python 3.4:
            for event in device.read():
                print(event)
 
+
+Reading events from multiple devices (using :mod:`asyncio`)
+=============================================================
 
 Yet another possibility is the :mod:`asyncio` module from Python 3.4:
 
@@ -182,9 +222,7 @@ Yet another possibility is the :mod:`asyncio` module from Python 3.4:
     loop = asyncio.get_event_loop()
     loop.run_forever()
 
-Since Python 3.5, the `async/await
-<https://docs.python.org/3/library/asyncio-task.html>`_ syntax makes this
-even simpler:
+Since Python 3.5, the `async/await`_ syntax makes this even simpler:
 
 ::
 
@@ -221,59 +259,6 @@ Accessing evdev constants
     ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
 
 
-Reading events with asyncore
-============================
-
-::
-
-    >>> from asyncore import file_dispatcher, loop
-    >>> from evdev import InputDevice, categorize, ecodes
-    >>> dev = InputDevice('/dev/input/event1')
-
-    >>> class InputDeviceDispatcher(file_dispatcher):
-    ...     def __init__(self, device):
-    ...         self.device = device
-    ...         file_dispatcher.__init__(self, device)
-    ...
-    ...     def recv(self, ign=None):
-    ...         return self.device.read()
-    ...
-    ...     def handle_read(self):
-    ...         for event in self.recv():
-    ...             print(repr(event))
-
-    >>> InputDeviceDispatcher(dev)
-    >>> loop()
-    InputEvent(1337255905L, 358854L, 1, 30, 0L)
-    InputEvent(1337255905L, 358857L, 0, 0, 0L)
-
-
-Reading events with asyncio
-===========================
-
-To read a single event, you can use device.async_read_one()
-
-::
-
-    event = await dev.async_read_one()
-
-To read a batch of events, you can use device.async_read():
-
-::
-
-    ev_batch = await dev.async_read()
-    for ev in ev_batch:
-        print(categorize(ev))
-
-To read all events in an infinite loop, use dev.read_loop() and `async for`:
-
-::
-    async for ev in dev.read_loop():
-        print(categorize(ev))
-
-See "Reading events from multiple devices" for a complete example using asyncio.
-
-
 Getting exclusive access to a device
 ====================================
 
@@ -298,8 +283,8 @@ Associating classes with event types
 
 See :mod:`events <evdev.events.event_factory>` for more information.
 
-Injecting input events
-======================
+Injecting input
+===============
 
 ::
 
@@ -315,8 +300,8 @@ Injecting input events
     >>> ui.close()
 
 
-Injecting events (2)
-====================
+Injecting events (using a context manager)
+==========================================
 
 ::
 
@@ -359,4 +344,4 @@ Specifying ``uinput`` device options
     >>> ui.syn()
 
 
-.. _selectors:   https://docs.python.org/3/library/selectors.html
+.. _`async/await`:  https://docs.python.org/3/library/asyncio-task.html
