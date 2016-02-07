@@ -1,2 +1,3 @@
 pytest>=2.6.4
 Sphinx>=1.3.5
+bumpversion>=0.5.3
