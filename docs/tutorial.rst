@@ -232,7 +232,7 @@ Since Python 3.5, the `async/await`_ syntax makes this even simpler:
     keybd = evdev.InputDevice('/dev/input/event5')
 
     async def print_events(device):
-        async for event in device.read_iter():
+        async for event in device.async_read_loop():
             print(device.fn, evdev.categorize(event), sep=': ')
 
     for device in mouse, keybd:

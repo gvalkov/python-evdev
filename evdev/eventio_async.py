@@ -33,7 +33,7 @@ class EventIO(eventio.EventIO):
         self._do_when_readable(lambda: future.set_result(self.read()))
         return future
 
-    def read_iter(self):
+    def async_read_loop(self):
         '''
         Return an iterator that yields input events. This iterator is
         compatible with the ``async for`` syntax

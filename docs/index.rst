@@ -147,7 +147,7 @@ Reading events using async/await:
     import asyncio, evdev
 
     async def print_events(device):
-        async for event in device.read_iter():
+        async for event in device.async_read_loop():
             print(device.fn, evdev.categorize(event), sep=': ')
 
     device = evdev.InputDevice('/dev/input/event4')
