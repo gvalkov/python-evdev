@@ -1,16 +1,16 @@
 Changelog
 =========
 
-In developement
-^^^^^^^^^^^^^^^
+0.6.0 (Feb 14, 2015)
+^^^^^^^^^^^^^^^^^^^^
 
 - Asyncio and async/await support (many thanks to `@paulo-raca`_).
-- Add the ability to set the `phys` of uinput devices (thanks `@paulo-raca`_).
+- Add the ability to set the `phys` property of uinput devices (thanks `@paulo-raca`_).
 - Add a generic :func:`InputDevice.set` method (thanks `@paulo-raca`_).
-- Distribute evtest along with evtest.
+- Distribute the evtest script along with evdev.
 - Fix issue with generating :mod:`ecodes.c` in recent kernels (``>= 4.4.0``).
 - Fix absinfo item indexes in :func:`UInput.uinput_create()` (thanks `@forsenonlhaimaisentito`_).
-- More robust comparison of :class:`InputDevice` objects  (thanks `@isia`_).
+- More robust comparison of :class:`InputDevice` objects (thanks `@isia`_).
 
 0.5.0 (Jun 16, 2015)
 ^^^^^^^^^^^^^^^^^^^^

@@ -36,7 +36,7 @@ class EventIO(eventio.EventIO):
     def async_read_loop(self):
         '''
         Return an iterator that yields input events. This iterator is
-        compatible with the ``async for`` syntax
+        compatible with the ``async for`` syntax.
 
         '''
         return ReadIterator(self)
