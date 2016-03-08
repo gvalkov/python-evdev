@@ -58,7 +58,7 @@ def main():
         for device in devices:
             device.grab()
 
-    print('Listening for events ...\n')
+    print('Listening for events (press ctrl-c to exit) ...')
     fd_to_device = {dev.fd: dev for dev in devices}
     while True:
         r, w, e = select.select(fd_to_device, [], [])
@@ -92,11 +92,17 @@ def select_devices(device_dir='/dev/input'):
     print('\n'.join(dev_lines))
     print()
 
-    choice = input('Select devices [0-%s]: ' % (len(dev_lines)-1))
-    choice = choice.split()
+    choices = input('Select devices [0-%s]: ' % (len(dev_lines)-1))
 
-    print()
-    return [devices[int(num)] for num in choice]
+    try:
+        choices = choices.split()
+        choices = [devices[int(num)] for num in choices]
+    except ValueError:
+        msg = 'error: invalid input - please enter one or more numbers separated by spaces'
+        print(msg, file=sys.stderr)
+        sys.exit(1)
+
+    return choices
 
 
 def print_capabilities(device):
@@ -146,4 +152,8 @@ def print_event(e):
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        ret = main()
+    except KeyboardInterrupt:
+        ret = 0
+    sys.exit(ret)
