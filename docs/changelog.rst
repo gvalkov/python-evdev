@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.6.0 (Feb 14, 2015)
+0.6.0 (Feb 14, 2016)
 ^^^^^^^^^^^^^^^^^^^^
 
 - Asyncio and async/await support (many thanks to `@paulo-raca`_).
