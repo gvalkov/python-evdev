@@ -25,6 +25,8 @@ from __future__ import print_function
 import re
 import sys
 import select
+import atexit
+import termios
 import optparse
 
 from evdev import ecodes, list_devices, AbsInfo, InputDevice
@@ -57,6 +59,11 @@ def main():
     if opts.grab:
         for device in devices:
             device.grab()
+
+    # Disable tty echoing if stdin is a tty.
+    if sys.stdin.isatty():
+        toggle_tty_echo(sys.stdin, enable=False)
+        atexit.register(toggle_tty_echo, sys.stdin, enable=False)
 
     print('Listening for events (press ctrl-c to exit) ...')
     fd_to_device = {dev.fd: dev for dev in devices}
@@ -149,6 +156,15 @@ def print_event(e):
 
         evfmt = 'time {:<16} type {} ({}), code {:<4} ({}), value {}'
         print(evfmt.format(e.timestamp(), e.type, ecodes.EV[e.type], e.code, codename, e.value))
+
+
+def toggle_tty_echo(fh, enable=True):
+    flags = termios.tcgetattr(fh.fileno())
+    if enable:
+        flags[3] |= termios.ECHO
+    else:
+        flags[3] &= ~termios.ECHO
+    termios.tcsetattr(fh.fileno(), termios.TCSANOW, flags)
 
 
 if __name__ == '__main__':
