@@ -11,11 +11,10 @@ from distutils.command import build
 #-----------------------------------------------------------------------------
 try:
     from setuptools import setup, Extension
-    from setuptools.command import bdist_egg, develop
+    from setuptools.command import bdist_egg, develop, build_ext
 except ImportError:
     from distutils.core import setup, Extension
-    from distutils.command import build
-    develop, bdist_egg = None, None
+    from distutils.command import build, build_ext
 
 #-----------------------------------------------------------------------------
 here = abspath(dirname(__file__))
@@ -27,6 +26,7 @@ classifiers = [
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
     'Operating System :: POSIX :: Linux',
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Libraries',
@@ -64,23 +64,34 @@ kw = {
 
 
 #-----------------------------------------------------------------------------
-def create_ecodes():
-    headers = [
-        '/usr/include/linux/input.h',
-        '/usr/include/linux/input-event-codes.h',
-    ]
+def create_ecodes(headers=None):
+    if not headers:
+        headers = [
+            '/usr/include/linux/input.h',
+            '/usr/include/linux/input-event-codes.h',
+        ]
 
     headers = [header for header in headers if os.path.isfile(header)]
     if not headers:
         msg = '''\
-        The linux/input.h and linux/input-event-codes.h include files are
-        missing missing. You will have to install the kernel header files in
+        The 'linux/input.h' and 'linux/input-event-codes.h' include files
+        are missing. You will have to install the kernel header files in
         order to continue:
 
             yum install kernel-headers-$(uname -r)
             apt-get install linux-headers-$(uname -r)
             emerge sys-kernel/linux-headers
-            pacman -S kernel-headers\n\n'''
+            pacman -S kernel-headers
+
+        In case they are installed in a non-standard location, you may use
+        the '--evdev-headers' option to specify one or more colon-separated
+        paths. For example:
+
+            python setup.py build_ext \\
+              --evdev-headers path/input.h:path/input-event-codes.h \\
+              --include-dirs  path/ \\
+              install
+        '''
 
         sys.stderr.write(textwrap.dedent(msg))
         sys.exit(1)
@@ -92,19 +103,29 @@ def create_ecodes():
     check_call(cmd, cwd="%s/evdev" % here, shell=True)
 
 
-def cmdfactory(cmd):
-    class cls(cmd):
-        def run(self):
-            create_ecodes()
-            cmd.run(self)
-    return cls
+#-----------------------------------------------------------------------------
+class cmdbuild_ext(build_ext.build_ext):
+    user_options = build_ext.build_ext.user_options[:]
+    user_options.extend([
+        ('evdev-headers=', None, 'colon-separated paths to input subsystem headers'),
+    ])
+
+    def initialize_options(self):
+        self.evdev_headers = None
+        super(cmdbuild_ext, self).initialize_options()
+
+    def finalize_options(self):
+        if self.evdev_headers:
+            self.evdev_headers = self.evdev_headers.split(':')
+        super(cmdbuild_ext, self).finalize_options()
+
+    def run(self):
+        create_ecodes(self.evdev_headers)
+        super(cmdbuild_ext, self).run()
 
 #-----------------------------------------------------------------------------
-kw['cmdclass']['build'] = cmdfactory(build.build)
+kw['cmdclass']['build_ext'] = cmdbuild_ext
 
-if develop and bdist_egg:
-    kw['cmdclass']['develop']   = cmdfactory(develop.develop)
-    kw['cmdclass']['bdist_egg'] = cmdfactory(bdist_egg.bdist_egg)
 
 #-----------------------------------------------------------------------------
 if __name__ == '__main__':

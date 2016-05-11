@@ -102,6 +102,9 @@ Installing *python-evdev* with pip_:
 
     $ sudo pip install evdev
 
+For more advanced installation options, please read the :doc:`full installation
+<installation>` page.
+
 Listing accessible event devices:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
