@@ -29,6 +29,11 @@ import atexit
 import termios
 import optparse
 
+try:
+    input = raw_input
+except NameError:
+    pass
+
 from evdev import ecodes, list_devices, AbsInfo, InputDevice
 
 
@@ -105,6 +110,9 @@ def select_devices(device_dir='/dev/input'):
         choices = choices.split()
         choices = [devices[int(num)] for num in choices]
     except ValueError:
+        choices = None
+
+    if not choices:
         msg = 'error: invalid input - please enter one or more numbers separated by spaces'
         print(msg, file=sys.stderr)
         sys.exit(1)

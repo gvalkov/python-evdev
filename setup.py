@@ -112,16 +112,17 @@ class cmdbuild_ext(build_ext.build_ext):
 
     def initialize_options(self):
         self.evdev_headers = None
-        super(cmdbuild_ext, self).initialize_options()
+        # We cannot use super(cmdbuild_ext, self) here for compatibility with Py2.
+        build_ext.build_ext.initialize_options(self)
 
     def finalize_options(self):
         if self.evdev_headers:
             self.evdev_headers = self.evdev_headers.split(':')
-        super(cmdbuild_ext, self).finalize_options()
+        build_ext.build_ext.finalize_options(self)
 
     def run(self):
         create_ecodes(self.evdev_headers)
-        super(cmdbuild_ext, self).run()
+        build_ext.build_ext.run(self)
 
 #-----------------------------------------------------------------------------
 kw['cmdclass']['build_ext'] = cmdbuild_ext
