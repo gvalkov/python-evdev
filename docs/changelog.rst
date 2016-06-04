@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.6.1 (Jun 04, 2016)
+^^^^^^^^^^^^^^^^^^^^
+
+- Dissable tty echoing while evtest is running.
+- Allow evtest to listen to more than one devices.
+
+- The setup.py script now allows the location of the input header files to be
+  overwritten. For example::
+
+    python setup.py build_ext \
+    --evdev-headers path/input.h:path/input-event-codes.h \
+    --include-dirs  path/ \
+    install
+
+
 0.6.0 (Feb 14, 2016)
 ^^^^^^^^^^^^^^^^^^^^
 
