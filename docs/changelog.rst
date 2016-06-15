@@ -1,8 +1,9 @@
 Changelog
-=========
+---------
+
 
 0.6.1 (Jun 04, 2016)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Dissable tty echoing while evtest is running.
 - Allow evtest to listen to more than one devices.
@@ -17,7 +18,7 @@ Changelog
 
 
 0.6.0 (Feb 14, 2016)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Asyncio and async/await support (many thanks to `@paulo-raca`_).
 - Add the ability to set the `phys` property of uinput devices (thanks `@paulo-raca`_).
@@ -27,21 +28,24 @@ Changelog
 - Fix absinfo item indexes in :func:`UInput.uinput_create()` (thanks `@forsenonlhaimaisentito`_).
 - More robust comparison of :class:`InputDevice` objects (thanks `@isia`_).
 
+
 0.5.0 (Jun 16, 2015)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Write access to the input device is no longer mandatory. Evdev will
   first try to open the device for reading and writing and fallback to
   read-only. Methods that require write access (e.g. :func:`set_led()`)
   will raise :class:`EvdevError` if the device is open only for reading.
 
+
 0.4.7 (Oct 07, 2014)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Fallback to distutils if setuptools is not available.
 
+
 0.4.6 (Oct 07, 2014)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Rework documentation and docstrings once more.
 
@@ -49,43 +53,50 @@ Changelog
 
 - Fix :func:`ioctl()` requested buffer size (thanks Jakub Wojciech Klama).
 
+
 0.4.5 (Jul 06, 2014)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Add method for returning a list of the currently active keys -
   :func:`InputDevice.active_keys()` (thanks `@spasche`_).
 
 - Fix a potential buffer overflow in :func:`ioctl_capabilities()` (thanks `@spasche`_).
 
+
 0.4.4 (Jun 04, 2014)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Calling :func:`InputDevice.read_one()` should always return ``None``,
   when there is nothing to be read, even in case of a ``EAGAIN`` errno
   (thanks JPP).
 
+
 0.4.3 (Dec 19, 2013)
-^^^^^^^^^^^^^^^^^^^^
+====================
+
 - Silence :class:`OSError` in destructor (thanks `@polyphemus`_).
 
 - Make :func:`InputDevice.close()` work in cases in which stdin (fd 0)
   has been closed (thanks `@polyphemus`_).
 
+
 0.4.2 (Dec 13, 2013)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Rework documentation and docstrings.
 
 - Call :func:`InputDevice.close()` from :func:`InputDevice.__del__()`.
 
+
 0.4.1 (Jul 24, 2013)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Fix reference counting in :func:`InputDevice.device_read()`,
-:func:`InputDevice.device_read_many()` and :func:`ioctl_capabilities`.
+  :func:`InputDevice.device_read_many()` and :func:`ioctl_capabilities`.
+
 
 0.4.0 (Jul 01, 2013)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Add ``FF_*`` and ``FF_STATUS`` codes to :func:`ecodes` (thanks `@bgilbert`_).
 
@@ -105,30 +116,34 @@ Changelog
 
 - Fix segfault in :func:`InputDevice.device_read_many()` (thanks `@bgilbert`_).
 
+
 0.3.3 (May 29, 2013)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Raise :class:`IOError` from :func:`InputDevice.device_read()` and
-:func:`InputDevice.device_read_many()` when :func:`InputDevice.read()`
-fails.
+  :func:`InputDevice.device_read_many()` when :func:`InputDevice.read()`
+  fails.
 
 - Several stability and style changes (thank you debian code reviewers).
 
+
 0.3.2 (Apr 05, 2013)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Fix vendor id and product id order in :func:`DeviceInfo` (thanks `@kived`_).
 
+
 0.3.1 (Nov 23, 2012)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - :func:`InputDevice.read()` will return an empty tuple if the device
   has nothing to offer (instead of segfaulting).
 
 - Exclude unnecessary package data in sdist and bdist.
 
+
 0.3.0 (Nov 06, 2012)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Add ability to set/get auto-repeat settings with ``EVIOC{SG}REP``.
 
@@ -149,7 +164,7 @@ fails.
 
 
 0.2.0 (Aug 22, 2012)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Add the ability to set arbitrary device capabilities on uinput
   devices (defaults to all ``EV_KEY`` ecodes).
@@ -197,7 +212,7 @@ fails.
 
 
 0.1.1 (May 18, 2012)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 - Add ``events.keys``, which is a combination of all ``BTN_`` and
   ``KEY_`` event codes.
@@ -206,7 +221,7 @@ fails.
 
 
 0.1.0 (May 17, 2012)
-^^^^^^^^^^^^^^^^^^^^
+====================
 
 *Initial Release*
 

@@ -1,6 +1,6 @@
+Tutorial
+--------
 
-.. contents:: Examples
-   :depth: 2
 
 Listing accessible event devices
 ================================
@@ -198,7 +198,7 @@ This can also be achieved using the :mod:`selectors` module in Python 3.4:
 
 
 Reading events from multiple devices (using :mod:`asyncio`)
-=============================================================
+===========================================================
 
 Yet another possibility is the :mod:`asyncio` module from Python 3.4:
 
@@ -313,6 +313,7 @@ Injecting events (using a context manager)
 
 Specifying ``uinput`` device options
 ====================================
+
 ::
 
     >>> from evdev import UInput, AbsInfo, ecodes as e
