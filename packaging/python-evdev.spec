@@ -8,9 +8,9 @@ URL:            https://python-evdev.readthedocs.io
 Source0:        https://github.com/gvalkov/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires:  kernel-headers
-BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  python3-devel
+BuildRequires:  python2-setuptools
 BuildRequires:  python3-setuptools
 
 
