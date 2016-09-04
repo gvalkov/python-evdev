@@ -30,6 +30,35 @@ class UInput(EventIO):
         'events', 'devnode', 'fd', 'device',
     )
 
+    @classmethod
+    def from_device(cls, *devices, **kwargs):
+        '''
+        Create an UInput device with the capabilities of one or more input
+        devices.
+
+        Arguments
+        ---------
+        devices : InputDevice|str
+          Varargs of InputDevice instances or paths to input devices.
+
+        **kwargs
+          Keyword arguments to UInput constructor (i.e. name, vendor etc.).
+        '''
+
+        device_instances = []
+        for dev in devices:
+            if not isinstance(dev, device.InputDevice):
+                dev = device.InputDevice(str(dev))
+            device_instances.append(dev)
+
+        all_capabilities = {}
+        for dev in device_instances:
+            all_capabilities.update(dev.capabilities())
+
+        del all_capabilities[ecodes.EV_SYN]
+
+        return cls(events=all_capabilities, **kwargs)
+
     def __init__(self,
                  events=None,
                  name='py-evdev-uinput',
@@ -60,7 +89,7 @@ class UInput(EventIO):
 
         phys
           physical path.
-          
+
         Note
         ----
         If you do not specify any events, the uinput device will be able
@@ -86,7 +115,7 @@ class UInput(EventIO):
 
         #: Write-only, non-blocking file descriptor to the uinput device node.
         self.fd = _uinput.open(devnode)
-        
+
         # Set phys name
         _uinput.set_phys(self.fd, phys)
 

@@ -1,6 +1,14 @@
 Changelog
 ---------
 
+Development
+===========
+
+- Add the ``UInput.from_device`` class method, which allows uinput device to be
+  created with the capabiltiies of one or more existing input devices::
+
+    ui = UInput.from_device('/dev/input1', '/dev/input2', **constructor_kwargs)
+
 
 0.6.1 (Jun 04, 2016)
 ====================

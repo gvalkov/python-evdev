@@ -345,4 +345,19 @@ Specifying ``uinput`` device options
     >>> ui.syn()
 
 
+Create ``uinput`` device with capabilities of another device
+================================================================
+
+::
+
+    >>> from evdev import UInput, InputDevice
+
+    >>> mouse = InputDevice('/dev/input/event1')from evdev import UInput, InputDevice
+    >>> keybd = '/dev/input/event2'
+
+    >>> ui = UInput.from_device(mouse, keybd, name='keyboard-mouse-device')
+    >>> ui.capabilities(verbose=True).keys()
+    dict_keys([('EV_LED', 17), ('EV_KEY', 1), ('EV_SYN', 0), ('EV_REL', 2), ('EV_MSC', 4)])
+
+
 .. _`async/await`:  https://docs.python.org/3/library/asyncio-task.html
