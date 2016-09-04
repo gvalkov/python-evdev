@@ -12,7 +12,7 @@ input devices that can inject events directly into the input
 subsystem.
 
 Documentation:
-    http://python-evdev.readthedocs.org/en/latest/
+    http://python-evdev.readthedocs.io/en/latest/
 
 Development:
     https://github.com/gvalkov/python-evdev
@@ -21,4 +21,4 @@ Package:
     http://pypi.python.org/pypi/evdev
 
 Changelog:
-    http://python-evdev.readthedocs.org/en/latest/changelog.html
+    http://python-evdev.readthedocs.io/en/latest/changelog.html
