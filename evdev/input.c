@@ -78,7 +78,7 @@ device_read(PyObject *self, PyObject *args)
 static PyObject *
 device_read_many(PyObject *self, PyObject *args)
 {
-    int fd, i;
+    int fd;
 
     // get device file descriptor (O_RDONLY|O_NONBLOCK)
     int ret = PyArg_ParseTuple(args, "i", &fd);
@@ -101,7 +101,7 @@ device_read_many(PyObject *self, PyObject *args)
     }
 
     // Construct a list of event tuples, which we'll make sense of in Python
-    for (i = 0 ; i < nread/event_size ; i++) {
+    for (unsigned i = 0 ; i < nread/event_size ; i++) {
         sec  = PyLong_FromLong(event[i].time.tv_sec);
         usec = PyLong_FromLong(event[i].time.tv_usec);
         val  = PyLong_FromLong(event[i].value);
