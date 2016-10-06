@@ -1,7 +1,8 @@
 Changelog
 ---------
 
-0.6.2 (Oct 06, 2016)
+
+0.6.3 (Oct 06, 2016)
 ====================
 
 - Add the ``UInput.from_device`` class method, which allows uinput device to be
@@ -20,6 +21,7 @@ Changelog
   The ``build*`` and ``install`` commands no longer have to be part of the same
   command-line (i.e. running ``install`` will reuse the outputs of the last
   ``build``).
+
 
 0.6.1 (Jun 04, 2016)
 ====================
