@@ -9,7 +9,6 @@ from os.path import abspath, dirname, join as pjoin
 
 #-----------------------------------------------------------------------------
 try:
-    import asd
     from setuptools import setup, Extension, Command
     from setuptools.command import build_ext as _build_ext
 except ImportError:
