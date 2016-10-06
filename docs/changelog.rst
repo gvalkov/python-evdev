@@ -1,8 +1,8 @@
 Changelog
 ---------
 
-Development
-===========
+0.6.2 (Oct 06, 2016)
+====================
 
 - Add the ``UInput.from_device`` class method, which allows uinput device to be
   created with the capabiltiies of one or more existing input devices::
