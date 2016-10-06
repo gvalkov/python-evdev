@@ -6,15 +6,16 @@ import sys
 import textwrap
 
 from os.path import abspath, dirname, join as pjoin
-from distutils.command import build
 
 #-----------------------------------------------------------------------------
 try:
-    from setuptools import setup, Extension
-    from setuptools.command import bdist_egg, develop, build_ext
+    import asd
+    from setuptools import setup, Extension, Command
+    from setuptools.command import build_ext as _build_ext
 except ImportError:
-    from distutils.core import setup, Extension
-    from distutils.command import build, build_ext
+    from distutils.core import setup, Extension, Command
+    from distutils.command import build_ext as _build_ext
+
 
 #-----------------------------------------------------------------------------
 here = abspath(dirname(__file__))
@@ -87,9 +88,10 @@ def create_ecodes(headers=None):
         the '--evdev-headers' option to specify one or more colon-separated
         paths. For example:
 
-            python setup.py build_ext \\
-              --evdev-headers path/input.h:path/input-event-codes.h \\
-              --include-dirs  path/ \\
+            python setup.py \\
+              build \\
+              build_ecodes --evdev-headers path/input.h:path/input-event-codes.h \\
+              build_ext --include-dirs  path/ \\
               install
         '''
 
@@ -104,28 +106,43 @@ def create_ecodes(headers=None):
 
 
 #-----------------------------------------------------------------------------
-class cmdbuild_ext(build_ext.build_ext):
-    user_options = build_ext.build_ext.user_options[:]
-    user_options.extend([
+class build_ecodes(Command):
+    description = 'generate ecodes.c'
+
+    user_options = [
         ('evdev-headers=', None, 'colon-separated paths to input subsystem headers'),
-    ])
+    ]
 
     def initialize_options(self):
         self.evdev_headers = None
-        # We cannot use super(cmdbuild_ext, self) here for compatibility with Py2.
-        build_ext.build_ext.initialize_options(self)
 
     def finalize_options(self):
         if self.evdev_headers:
             self.evdev_headers = self.evdev_headers.split(':')
-        build_ext.build_ext.finalize_options(self)
 
     def run(self):
         create_ecodes(self.evdev_headers)
-        build_ext.build_ext.run(self)
+
+
+class build_ext(_build_ext.build_ext):
+    def has_ecodes(self):
+        ecodes_path = os.path.join(here, 'evdev/ecodes.c')
+        res = os.path.exists(ecodes_path)
+        if res:
+            print('ecodes.c already exists ... skipping build_ecodes')
+        return not res
+
+    def run(self):
+        for cmd_name in self.get_sub_commands():
+            self.run_command(cmd_name)
+        _build_ext.build_ext.run(self)
+
+    sub_commands =  [('build_ecodes', has_ecodes)] + _build_ext.build_ext.sub_commands
+
 
 #-----------------------------------------------------------------------------
-kw['cmdclass']['build_ext'] = cmdbuild_ext
+kw['cmdclass']['build_ext'] = build_ext
+kw['cmdclass']['build_ecodes'] = build_ecodes
 
 
 #-----------------------------------------------------------------------------

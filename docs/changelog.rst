@@ -9,6 +9,17 @@ Development
 
     ui = UInput.from_device('/dev/input1', '/dev/input2', **constructor_kwargs)
 
+- Add the ``build_ecodes`` distutils command, which generates the ``ecodes.c``
+  extension module. The new way of overwriting the evdev header locations is::
+
+    python setup.py build \
+      build_ecodes --evdev-headers path/input.h:path/input-event-codes.h \
+      build_ext --include-dirs  path/ \
+      install
+
+  The ``build*`` and ``install`` commands no longer have to be part of the same
+  command-line (i.e. running ``install`` will reuse the outputs of the last
+  ``build``).
 
 0.6.1 (Jun 04, 2016)
 ====================
@@ -20,9 +31,9 @@ Development
   overwritten. For example::
 
     python setup.py build_ext \
-    --evdev-headers path/input.h:path/input-event-codes.h \
-    --include-dirs  path/ \
-    install
+      --evdev-headers path/input.h:path/input-event-codes.h \
+      --include-dirs  path/ \
+      install
 
 
 0.6.0 (Feb 14, 2016)
