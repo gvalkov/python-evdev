@@ -2,6 +2,12 @@ Changelog
 ---------
 
 
+0.6.4 (Oct 07, 2016)
+====================
+
+- Exclude ``ecodes.c`` from source distribution (Fixes `#63`_).
+
+
 0.6.3 (Oct 06, 2016)
 ====================
 
@@ -256,3 +262,4 @@ Changelog
 .. _`@paulo-raca`: https://github.com/paulo-raca
 
 .. _issue21121: http://bugs.python.org/issue21121
+.. _`#63`:      https://github.com/gvalkov/python-evdev/issues/63
