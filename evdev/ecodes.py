@@ -1,15 +1,16 @@
 # encoding: utf-8
 
 '''
-This modules exposes the integer constants defined in ``linux/input.h``.
+This modules exposes the integer constants defined in ``linux/input.h`` and
+``linux/input-event-codes.h``.
 
 Exposed constants::
 
     KEY, ABS, REL, SW, MSC, LED, BTN, REP, SND, ID, EV,
     BUS, SYN, FF, FF_STATUS
 
-This module also provides numerous reverse and forward mappings that are best
-illustrated by a few examples::
+This module also provides reverse and forward mappings of the names and values
+of the above mentioned constants::
 
     >>> evdev.ecodes.KEY_A
     30
@@ -29,7 +30,8 @@ illustrated by a few examples::
     >>> evdev.ecodes.bytype[evdev.ecodes.EV_REL][0]
     'REL_X'
 
-Values in reverse mappings may point to one or more ecodes. For example::
+Keep in mind that values in reverse mappings may point to one or more event
+codes. For example::
 
     >>> evdev.ecodes.FF[80]
     ['FF_EFFECT_MIN', 'FF_RUMBLE']
