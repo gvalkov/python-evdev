@@ -266,6 +266,9 @@ class InputDevice(EventIO):
         msg = (self.__class__.__name__, self.fn)
         return '{}({!r})'.format(*msg)
 
+    def __fspath__(self):
+        return self.fn
+
     def close(self):
         if self.fd > -1:
             try:

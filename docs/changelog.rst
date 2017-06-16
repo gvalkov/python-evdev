@@ -2,6 +2,12 @@ Changelog
 ---------
 
 
+Unreleased
+====================
+
+- Support path protocol in ``InputDevice``.
+
+
 0.6.4 (Oct 07, 2016)
 ====================
 
