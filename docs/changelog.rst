@@ -7,6 +7,10 @@ Unreleased
 
 - Support path protocol in ``InputDevice``.
 
+- Exceptions raised during ``InputDevice.async_read()`` (and similar) are now
+  handled properly (i.e. an exception is set on the returned future instead of
+  leaking that exception into the event loop) (Fixes `#67`_).
+
 
 0.6.4 (Oct 07, 2016)
 ====================
@@ -269,3 +273,4 @@ Unreleased
 
 .. _issue21121: http://bugs.python.org/issue21121
 .. _`#63`:      https://github.com/gvalkov/python-evdev/issues/63
+.. _`#63`:      https://github.com/gvalkov/python-evdev/issues/67

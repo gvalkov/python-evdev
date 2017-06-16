@@ -14,13 +14,19 @@ class EventIO(eventio.EventIO):
             callback()
         loop.add_reader(self.fileno(), ready)
 
+    def _set_result(self, future, cb):
+        try:
+            future.set_result(cb())
+        except Exception as error:
+            future.set_exception(error)
+
     def async_read_one(self):
         '''
         Asyncio coroutine to read and return a single input event as
         an instance of :class:`InputEvent <evdev.events.InputEvent>`.
         '''
         future = asyncio.Future()
-        self._do_when_readable(lambda: future.set_result(self.read_one()))
+        self._do_when_readable(lambda: self._set_result(future, self.read_one))
         return future
 
     def async_read(self):
@@ -30,7 +36,7 @@ class EventIO(eventio.EventIO):
         instances.
         '''
         future = asyncio.Future()
-        self._do_when_readable(lambda: future.set_result(self.read()))
+        self._do_when_readable(lambda: self._set_result(future, self.read))
         return future
 
     def async_read_loop(self):
