@@ -2,11 +2,11 @@ Changelog
 ---------
 
 
-Unreleased
+0.7.0 (Jun 16, 2017)
 ====================
 
-- ``InputDevice`` now accepts objects that support the path protocol. For
-  example::
+- ``InputDevice`` now accepts objects that support the path protocol.
+  For example::
 
     pth = pathlib.Path('/dev/input/event0')
     dev = evdev.InputDevice(pth)
