@@ -5,7 +5,14 @@ Changelog
 Unreleased
 ====================
 
-- Support path protocol in ``InputDevice``.
+- ``InputDevice`` now accepts objects that support the path protocol. For
+  example::
+
+    pth = pathlib.Path('/dev/input/event0')
+    dev = evdev.InputDevice(pth)
+
+- Support path protocol in ``InputDevice``. This means that ``InputDevice``
+  instances can be passed to callers that expect a ``os.PathLike`` object.
 
 - Exceptions raised during ``InputDevice.async_read()`` (and similar) are now
   handled properly (i.e. an exception is set on the returned future instead of

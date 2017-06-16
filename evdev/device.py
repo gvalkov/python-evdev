@@ -114,12 +114,12 @@ class InputDevice(EventIO):
         '''
         Arguments
         ---------
-        dev : str
+        dev : str|bytes|PathLike
           Path to input device
         '''
 
         #: Path to input device.
-        self.fn = dev
+        self.fn = dev if not hasattr(dev, '__fspath__') else dev.__fspath__()
 
         # Certain operations are possible only when the device is opened in
         # read-write mode.
