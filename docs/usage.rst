@@ -29,7 +29,7 @@ Reading events from a device
 
     >>> for event in device.read_loop():
     ...     if event.type == evdev.ecodes.EV_KEY:
-    ...         print(categorize(event))
+    ...         print(evdev.categorize(event))
     ... # pressing 'a' and holding 'space'
     key event at 1337016188.396030, 30 (KEY_A), down
     key event at 1337016188.492033, 30 (KEY_A), up
