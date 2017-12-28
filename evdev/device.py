@@ -256,7 +256,8 @@ class InputDevice(EventIO):
         '''
         Two devices are equal if their :data:`info` attributes are equal.
         '''
-        return isinstance(other, self.__class__) and self.info == other.info
+        return isinstance(other, self.__class__) and self.info == other.info \
+            and self.path == other.path
 
     def __ne__(self, other):
         # Python 2 compatibility. Python 3 automatically negates the value of
