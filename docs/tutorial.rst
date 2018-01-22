@@ -352,7 +352,7 @@ Create ``uinput`` device with capabilities of another device
 
     >>> from evdev import UInput, InputDevice
 
-    >>> mouse = InputDevice('/dev/input/event1')from evdev import UInput, InputDevice
+    >>> mouse = InputDevice('/dev/input/event1')
     >>> keybd = '/dev/input/event2'
 
     >>> ui = UInput.from_device(mouse, keybd, name='keyboard-mouse-device')
