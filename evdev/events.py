@@ -98,7 +98,7 @@ class KeyEvent(object):
             self.keycode = keys[event.code]
         except KeyError:
             #: Report unknown keys with a numeric code
-            keys.update({event.code: "0x{}".format(hex(event.code))})
+            keys.update({event.code: "0x{:0X}".format(event.code)})
             self.keycode = keys[event.code]
         self.scancode = event.code
 
