@@ -3,6 +3,7 @@
 import os
 import stat
 import time
+from collections import defaultdict
 
 from evdev import _uinput
 from evdev import ecodes, util, device
@@ -51,9 +52,14 @@ class UInput(EventIO):
                 dev = device.InputDevice(str(dev))
             device_instances.append(dev)
 
-        all_capabilities = {}
+        # merge device capabilities
+        all_capabilities = defaultdict(list)
         for dev in device_instances:
-            all_capabilities.update(dev.capabilities())
+            dev_caps = dev.capabilities()
+            for ev_type, ev_codes in dev_caps.iteritems():
+                all_capabilities[ev_type].extend(ev_codes)
+                # remove duplicate ev_codes
+                all_capabilities[ev_type] = list(set(all_capabilities[ev_type]))
 
         del all_capabilities[ecodes.EV_SYN]
 
