@@ -52,14 +52,12 @@ class UInput(EventIO):
                 dev = device.InputDevice(str(dev))
             device_instances.append(dev)
 
-        # merge device capabilities
-        all_capabilities = defaultdict(list)
+        all_capabilities = defaultdict(set)
+
+        # Merge the capabilities of all devices into one dictionary.
         for dev in device_instances:
-            dev_caps = dev.capabilities()
-            for ev_type, ev_codes in dev_caps.iteritems():
-                all_capabilities[ev_type].extend(ev_codes)
-                # remove duplicate ev_codes
-                all_capabilities[ev_type] = list(set(all_capabilities[ev_type]))
+            for ev_type, ev_codes in dev.capabilities().items():
+                all_capabilities[ev_type].update(ev_codes)
 
         del all_capabilities[ecodes.EV_SYN]
 
