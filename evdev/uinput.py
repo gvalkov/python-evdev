@@ -32,7 +32,7 @@ class UInput(EventIO):
     )
 
     @classmethod
-    def from_device(cls, *devices, **kwargs):
+    def from_device(cls, *devices, filtered_types=(ecodes.EV_SYN, ecodes.EV_FF), **kwargs):
         '''
         Create an UInput device with the capabilities of one or more input
         devices.
@@ -41,6 +41,9 @@ class UInput(EventIO):
         ---------
         devices : InputDevice|str
           Varargs of InputDevice instances or paths to input devices.
+
+        filtered_types : Tuple[event type codes]
+          Event types to exclude from the capabilities of the uinput device.
 
         **kwargs
           Keyword arguments to UInput constructor (i.e. name, vendor etc.).
@@ -59,7 +62,8 @@ class UInput(EventIO):
             for ev_type, ev_codes in dev.capabilities().items():
                 all_capabilities[ev_type].update(ev_codes)
 
-        del all_capabilities[ecodes.EV_SYN]
+        for evtype in filtered_types:
+            del all_capabilities[evtype]
 
         return cls(events=all_capabilities, **kwargs)
 
