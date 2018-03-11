@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import os
+import contextlib
 import collections
 
 from evdev import _input, ecodes, util
@@ -306,6 +307,16 @@ class InputDevice(EventIO):
         '''
 
         _input.ioctl_EVIOCGRAB(self.fd, 0)
+
+    @contextlib.contextmanager
+    def grab_context(self):
+        '''
+        A context manager for the duration of which only the current
+        process will be able to receive events from the device.
+        '''
+        self.grab()
+        yield
+        self.ungrab()
 
     def upload_effect(self, effect):
         '''

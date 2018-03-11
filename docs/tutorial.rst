@@ -267,6 +267,13 @@ Getting exclusive access to a device
     >>> dev.grab()  # become the sole recipient of all incoming input events
     >>> dev.ungrab()
 
+This functionality is also available as a context manager.
+
+::
+
+    >>> with dev.grab_context():
+    ...     pass
+
 
 Associating classes with event types
 ====================================
