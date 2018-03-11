@@ -7,13 +7,13 @@ Python-evdev has been packaged for the following GNU/Linux distributions:
 .. raw:: html
 
     <div style="margin:1em;">
-    <a href="https://aur.archlinux.org/packages/python-evdev/">
+    <a href="https://www.archlinux.org/packages/extra/x86_64/python-evdev/">
       <img height="30px" src="_static/pacifica-icon-set/distributor-logo-archlinux.png">
     </a>
-    <a href="http://packages.ubuntu.com/wily/python-evdev">
+    <a href="https://packages.ubuntu.com/artful/python-evdev">
       <img height="30px" src="_static/pacifica-icon-set/distributor-logo-ubuntu.png">
     </a>
-    <a href="https://copr.fedorainfracloud.org/coprs/gvalkov/python-evdev/">
+    <a href="https://apps.fedoraproject.org/packages/python3-evdev">
       <img height="30px" src="_static/pacifica-icon-set/distributor-logo-fedora.png">
     </a>
     <!--
@@ -59,7 +59,8 @@ Once all dependencies are available, you may install *python-evdev* using pip_:
 
 .. code-block:: bash
 
-    $ sudo pip install evdev
+    $ sudo pip install evdev    # available globally
+    $ pip install --user evdev  # available to the current user
 
 
 Specifying header locations
