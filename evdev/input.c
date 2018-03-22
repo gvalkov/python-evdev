@@ -229,7 +229,7 @@ ioctl_devinfo(PyObject *self, PyObject *args)
     // Some devices do not have a physical topology associated with them
     ioctl(fd, EVIOCGPHYS(sizeof(phys)), phys);
 
-    // Some kernels have started reporting bluetooth controller MAC as phys.
+    // Some kernels have started reporting bluetooth controller MACs as phys.
     // This lets us get the real physical address. As with phys, it may be blank.
     ioctl(fd, EVIOCGUNIQ(sizeof(uniq)), uniq);
 

@@ -2,6 +2,33 @@ Changelog
 ---------
 
 
+0.8.0 (Mar 22, 2018)
+====================
+
+- Fix ``InputDevice`` comparison on Python 2.
+
+- The device path is now considered when comparing two devices.
+
+- Fix ``UInput.from_device`` not correctly merging the capabilities of
+  selected devices.
+
+- The list of excluded event types in ``UInput.from_device`` is now
+  configurable. For example::
+
+    UInput.from_device(dev, filtered_types=(EV_SYN, EV_FF))
+
+  In addition, ``ecodes.EV_FF`` is now excluded by default.
+
+- Add a context manager for grabbing access to a device -
+  ``InputDevice.grab_context``. For example::
+
+    with dev.grab_context():
+        pass
+
+- Add the ``InputDevice.uniq`` attribute, which contains the unique identifier
+  of the device. As with ``phys``, this attribute may be empty (i.e. `''`).
+
+
 0.7.0 (Jun 16, 2017)
 ====================
 
