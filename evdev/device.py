@@ -108,7 +108,7 @@ class InputDevice(EventIO):
     A linux input device from which input events can be read.
     '''
 
-    __slots__ = ('fn', 'fd', 'info', 'name', 'phys', '_rawcapabilities',
+    __slots__ = ('fn', 'fd', 'info', 'name', 'phys', 'uniq', '_rawcapabilities',
                  'version', 'ff_effects_count')
 
     def __init__(self, dev):
@@ -143,6 +143,9 @@ class InputDevice(EventIO):
 
         #: The physical topology of the device.
         self.phys = info_res[5]
+
+	#: The unique address of the device
+        self.uniq = info_res[6]
 
         #: The evdev protocol version.
         self.version = _input.ioctl_EVIOCGVERSION(self.fd)
