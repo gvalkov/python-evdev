@@ -95,15 +95,15 @@ def select_devices(device_dir='/dev/input'):
         print(msg % device_dir, file=sys.stderr)
         sys.exit(1)
 
-    dev_format = '{0:<3} {1.fn:<20} {1.name:<35} {1.phys}'
-    dev_lines  = [dev_format.format(n, d) for n, d in enumerate(devices)]
+    dev_format = '{0:<3} {1.fn:<20} {1.name:<35} {1.phys:<35} {1.uniq}'
+    dev_lines = [dev_format.format(n, d) for n, d in enumerate(devices)]
 
-    print('ID  {:<20} {:<35} {}'.format('Device', 'Name', 'Phys'))
+    print('ID  {:<20} {:<35} {:<35} {}'.format('Device', 'Name', 'Phys', 'Uniq'))
     print('-' * len(max(dev_lines, key=len)))
     print('\n'.join(dev_lines))
     print()
 
-    choices = input('Select devices [0-%s]: ' % (len(dev_lines)-1))
+    choices = input('Select devices [0-%s]: ' % (len(dev_lines) - 1))
 
     try:
         choices = choices.split()
