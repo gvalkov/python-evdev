@@ -216,6 +216,7 @@ ioctl_devinfo(PyObject *self, PyObject *args)
     struct input_id iid;
     char name[MAX_NAME_SIZE];
     char phys[MAX_NAME_SIZE] = {0};
+    char uniq[MAX_NAME_SIZE] = {0};
 
     int ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
@@ -225,11 +226,13 @@ ioctl_devinfo(PyObject *self, PyObject *args)
     if (ioctl(fd, EVIOCGID, &iid) < 0)                 goto on_err;
     if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0) goto on_err;
 
+    ioctl(fd, EVIOCGUNIQ(sizeof(uniq)), uniq);
+
     // Some devices do not have a physical topology associated with them
     ioctl(fd, EVIOCGPHYS(sizeof(phys)), phys);
 
-    return Py_BuildValue("hhhhss", iid.bustype, iid.vendor, iid.product, iid.version,
-                         name, phys);
+    return Py_BuildValue("hhhhsss", iid.bustype, iid.vendor, iid.product, iid.version,
+                         name, phys, uniq);
 
     on_err:
         PyErr_SetFromErrno(PyExc_IOError);
