@@ -177,6 +177,6 @@ def toggle_tty_echo(fh, enable=True):
 if __name__ == '__main__':
     try:
         ret = main()
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         ret = 0
     sys.exit(ret)
