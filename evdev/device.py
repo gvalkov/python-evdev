@@ -144,7 +144,7 @@ class InputDevice(EventIO):
         #: The physical topology of the device.
         self.phys = info_res[5]
 
-	#: The unique address of the device
+        #: The unique address of the device.
         self.uniq = info_res[6]
 
         #: The evdev protocol version.

@@ -226,10 +226,12 @@ ioctl_devinfo(PyObject *self, PyObject *args)
     if (ioctl(fd, EVIOCGID, &iid) < 0)                 goto on_err;
     if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0) goto on_err;
 
-    ioctl(fd, EVIOCGUNIQ(sizeof(uniq)), uniq);
-
     // Some devices do not have a physical topology associated with them
     ioctl(fd, EVIOCGPHYS(sizeof(phys)), phys);
+
+    // Some kernels have started reporting bluetooth controller MAC as phys.
+    // This lets us get the real physical address. As with phys, it may be blank.
+    ioctl(fd, EVIOCGUNIQ(sizeof(uniq)), uniq);
 
     return Py_BuildValue("hhhhsss", iid.bustype, iid.vendor, iid.product, iid.version,
                          name, phys, uniq);
