@@ -60,7 +60,7 @@ copyright = u'2012-2016, Georgi Valkov'
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = '0.8.0'
+release = '0.8.1'
 
 # The short X.Y version.
 version = release

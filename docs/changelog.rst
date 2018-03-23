@@ -1,6 +1,13 @@
 Changelog
 ---------
 
+0.8.1 (Mar 24, 2018)
+====================
+
+- Fix Python 2 compatibility issue in with ``Uinput.from_device``.
+
+- Fix minor `evdev.evtest` formatting issue.
+
 
 0.8.0 (Mar 22, 2018)
 ====================
