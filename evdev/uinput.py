@@ -136,7 +136,8 @@ class UInput(EventIO):
                 # Handle max, min, fuzz, flat.
                 if isinstance(code, (tuple, list, device.AbsInfo)):
                     # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
-                    f = [code[0]]; f += code[1]
+                    f = [code[0]]
+                    f.extend(code[1])
                     absinfo.append(f)
                     code = code[0]
 
@@ -197,7 +198,7 @@ class UInput(EventIO):
     def capabilities(self, verbose=False, absinfo=True):
         '''See :func:`capabilities <evdev.device.InputDevice.capabilities>`.'''
         if self.device is None:
-            raise UInputError('input device not opened - cannot read capabilites')
+            raise UInputError('input device not opened - cannot read capabilities')
 
         return self.device.capabilities(verbose, absinfo)
 
