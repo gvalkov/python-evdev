@@ -66,7 +66,8 @@ class UInput(EventIO):
                 all_capabilities[ev_type].update(ev_codes)
 
         for evtype in filtered_types:
-            del all_capabilities[evtype]
+            if evtype in all_capabilities:
+                del all_capabilities[evtype]
 
         return cls(events=all_capabilities, **kwargs)
 
