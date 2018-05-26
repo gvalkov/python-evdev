@@ -73,7 +73,6 @@ class ReadIterator(object):
             self.current_batch = self.device.read()
             return next(self.current_batch)
 
-    @asyncio.coroutine
     def __aiter__(self):
         return self
 
