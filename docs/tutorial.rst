@@ -16,6 +16,7 @@ Listing accessible event devices
     /dev/input/event0    Dell USB Optical Mouse   usb-0000:00:12.0-2/input0
 
 
+
 Listing device capabilities
 ===========================
 
