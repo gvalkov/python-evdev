@@ -139,6 +139,7 @@ class UInput(EventIO):
                     # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
                     f = [code[0]]
                     f.extend(code[1])
+                    f.extend([0] * (6 - len(code[1])))
                     absinfo.append(f)
                     code = code[0]
 
