@@ -4,11 +4,14 @@ import asyncio
 import select
 
 from evdev import eventio
+# needed for compatibility
+from evdev.eventio import EvdevError
 
 
 class EventIO(eventio.EventIO):
     def _do_when_readable(self, callback):
         loop = asyncio.get_event_loop()
+
         def ready():
             loop.remove_reader(self.fileno())
             callback()

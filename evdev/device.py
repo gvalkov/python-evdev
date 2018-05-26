@@ -8,14 +8,10 @@ from evdev import _input, ecodes, util
 from evdev.events import InputEvent
 
 try:
-    from evdev.eventio_async import EventIO
+    from evdev.eventio_async import EventIO, EvdevError
 except ImportError:
-    from evdev.eventio import EventIO
+    from evdev.eventio import EventIO, EvdevError
 
-
-#--------------------------------------------------------------------------
-class EvdevError(Exception):
-    pass
 
 #--------------------------------------------------------------------------
 _AbsInfo = collections.namedtuple(
