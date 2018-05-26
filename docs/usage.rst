@@ -15,6 +15,11 @@ Listing accessible event devices
     /dev/input/event1    USB Keyboard        usb-0000:00:12.1-2/input0
     /dev/input/event0    USB Optical Mouse   usb-0000:00:12.0-2/input0
 
+.. note::
+
+   If you do not see any devices, ensure that your user is in the
+   correct group (typically ``input``) to have read/write access.
+
 
 Reading events from a device
 ============================
