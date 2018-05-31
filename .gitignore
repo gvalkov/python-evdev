@@ -16,6 +16,7 @@ evdev/ecodes.c
 docs/_build
 .#*
 __pycache__
+.pytest_cache
 
 evdev/_ecodes.py
 evdev/_input.py
