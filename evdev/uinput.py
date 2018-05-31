@@ -66,7 +66,8 @@ class UInput(EventIO):
                 all_capabilities[ev_type].update(ev_codes)
 
         for evtype in filtered_types:
-            del all_capabilities[evtype]
+            if evtype in all_capabilities:
+                del all_capabilities[evtype]
 
         return cls(events=all_capabilities, **kwargs)
 
@@ -138,6 +139,7 @@ class UInput(EventIO):
                     # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
                     f = [code[0]]
                     f.extend(code[1])
+                    f.extend([0] * (6 - len(code[1])))
                     absinfo.append(f)
                     code = code[0]
 
