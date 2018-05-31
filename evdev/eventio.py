@@ -8,6 +8,10 @@ import functools
 from evdev import _input, _uinput, ecodes, util
 from evdev.events import InputEvent
 
+#--------------------------------------------------------------------------
+class EvdevError(Exception):
+    pass
+
 
 class EventIO(object):
     '''

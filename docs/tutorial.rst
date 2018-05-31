@@ -112,36 +112,29 @@ Reading events from a single device in an endless loop.
     key event at 1337016190.284160, 57 (KEY_SPACE), up
 
 
-Reading events (using :mod:`asyncore`)
+Reading events (using :mod:`asyncio`)
 ======================================
-
-::
-
-    >>> from asyncore import file_dispatcher, loop
-    >>> from evdev import InputDevice, categorize, ecodes
-    >>> dev = InputDevice('/dev/input/event1')
-
-    >>> class InputDeviceDispatcher(file_dispatcher):
-    ...     def __init__(self, device):
-    ...         self.device = device
-    ...         file_dispatcher.__init__(self, device)
-    ...
-    ...     def recv(self, ign=None):
-    ...         return self.device.read()
-    ...
-    ...     def handle_read(self):
-    ...         for event in self.recv():
-    ...             print(repr(event))
-
-    >>> InputDeviceDispatcher(dev)
-    >>> loop()
-    InputEvent(1337255905L, 358854L, 1, 30, 0L)
-    InputEvent(1337255905L, 358857L, 0, 0, 0L)
 
 .. note::
 
-   The :mod:`asyncore` module is deprecated in recent versions of Python.
-   Please consider using :mod:`asyncio`.
+   This requires Python 3.5+ for the async/await keywords.
+
+
+::
+
+    >>> from asyncio import get_event_loop
+    >>> from evdev import InputDevice, categorize, ecodes
+    >>> dev = InputDevice('/dev/input/event1')
+
+    >>> async def helper(d):
+    ...     async for ev in d.async_read_loop():
+    ...         print(repr(ev))
+
+    >>> loop = asyncio.get_event_loop()
+    >>> loop.run_until_complete(helper(d))
+    InputEvent(1527363738, 348740, 4, 4, 458792)
+    InputEvent(1527363738, 348740, 1, 28, 0)
+    InputEvent(1527363738, 348740, 0, 0, 0)
 
 
 Reading events from multiple devices (using :mod:`select`)

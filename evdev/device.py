@@ -9,14 +9,13 @@ from evdev import _input, ecodes, util
 from evdev.events import InputEvent
 
 try:
-    from evdev.eventio_async import EventIO
+    from evdev.eventio_async import EventIO, EvdevError
 except ImportError:
-    from evdev.eventio import EventIO
+    from evdev.eventio import EventIO, EvdevError
 
-
-#--------------------------------------------------------------------------
-class EvdevError(Exception):
-    pass
+import sys
+if sys.version_info > (3,):
+    buffer = memoryview
 
 #--------------------------------------------------------------------------
 _AbsInfo = collections.namedtuple(
@@ -166,6 +165,7 @@ class InputDevice(EventIO):
 
     def _capabilities(self, absinfo=True):
         res = {}
+
         for etype, ecodes in self._rawcapabilities.items():
             for code in ecodes:
                 l = res.setdefault(etype, [])

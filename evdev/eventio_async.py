@@ -4,11 +4,14 @@ import asyncio
 import select
 
 from evdev import eventio
+# needed for compatibility
+from evdev.eventio import EvdevError
 
 
 class EventIO(eventio.EventIO):
     def _do_when_readable(self, callback):
         loop = asyncio.get_event_loop()
+
         def ready():
             loop.remove_reader(self.fileno())
             callback()
@@ -70,7 +73,6 @@ class ReadIterator(object):
             self.current_batch = self.device.read()
             return next(self.current_batch)
 
-    @asyncio.coroutine
     def __aiter__(self):
         return self
 
