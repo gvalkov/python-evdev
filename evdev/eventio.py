@@ -79,7 +79,7 @@ class EventIO(object):
             fd = args[0].fd
             if fcntl.fcntl(fd, fcntl.F_GETFL) & os.O_RDWR:
                 return func(*args)
-            msg = 'no write access to device "%s"' % args[0].fn
+            msg = 'no write access to device "%s"' % args[0].path
             raise EvdevError(msg)
         return wrapper
 

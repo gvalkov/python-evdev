@@ -9,12 +9,11 @@ Listing accessible event devices
 
     >>> import evdev
 
-    >>> devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+    >>> devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
     >>> for device in devices:
-    >>>     print(device.fn, device.name, device.phys)
+    >>>     print(device.path, device.name, device.phys)
     /dev/input/event1    Dell Dell USB Keyboard   usb-0000:00:12.1-2/input0
     /dev/input/event0    Dell USB Optical Mouse   usb-0000:00:12.0-2/input0
-
 
 
 Listing device capabilities
@@ -212,7 +211,7 @@ Yet another possibility is the :mod:`asyncio` module from Python 3.4:
         while True:
             events = yield from device.async_read()
             for event in events:
-                print(device.fn, evdev.categorize(event), sep=': ')
+                print(device.path, evdev.categorize(event), sep=': ')
 
     mouse = evdev.InputDevice('/dev/input/eventX')
     keybd = evdev.InputDevice('/dev/input/eventY')
@@ -234,7 +233,7 @@ Since Python 3.5, the `async/await`_ syntax makes this even simpler:
 
     async def print_events(device):
         async for event in device.async_read_loop():
-            print(device.fn, evdev.categorize(event), sep=': ')
+            print(device.path, evdev.categorize(event), sep=': ')
 
     for device in mouse, keybd:
         asyncio.ensure_future(print_events(device))

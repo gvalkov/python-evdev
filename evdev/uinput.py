@@ -229,7 +229,7 @@ class UInput(EventIO):
         #:bug: the device node might not be immediately available
         time.sleep(0.1)
 
-        for fn in util.list_devices('/dev/input/'):
-            d = device.InputDevice(fn)
+        for path in util.list_devices('/dev/input/'):
+            d = device.InputDevice(path)
             if d.name == self.name:
                 return d

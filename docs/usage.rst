@@ -9,9 +9,9 @@ Listing accessible event devices
 
     >>> import evdev
 
-    >>> devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+    >>> devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
     >>> for device in devices:
-    ...    print(device.fn, device.name, device.phys)
+    ...    print(device.path, device.name, device.phys)
     /dev/input/event1    USB Keyboard        usb-0000:00:12.1-2/input0
     /dev/input/event0    USB Optical Mouse   usb-0000:00:12.0-2/input0
 
