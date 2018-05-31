@@ -13,9 +13,6 @@ try:
 except ImportError:
     from evdev.eventio import EventIO, EvdevError
 
-import sys
-if sys.version_info > (3,):
-    buffer = memoryview
 
 #--------------------------------------------------------------------------
 _AbsInfo = collections.namedtuple(
@@ -327,7 +324,7 @@ class InputDevice(EventIO):
         Upload a force feedback effect to a force feedback device.
         '''
 
-        data = bytes(buffer(effect)[:])
+        data = memoryview(effect).tobytes()
         ff_id = _input.upload_effect(self.fd, data)
         return ff_id
 
