@@ -139,11 +139,13 @@ class UInput(EventIO):
                     # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
                     f = [code[0]]
                     f.extend(code[1])
+                    # Ensure the tuple is always 6 ints long, since uinput.c:uinput_create
+                    # does little in the way of checking the length.
                     f.extend([0] * (6 - len(code[1])))
                     absinfo.append(f)
                     code = code[0]
 
-                # TODO: a lot of unnecessary packing/unpacking
+                # TODO: remove a lot of unnecessary packing/unpacking
                 _uinput.enable(self.fd, etype, code)
 
         # Create the uinput device.
