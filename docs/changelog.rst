@@ -1,6 +1,28 @@
 Changelog
 ---------
 
+1.0.0 (Unreleased)
+
+- Prevent ``Uinput`` device creation raising ``Objects/longobject.c:415: bad
+  argument to internal function`` when a non-complete ``AbsInfo`` structure is
+  passed. All missing ``AbsInfo`` fields will be set to 0.
+
+- Fix ``Uinput`` device creation raising ``KeyError`` when a capability filtered
+  by default is not present.
+
+- The ``InputDevice.fn`` attribute was deprecated in favor of
+  ``InputDevice.path``. Using the former will show a ``DeprecationWarning``, but
+  would otherwise continue working as before.
+
+- Fix ``InputDevice`` comparison.
+
+- Fix asyncio support in Python 3.5+.
+
+- Uploading FF effect now works both on Python 2.7 and Python 3+.
+
+- Remove the ``asyncore`` example from the tutorial.
+
+
 0.8.1 (Mar 24, 2018)
 ====================
 
