@@ -85,7 +85,7 @@ def select_devices(device_dir='/dev/input'):
     '''
 
     def devicenum(device_path):
-        digits = re.findall('\d+$', device_path)
+        digits = re.findall(r'\d+$', device_path)
         return [int(i) for i in digits]
 
     devices = sorted(list_devices(device_dir), key=devicenum)
