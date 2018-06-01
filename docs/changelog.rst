@@ -1,20 +1,22 @@
 Changelog
 ---------
 
-1.0.0 (Unreleased)
+1.0.0 (Jun 02, 2018)
+====================
 
 - Prevent ``Uinput`` device creation raising ``Objects/longobject.c:415: bad
   argument to internal function`` when a non-complete ``AbsInfo`` structure is
-  passed. All missing ``AbsInfo`` fields will be set to 0.
+  passed. All missing ``AbsInfo`` fields are set to 0.
 
 - Fix ``Uinput`` device creation raising ``KeyError`` when a capability filtered
   by default is not present.
 
-- The ``InputDevice.fn`` attribute was deprecated in favor of
-  ``InputDevice.path``. Using the former will show a ``DeprecationWarning``, but
-  would otherwise continue working as before.
+- The ``InputDevice.fn`` attribute was deprecated in favor of ``InputDevice.path``.
+  Using the former will show a ``DeprecationWarning``, but would otherwise continue
+  working as before.
 
-- Fix ``InputDevice`` comparison.
+- Fix ``InputDevice`` comparison raising ``AttributeError`` due to a non-existant
+  ``path`` attribute.
 
 - Fix asyncio support in Python 3.5+.
 

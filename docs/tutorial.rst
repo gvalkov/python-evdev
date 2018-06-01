@@ -122,17 +122,17 @@ Reading events (using :mod:`asyncio`)
 
 ::
 
-    >>> from asyncio import get_event_loop
+    >>> import asyncio
     >>> from evdev import InputDevice, categorize, ecodes
 
     >>> dev = InputDevice('/dev/input/event1')
 
-    >>> async def helper(d):
-    ...     async for ev in d.async_read_loop():
+    >>> async def helper(dev):
+    ...     async for ev in dev.async_read_loop():
     ...         print(repr(ev))
 
     >>> loop = asyncio.get_event_loop()
-    >>> loop.run_until_complete(helper(d))
+    >>> loop.run_until_complete(helper(dev))
     InputEvent(1527363738, 348740, 4, 4, 458792)
     InputEvent(1527363738, 348740, 1, 28, 0)
     InputEvent(1527363738, 348740, 0, 0, 0)

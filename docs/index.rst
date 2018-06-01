@@ -43,6 +43,4 @@ License
 This package is released under the terms of the `Revised BSD License`_.
 
 .. _`Revised BSD License`: https://raw.github.com/gvalkov/python-evdev/master/LICENSE
-.. _python-uinput:     https://github.com/tuomasjjrasanen/python-uinput
-.. _ruby-evdev:        http://technofetish.net/repos/buffaloplay/ruby_evdev/doc/
 .. _evdev:             http://svn.navi.cx/misc/trunk/python/evdev/
