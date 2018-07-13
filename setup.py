@@ -70,6 +70,7 @@ def create_ecodes(headers=None):
         headers = [
             '/usr/include/linux/input.h',
             '/usr/include/linux/input-event-codes.h',
+            '/usr/include/linux/uinput.h',
         ]
 
     headers = [header for header in headers if os.path.isfile(header)]
