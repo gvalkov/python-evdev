@@ -131,6 +131,8 @@ class UInput(EventIO):
         # Set phys name
         _uinput.set_phys(self.fd, phys)
 
+        _uinput.setup(self.fd, name, vendor, product, version, bustype, absinfo)
+
         # Set device capabilities.
         for etype, codes in events.items():
             for code in codes:
@@ -149,7 +151,7 @@ class UInput(EventIO):
                 _uinput.enable(self.fd, etype, code)
 
         # Create the uinput device.
-        _uinput.create(self.fd, name, vendor, product, version, bustype, absinfo)
+        _uinput.create(self.fd)
 
         #: An :class:`InputDevice <evdev.device.InputDevice>` instance
         #: for the fake input device. ``None`` if the device cannot be

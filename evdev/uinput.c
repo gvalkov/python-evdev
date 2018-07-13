@@ -69,7 +69,7 @@ uinput_set_phys(PyObject *self, PyObject *args)
 
 
 static PyObject *
-uinput_create(PyObject *self, PyObject *args) {
+uinput_setup(PyObject *self, PyObject *args) {
     int fd, len, i, abscode;
     uint16_t vendor, product, version, bustype;
 
@@ -112,6 +112,22 @@ uinput_create(PyObject *self, PyObject *args) {
     /*      if (ioctl(fd, UI_SET_KEYBIT, i) < 0) */
     /*         goto on_err; */
     /* } */
+
+    Py_RETURN_NONE;
+
+    on_err:
+        _uinput_close(fd);
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+}
+
+static PyObject *
+uinput_create(PyObject *self, PyObject *args)
+{
+    int fd;
+
+    int ret = PyArg_ParseTuple(args, "i", &fd);
+    if (!ret) return NULL;
 
     if (ioctl(fd, UI_DEV_CREATE) < 0)
         goto on_err;
@@ -213,6 +229,9 @@ uinput_enable_event(PyObject *self, PyObject *args)
 static PyMethodDef MethodTable[] = {
     { "open",  uinput_open, METH_VARARGS,
       "Open uinput device node."},
+
+    { "setup",  uinput_setup, METH_VARARGS,
+      "Set an uinput device up."},
 
     { "create",  uinput_create, METH_VARARGS,
       "Create an uinput device."},
