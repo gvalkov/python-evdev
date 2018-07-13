@@ -89,6 +89,8 @@ uinput_setup(PyObject *self, PyObject *args) {
     uidev.id.version = version;
     uidev.id.bustype = bustype;
 
+    uidev.ff_effects_max = FF_MAX_EFFECTS;
+
     len = PyList_Size(absinfo);
     for (i=0; i<len; i++) {
         // item -> (ABS_X, 0, 255, 0, 0, 0, 0)
