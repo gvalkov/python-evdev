@@ -224,6 +224,25 @@ uinput_enable_event(PyObject *self, PyObject *args)
         return NULL;
 }
 
+int _uinput_begin_upload(int fd, struct uinput_ff_upload *upload)
+{
+    return ioctl(fd, UI_BEGIN_FF_UPLOAD, upload);
+}
+
+int _uinput_end_upload(int fd, struct uinput_ff_upload *upload)
+{
+    return ioctl(fd, UI_END_FF_UPLOAD, upload);
+}
+
+int _uinput_begin_erase(int fd, struct uinput_ff_erase *upload)
+{
+    return ioctl(fd, UI_BEGIN_FF_ERASE, upload);
+}
+
+int _uinput_end_erase(int fd, struct uinput_ff_erase *upload)
+{
+    return ioctl(fd, UI_END_FF_ERASE, upload);
+}
 
 #define MODULE_NAME "_uinput"
 #define MODULE_HELP "Python bindings for parts of linux/uinput.c"
