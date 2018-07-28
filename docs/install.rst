@@ -10,7 +10,10 @@ Python-evdev has been packaged for the following GNU/Linux distributions:
     <a href="https://www.archlinux.org/packages/extra/x86_64/python-evdev/">
       <img height="30px" src="_static/pacifica-icon-set/distributor-logo-archlinux.png">
     </a>
-    <a href="https://packages.ubuntu.com/artful/python-evdev">
+    <a href="https://packages.debian.org/search?searchon=names&keywords=python-evdev">
+      <img height="30px" src="_static/pacifica-icon-set/distributor-logo-debian.png">
+    </a>
+    <a href="https://packages.ubuntu.com/search?suite=default&section=all&arch=any&keywords=python-evdev&searchon=names">
       <img height="30px" src="_static/pacifica-icon-set/distributor-logo-ubuntu.png">
     </a>
     <a href="https://apps.fedoraproject.org/packages/python3-evdev">
@@ -24,7 +27,7 @@ Python-evdev has been packaged for the following GNU/Linux distributions:
     --!>
     </div>
 
-Consult the relevant documentation of your OS package manager for installation instructions.
+Consult the documentation of your OS package manager for installation instructions.
 
 
 From source
