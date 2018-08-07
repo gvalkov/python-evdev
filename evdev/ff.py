@@ -100,7 +100,7 @@ class Condition(ctypes.Structure):
         ('right_saturation', _u16),
         ('left_saturation', _u16),
         ('right_coeff', _s16),
-        ('left_foeff', _s16),
+        ('left_coeff', _s16),
         ('deadband', _u16),
         ('center', _s16),
     ]
