@@ -362,3 +362,93 @@ Create ``uinput`` device with capabilities of another device
 
 
 .. _`async/await`:  https://docs.python.org/3/library/asyncio-task.html
+
+Create ``uinput`` device capable of recieving FF-effects
+========================================================
+
+::
+    import asyncio
+    from evdev import UInput, categorize, ecodes as e
+
+    cap = {
+       e.EV_FF : [ e.FF_RUMBLE ],
+       e.EV_KEY : [e.KEY_A, e.KEY_B],
+    }
+
+    try:
+        ui = UInput(cap, name='test-controller', version=0x3)
+    except UInputError:
+        print('Please make sure you have appropriate permissions to access /dev/uinput and the "uinput" kernel module is loaded')
+        raise
+
+    async def print_events(device):
+        async for event in device.async_read_loop():
+            print(categorize(event))
+            #
+            #  Wait for EV_UINPUT event that will signal us that effect
+            #  upload/erase operation is in progress
+            #
+            if event.type != e.EV_UINPUT:
+                pass
+
+            if event.code == e.UI_FF_UPLOAD:
+                upload = device.begin_upload(event.value)
+                upload.retval = 0
+
+                print('[upload] effect_id: {}, type: {}'
+                      .format(upload.effect_id, upload.effect.type))
+                device.end_upload(upload)
+
+            elif event.code == e.UI_FF_ERASE:
+                erase = device.begin_erase(event.value)
+                print('[erase] effect_id {}'.format(erase.effect_id))
+
+                erase.retval = 0
+                device.end_erase(erase)
+
+    asyncio.ensure_future(print_events(ui))
+    loop = asyncio.get_event_loop()
+    loop.run_forever()
+
+
+Injecting FF-events into first FF-capable device found
+======================================================
+
+::
+    from evdev import ecodes as e
+    from glob import glob
+
+    dev = None
+
+    #
+    # Find first EV_FF capable event device (that we have permissions to
+    # use)
+    #
+    for name in glob('/dev/input/event*'):
+        try:
+            dev = InputDevice(name)
+
+            if e.EV_FF in dev.capabilities():
+                break
+        except PermissionError as e:
+            print(e)
+            continue
+
+    if dev:
+        duration_ms = 1000
+
+        rumble = ff.Rumble(strong_magnitude=0x0000,
+                           weak_magnitude=0xffff)
+        effect_type = ff.EffectType(ff_rumble_effect=rumble)
+        effect = ff.Effect(e.FF_RUMBLE, -1, 0,
+                           ff.Trigger(0, 0),
+                           ff.Replay(duration_ms, 0),
+                           effect_type)
+
+        repeat_count = 1
+        effect_id = dev.upload_effect(effect)
+        dev.write(e.EV_FF, effect_id, repeat_count)
+        dev.erase_effect(effect_id)
+    else:
+        print('No FF capable device was found!')
+
