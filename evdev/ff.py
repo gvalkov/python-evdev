@@ -8,6 +8,7 @@ _u8  = ctypes.c_uint8
 _u16 = ctypes.c_uint16
 _u32 = ctypes.c_uint32
 _s16 = ctypes.c_int16
+_s32 = ctypes.c_int32
 
 class Replay(ctypes.Structure):
     '''
@@ -165,6 +166,21 @@ class Effect(ctypes.Structure):
         ('ff_trigger', Trigger),
         ('ff_replay', Replay),
         ('u', EffectType)
+    ]
+
+class UInputUpload(ctypes.Structure):
+    _fields_ = [
+        ('request_id', _u32),
+        ('retval', _s32),
+        ('effect', Effect),
+        ('old', Effect),
+    ]
+
+class UInputErase(ctypes.Structure):
+    _fields_ = [
+        ('request_id', _u32),
+        ('retval', _s32),
+        ('effect_id', _u32),
     ]
 
 # ff_types = {

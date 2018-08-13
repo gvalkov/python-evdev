@@ -381,6 +381,11 @@ void print_ff_effect(struct ff_effect* effect) {
                 effect->u.constant.envelope.attack_level,
                 effect->u.constant.envelope.fade_length,
                 effect->u.constant.envelope.fade_level);
+
+    case FF_RUMBLE:
+        fprintf(stderr, "  rumble: (%d, %d)\n",
+		effect->u.rumble.strong_magnitude,
+		effect->u.rumble.weak_magnitude);
         break;
     }
 }
