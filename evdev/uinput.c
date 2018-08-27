@@ -268,7 +268,7 @@ static PyMethodDef MethodTable[] = {
 
     { "set_phys", uinput_set_phys, METH_VARARGS,
       "Set physical path"},
-      
+
     { NULL, NULL, 0, NULL}
 };
 
