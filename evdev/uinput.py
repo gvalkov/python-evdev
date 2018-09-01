@@ -121,9 +121,10 @@ class UInput(EventIO):
         if not events:
             events = {ecodes.EV_KEY: ecodes.keys.keys()}
 
-        # The min, max, fuzz and flat values for the absolute axis for
-        # a given code.
-        absinfo = []
+        # Split the provided list of events into:
+        #   absinfo: The min, max, fuzz and flat values for the absolute axis for a given code.
+        #   regular: Other events that need to be enabled.
+        absinfo, regular = self._split_events(events)
 
         self._verify()
 
@@ -135,22 +136,8 @@ class UInput(EventIO):
 
         _uinput.setup(self.fd, name, vendor, product, version, bustype, absinfo)
 
-        # Set device capabilities.
-        for etype, codes in events.items():
-            for code in codes:
-                # Handle max, min, fuzz, flat.
-                if isinstance(code, (tuple, list, device.AbsInfo)):
-                    # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
-                    f = [code[0]]
-                    f.extend(code[1])
-                    # Ensure the tuple is always 6 ints long, since uinput.c:uinput_create
-                    # does little in the way of checking the length.
-                    f.extend([0] * (6 - len(code[1])))
-                    absinfo.append(f)
-                    code = code[0]
-
-                # TODO: remove a lot of unnecessary packing/unpacking
-                _uinput.enable(self.fd, etype, code)
+        for etype, code in regular:
+            _uinput.enable(self.fd, etype, code)
 
         # Create the uinput device.
         _uinput.create(self.fd)
@@ -163,6 +150,24 @@ class UInput(EventIO):
         #: for the fake input device. ``None`` if the device cannot be
         #: opened for reading and writing.
         self.device = self._find_device()
+
+    def _split_events(self, events):
+        '''Split events into absinfo and 'regular' events'''
+        absinfo, regular = [], []
+        for etype, codes in events.items():
+            for code in codes:
+                # Handle max, min, fuzz, flat.
+                if isinstance(code, (tuple, list, device.AbsInfo)):
+                    # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
+                    f = [code[0]]
+                    f.extend(code[1])
+                    # Ensure the tuple is always 6 ints long, since uinput.c:uinput_create
+                    # does little in the way of checking the length.
+                    f.extend([0] * (6 - len(code[1])))
+                    absinfo.append(f)
+                else:
+                    regular.append((etype, code))
+        return absinfo, regular
 
     def __enter__(self):
         return self
