@@ -16,6 +16,12 @@
 #include <linux/uinput.h>
 #endif
 
+
+// Workaround for installing on kernels newer than 4.4.
+#ifndef FF_MAX_EFFECTS
+#define FF_MAX_EFFECTS FF_GAIN;
+#endif
+
 int _uinput_close(int fd)
 {
     if (ioctl(fd, UI_DEV_DESTROY) < 0) {
@@ -88,7 +94,6 @@ uinput_setup(PyObject *self, PyObject *args) {
     uidev.id.product = product;
     uidev.id.version = version;
     uidev.id.bustype = bustype;
-
     uidev.ff_effects_max = FF_MAX_EFFECTS;
 
     len = PyList_Size(absinfo);
