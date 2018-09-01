@@ -89,7 +89,11 @@ uinput_setup(PyObject *self, PyObject *args) {
     uidev.id.version = version;
     uidev.id.bustype = bustype;
 
+    #ifdef FF_MAX_EFFECTS
     uidev.ff_effects_max = FF_MAX_EFFECTS;
+    #else
+    uidev.ff_effects_max = FF_GAIN;  // from input.c on more recent kernels
+    #endif
 
     len = PyList_Size(absinfo);
     for (i=0; i<len; i++) {
