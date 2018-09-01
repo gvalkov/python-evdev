@@ -1,6 +1,14 @@
 Changelog
 ---------
 
+1.1.1 (Sep 1, 2018)
+====================
+
+- Fix installation on kernels <= 4.4.
+
+- Fix uinput creation ignoring absinfo settings.
+
+
 1.1.0 (Aug 27, 2018)
 ====================
 
