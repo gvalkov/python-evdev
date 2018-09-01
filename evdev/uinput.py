@@ -121,23 +121,21 @@ class UInput(EventIO):
         if not events:
             events = {ecodes.EV_KEY: ecodes.keys.keys()}
 
-        # Split the provided list of events into:
-        #   absinfo: The min, max, fuzz and flat values for the absolute axis for a given code.
-        #   regular: Other events that need to be enabled.
-        absinfo, regular = self._split_events(events)
-
         self._verify()
 
         #: Write-only, non-blocking file descriptor to the uinput device node.
         self.fd = _uinput.open(devnode)
 
+        # Prepare the list of events for passing to _uinput.enable and _uinput.setup.
+        absinfo, prepared_events = self._prepare_events(events)
+
         # Set phys name
         _uinput.set_phys(self.fd, phys)
 
-        _uinput.setup(self.fd, name, vendor, product, version, bustype, absinfo)
-
-        for etype, code in regular:
+        for etype, code in prepared_events:
             _uinput.enable(self.fd, etype, code)
+
+        _uinput.setup(self.fd, name, vendor, product, version, bustype, absinfo)
 
         # Create the uinput device.
         _uinput.create(self.fd)
@@ -151,9 +149,9 @@ class UInput(EventIO):
         #: opened for reading and writing.
         self.device = self._find_device()
 
-    def _split_events(self, events):
-        '''Split events into absinfo and 'regular' events'''
-        absinfo, regular = [], []
+    def _prepare_events(self, events):
+        '''Prepare events for passing to _uinput.enable and _uinput.setup'''
+        absinfo, prepared_events = [], []
         for etype, codes in events.items():
             for code in codes:
                 # Handle max, min, fuzz, flat.
@@ -165,9 +163,9 @@ class UInput(EventIO):
                     # does little in the way of checking the length.
                     f.extend([0] * (6 - len(code[1])))
                     absinfo.append(f)
-                else:
-                    regular.append((etype, code))
-        return absinfo, regular
+                    code = code[0]
+                prepared_events.append((etype, code))
+        return absinfo, prepared_events
 
     def __enter__(self):
         return self
