@@ -325,7 +325,7 @@ Specifying ``uinput`` device options
     ...         (e.ABS_X, AbsInfo(value=0, min=0, max=255,
     ...                           fuzz=0, flat=0, resolution=0)),
     ...         (e.ABS_Y, AbsInfo(0, 0, 255, 0, 0, 0)),
-    ...         (e.ABS_MT_POSITION_X, (0, 255, 128, 0)) ]
+    ...         (e.ABS_MT_POSITION_X, (0, 128, 255, 0)) ]
     ... }
 
     >>> ui = UInput(cap, name='example-device', version=0x3)
