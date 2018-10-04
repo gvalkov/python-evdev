@@ -250,7 +250,10 @@ ioctl_EVIOCGREP(PyObject *self, PyObject *args)
     ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
 
-    ioctl(fd, EVIOCGREP, &rep);
+    ret = ioctl(fd, EVIOCGREP, &rep);
+    if (ret == -1)
+        return NULL;
+
     return Py_BuildValue("(ii)", rep[0], rep[1]);
 }
 
@@ -265,6 +268,9 @@ ioctl_EVIOCSREP(PyObject *self, PyObject *args)
     if (!ret) return NULL;
 
     ret = ioctl(fd, EVIOCSREP, &rep);
+    if (ret == -1)
+        return NULL;
+
     return Py_BuildValue("i", ret);
 }
 
@@ -277,6 +283,9 @@ ioctl_EVIOCGVERSION(PyObject *self, PyObject *args)
     if (!ret) return NULL;
 
     ret = ioctl(fd, EVIOCGVERSION, &res);
+    if (ret == -1)
+        return NULL;
+
     return Py_BuildValue("i", res);
 }
 
@@ -338,6 +347,9 @@ ioctl_EVIOCG_bits(PyObject *self, PyObject *args)
         break;
     }
 
+    if (ret == -1)
+        return NULL;
+
     PyObject* res = PyList_New(0);
     for (int i=0; i<max; i++) {
         if (test_bit(bytes, i)) {
@@ -357,6 +369,9 @@ ioctl_EVIOCGEFFECTS(PyObject *self, PyObject *args)
     if (!ret) return NULL;
 
     ret = ioctl(fd, EVIOCGEFFECTS, &res);
+    if (ret == -1)
+        return NULL;
+
     return Py_BuildValue("i", res);
 }
 
