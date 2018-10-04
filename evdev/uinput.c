@@ -89,7 +89,7 @@ uinput_setup(PyObject *self, PyObject *args) {
     if (!ret) return NULL;
 
     memset(&uidev, 0, sizeof(uidev));
-    strncpy(uidev.name, name, UINPUT_MAX_NAME_SIZE);
+    strncpy(uidev.name, name, sizeof(uidev.name) - 1);
     uidev.id.vendor  = vendor;
     uidev.id.product = product;
     uidev.id.version = version;
