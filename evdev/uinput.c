@@ -84,7 +84,7 @@ uinput_setup(PyObject *self, PyObject *args) {
     struct uinput_user_dev uidev;
     const char* name;
 
-    int ret = PyArg_ParseTuple(args, "ishhhhO", &fd, &name, &vendor,
+    int ret = PyArg_ParseTuple(args, "isHHHHO", &fd, &name, &vendor,
                                &product, &version, &bustype, &absinfo);
     if (!ret) return NULL;
 
