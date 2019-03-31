@@ -74,6 +74,68 @@ uinput_set_phys(PyObject *self, PyObject *args)
 }
 
 
+#if defined(UI_DEV_SETUP) && defined(UI_ABS_SETUP)
+// New variant is not supported in old linux kernels and FreeBSD
+static PyObject *
+uinput_setup(PyObject *self, PyObject *args) {
+    int fd, len, i;
+    uint16_t vendor, product, version, bustype;
+
+    PyObject *absinfo = NULL, *item = NULL;
+
+    struct uinput_abs_setup abs_setup;
+
+    const char* name;
+    int ret = PyArg_ParseTuple(args, "isHHHHO", &fd, &name, &vendor,
+                               &product, &version, &bustype, &absinfo);
+    if (!ret) return NULL;
+
+    // Setup absinfo:
+    len = PyList_Size(absinfo);
+    for (i=0; i<len; i++) {
+        
+        // item -> (ABS_X, 0, 255, 0, 0, 0, 0)
+        item = PyList_GetItem(absinfo, i);
+
+        memset(&abs_setup, 0, sizeof(abs_setup)); // Clear struct
+        abs_setup.code = PyLong_AsLong(PyList_GetItem(item, 0));
+        abs_setup.absinfo.value = PyLong_AsLong(PyList_GetItem(item, 1));
+        abs_setup.absinfo.minimum = PyLong_AsLong(PyList_GetItem(item, 2));
+        abs_setup.absinfo.maximum = PyLong_AsLong(PyList_GetItem(item, 3));
+        abs_setup.absinfo.fuzz = PyLong_AsLong(PyList_GetItem(item, 4));
+        abs_setup.absinfo.flat = PyLong_AsLong(PyList_GetItem(item, 5));
+        abs_setup.absinfo.resolution = PyLong_AsLong(PyList_GetItem(item, 6));
+
+        if(ioctl(fd, UI_ABS_SETUP, &abs_setup) < 0)
+            goto on_err;
+    }
+
+
+    // Setup evdev:
+    struct uinput_setup usetup;
+    
+    memset(&usetup, 0, sizeof(usetup));
+    strncpy(usetup.name, name, sizeof(usetup.name) - 1);
+    usetup.id.vendor  = vendor;
+    usetup.id.product = product;
+    usetup.id.version = version;
+    usetup.id.bustype = bustype;
+    usetup.ff_effects_max = FF_MAX_EFFECTS;
+    ioctl(fd, UI_DEV_SETUP, &usetup);
+
+    if(ioctl(fd, UI_DEV_SETUP, &usetup) < 0)
+        goto on_err;
+
+
+    Py_RETURN_NONE;
+
+    on_err:
+        _uinput_close(fd);
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+}
+#else
+// Old variant (fallback):
 static PyObject *
 uinput_setup(PyObject *self, PyObject *args) {
     int fd, len, i, abscode;
@@ -127,6 +189,8 @@ uinput_setup(PyObject *self, PyObject *args) {
         PyErr_SetFromErrno(PyExc_IOError);
         return NULL;
 }
+#endif
+
 
 static PyObject *
 uinput_create(PyObject *self, PyObject *args)
