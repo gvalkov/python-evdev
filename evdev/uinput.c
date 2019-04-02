@@ -93,7 +93,7 @@ uinput_setup(PyObject *self, PyObject *args) {
     // Setup absinfo:
     len = PyList_Size(absinfo);
     for (i=0; i<len; i++) {
-        
+
         // item -> (ABS_X, 0, 255, 0, 0, 0, 0)
         item = PyList_GetItem(absinfo, i);
 
@@ -113,7 +113,7 @@ uinput_setup(PyObject *self, PyObject *args) {
 
     // Setup evdev:
     struct uinput_setup usetup;
-    
+
     memset(&usetup, 0, sizeof(usetup));
     strncpy(usetup.name, name, sizeof(usetup.name) - 1);
     usetup.id.vendor  = vendor;
@@ -121,7 +121,6 @@ uinput_setup(PyObject *self, PyObject *args) {
     usetup.id.version = version;
     usetup.id.bustype = bustype;
     usetup.ff_effects_max = FF_MAX_EFFECTS;
-    ioctl(fd, UI_DEV_SETUP, &usetup);
 
     if(ioctl(fd, UI_DEV_SETUP, &usetup) < 0)
         goto on_err;
