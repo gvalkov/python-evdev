@@ -176,14 +176,6 @@ uinput_setup(PyObject *self, PyObject *args) {
     if (write(fd, &uidev, sizeof(uidev)) != sizeof(uidev))
         goto on_err;
 
-    /* if (ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0) */
-    /*     goto on_err; */
-    /* int i; */
-    /* for (i=0; i<KEY_MAX && fd; i++) { */
-    /*      if (ioctl(fd, UI_SET_KEYBIT, i) < 0) */
-    /*         goto on_err; */
-    /* } */
-
     Py_RETURN_NONE;
 
     on_err:
