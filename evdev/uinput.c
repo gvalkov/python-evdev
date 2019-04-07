@@ -74,8 +74,12 @@ uinput_set_phys(PyObject *self, PyObject *args)
 }
 
 
+// Different kernel versions have different device setup methods. You can read
+// more about it here:
+// https://github.com/torvalds/linux/commit/052876f8e5aec887d22c4d06e54aa5531ffcec75
+
+// Setup function for kernel >= v4.5
 #if defined(UI_DEV_SETUP) && defined(UI_ABS_SETUP)
-// New variant is not supported in old linux kernels and FreeBSD
 static PyObject *
 uinput_setup(PyObject *self, PyObject *args) {
     int fd, len, i;
@@ -110,7 +114,6 @@ uinput_setup(PyObject *self, PyObject *args) {
             goto on_err;
     }
 
-
     // Setup evdev:
     struct uinput_setup usetup;
 
@@ -125,7 +128,6 @@ uinput_setup(PyObject *self, PyObject *args) {
     if(ioctl(fd, UI_DEV_SETUP, &usetup) < 0)
         goto on_err;
 
-
     Py_RETURN_NONE;
 
     on_err:
@@ -133,8 +135,9 @@ uinput_setup(PyObject *self, PyObject *args) {
         PyErr_SetFromErrno(PyExc_IOError);
         return NULL;
 }
+
+// Fallback setup function (Linux <= 4.5 and FreeBSD).
 #else
-// Old variant (fallback):
 static PyObject *
 uinput_setup(PyObject *self, PyObject *args) {
     int fd, len, i, abscode;
