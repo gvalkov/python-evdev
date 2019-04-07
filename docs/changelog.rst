@@ -1,6 +1,17 @@
 Changelog
 ---------
 
+1.2.0 (Apr 7, 2019)
+====================
+
+- Add UInput support for the resolution parameter in AbsInfo. This brings
+  support for the new method of uinput device setup, which was `introduced in
+  Linux 4.5`_ (thanks to `@LinusCDE`_).
+
+- Vendor and product identifiers can be greater or equal to `0x8000` (thanks
+  `@ivaradi`_).
+
+
 1.1.2 (Sep 1, 2018)
 ====================
 
@@ -12,7 +23,7 @@ Changelog
 1.1.0 (Aug 27, 2018)
 ====================
 
-- Add support for handling force-feedback effect uploads (many thanks to `@ndreys`).
+- Add support for handling force-feedback effect uploads (many thanks to `@ndreys`_).
 
 - Fix typo preventing ff effects that need left coefficients from working.
 
@@ -352,7 +363,10 @@ Changelog
 .. _`@forsenonlhaimaisentito`: https://github.com/forsenonlhaimaisentito
 .. _`@paulo-raca`: https://github.com/paulo-raca
 .. _`@ndreys`: https://github.com/ndreys
+.. _`@LinusCDE`: https://github.com/gvalkov/python-evdev/pulls/LinusCDE
+.. _`ivaradi`: https://github.com/gvalkov/python-evdev/pull/104
 
+.. _`introduced in Linux 4.5`: https://github.com/torvalds/linux/commit/052876f8e5aec887d22c4d06e54aa5531ffcec75
 .. _issue21121: http://bugs.python.org/issue21121
 .. _`#63`:      https://github.com/gvalkov/python-evdev/issues/63
 .. _`#63`:      https://github.com/gvalkov/python-evdev/issues/67
