@@ -398,3 +398,53 @@ class InputDevice(EventIO):
         msg = 'Please use {0}.path instead of {0}.fn'.format(self.__class__.__name__)
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
         return self.path
+
+    def get_absinfo(self, axis_num):
+        """
+        Return current :class:`AbsInfo` for input device axis
+
+        Arguments
+        ---------
+        axis_num : int
+          EV_ABS keycode (example :attr:`ecodes.ABS_X`)
+
+        Example
+        -------
+
+        >>> device.get_absinfo(ecodes.ABS_X)
+        AbsInfo(value=1501, min=-32768, max=32767, fuzz=0, flat=128, resolution=0)
+
+        """
+        return AbsInfo(*_input.ioctl_EVIOCGABS(self.fd, axis_num))
+
+    def set_absinfo(self, axis_num, value=None, min=None, max=None, fuzz=None, flat=None, resolution=None):
+        """
+        Set AbsInfo values for input device.
+
+        Only values set will be overwritten.
+
+        See :class:`AbsInfo` for more info about the arguments
+
+        Arguments
+        ---------
+        axis_num : int
+          EV_ABS keycode (example :attr:`ecodes.ABS_X`)
+
+        Example
+        -------
+        >>> device.set_absinfo(ecodes.ABS_X, min=-2000, max=2000)
+
+        You can also unpack AbsInfo tuple that will overwrite all values
+
+        >>> device.set_absinfo(ecodes.ABS_Y, *AbsInfo(0, -2000, 2000, 0, 15, 0))
+
+
+        """
+        cur_absinfo = self.get_absinfo(axis_num)
+        new_absinfo = AbsInfo(value if value else cur_absinfo.value,
+                              min if min else cur_absinfo.min,
+                              max if max else cur_absinfo.max,
+                              fuzz if fuzz else cur_absinfo.fuzz,
+                              flat if flat else cur_absinfo.flat,
+                              resolution if resolution else cur_absinfo.resolution)
+        _input.ioctl_EVIOCSABS(self.fd, axis_num, new_absinfo)
