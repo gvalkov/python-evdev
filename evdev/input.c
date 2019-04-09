@@ -243,6 +243,63 @@ ioctl_devinfo(PyObject *self, PyObject *args)
 
 
 static PyObject *
+ioctl_EVIOCGABS(PyObject *self, PyObject *args)
+{
+    int fd, ev_code;
+    struct input_absinfo absinfo;
+    PyObject* py_absinfo = NULL;
+
+    int ret = PyArg_ParseTuple(args, "ii", &fd, &ev_code);
+    if (!ret) return NULL;
+
+    memset(&absinfo, 0, sizeof(absinfo));
+    ret = ioctl(fd, EVIOCGABS(ev_code), &absinfo);
+    if (ret == -1) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
+
+    py_absinfo = Py_BuildValue("(iiiiii)",
+                               absinfo.value,
+                               absinfo.minimum,
+                               absinfo.maximum,
+                               absinfo.fuzz,
+                               absinfo.flat,
+                               absinfo.resolution);
+    return py_absinfo;
+}
+
+
+static PyObject *
+ioctl_EVIOCSABS(PyObject *self, PyObject *args)
+{
+    int fd, ev_code;
+    struct input_absinfo absinfo;
+
+    int ret = PyArg_ParseTuple(args,
+                               "ii(iiiiii)",
+                               &fd,
+                               &ev_code,
+                               &absinfo.value,
+                               &absinfo.minimum,
+                               &absinfo.maximum,
+                               &absinfo.fuzz,
+                               &absinfo.flat,
+                               &absinfo.resolution);
+    if (!ret) return NULL;
+
+    ret = ioctl(fd, EVIOCSABS(ev_code), &absinfo);
+    if (ret == -1) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+
+static PyObject *
 ioctl_EVIOCGREP(PyObject *self, PyObject *args)
 {
     int fd, ret;
@@ -453,6 +510,8 @@ erase_effect(PyObject *self, PyObject *args)
 static PyMethodDef MethodTable[] = {
     { "ioctl_devinfo",        ioctl_devinfo,        METH_VARARGS, "fetch input device info" },
     { "ioctl_capabilities",   ioctl_capabilities,   METH_VARARGS, "fetch input device capabilities" },
+    { "ioctl_EVIOCGABS",      ioctl_EVIOCGABS,      METH_VARARGS, "get input device absinfo"},
+    { "ioctl_EVIOCSABS",      ioctl_EVIOCSABS,      METH_VARARGS, "set input device absinfo"},
     { "ioctl_EVIOCGREP",      ioctl_EVIOCGREP,      METH_VARARGS},
     { "ioctl_EVIOCSREP",      ioctl_EVIOCSREP,      METH_VARARGS},
     { "ioctl_EVIOCGVERSION",  ioctl_EVIOCGVERSION,  METH_VARARGS},
