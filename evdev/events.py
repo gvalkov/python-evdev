@@ -94,7 +94,9 @@ class KeyEvent(object):
         elif event.value == 1:
             self.keystate = KeyEvent.key_down
 
-        self.keycode  = keys[event.code]  # :todo:
+        if not (event.code in keys):
+            keys[event.code] = ''.join('{:02X}'.format(event.code))
+        self.keycode = keys[event.code]
         self.scancode = event.code
 
         #: Reference to an :class:`InputEvent` instance.
