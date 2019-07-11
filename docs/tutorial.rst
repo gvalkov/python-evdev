@@ -363,7 +363,7 @@ Create ``uinput`` device with capabilities of another device
 
 .. _`async/await`:  https://docs.python.org/3/library/asyncio-task.html
 
-Create ``uinput`` device capable of recieving FF-effects
+Create ``uinput`` device capable of receiving FF-effects
 ========================================================
 
 ::

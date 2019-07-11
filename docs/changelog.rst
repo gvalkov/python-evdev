@@ -134,7 +134,7 @@ Changelog
 0.6.1 (Jun 04, 2016)
 ====================
 
-- Dissable tty echoing while evtest is running.
+- Disable tty echoing while evtest is running.
 - Allow evtest to listen to more than one devices.
 
 - The setup.py script now allows the location of the input header files to be
