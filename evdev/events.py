@@ -94,7 +94,12 @@ class KeyEvent(object):
         elif event.value == 1:
             self.keystate = KeyEvent.key_down
 
-        self.keycode  = keys[event.code]  # :todo:
+        try:
+            self.keycode = keys[event.code]
+        except KeyError:
+            #: Report unknown keys with a numeric code
+            keys.update({event.code: "0x{:0X}".format(event.code)})
+            self.keycode = keys[event.code]
         self.scancode = event.code
 
         #: Reference to an :class:`InputEvent` instance.
