@@ -24,6 +24,11 @@
 #include <linux/input.h>
 #endif
 
+#ifndef input_event_sec
+#define input_event_sec time.tv_sec
+#define input_event_usec time.tv_usec
+#endif
+
 #define MAX_NAME_SIZE 256
 
 extern char*  EV_NAME[EV_CNT];
@@ -60,8 +65,8 @@ device_read(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    PyObject* sec  = PyLong_FromLong(event.time.tv_sec);
-    PyObject* usec = PyLong_FromLong(event.time.tv_usec);
+    PyObject* sec  = PyLong_FromLong(event.input_event_sec);
+    PyObject* usec = PyLong_FromLong(event.input_event_usec);
     PyObject* val  = PyLong_FromLong(event.value);
     PyObject* py_input_event = NULL;
 
@@ -102,8 +107,8 @@ device_read_many(PyObject *self, PyObject *args)
 
     // Construct a list of event tuples, which we'll make sense of in Python
     for (unsigned i = 0 ; i < nread/event_size ; i++) {
-        sec  = PyLong_FromLong(event[i].time.tv_sec);
-        usec = PyLong_FromLong(event[i].time.tv_usec);
+        sec  = PyLong_FromLong(event[i].input_event_sec);
+        usec = PyLong_FromLong(event[i].input_event_usec);
         val  = PyLong_FromLong(event[i].value);
 
         py_input_event = Py_BuildValue("OOhhO", sec, usec, event[i].type, event[i].code, val);
