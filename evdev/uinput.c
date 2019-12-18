@@ -16,6 +16,10 @@
 #include <linux/uinput.h>
 #endif
 
+#ifndef input_event_sec
+#define input_event_sec time.tv_sec
+#define input_event_usec time.tv_usec
+#endif
 
 // Workaround for installing on kernels newer than 4.4.
 #ifndef FF_MAX_EFFECTS
@@ -232,8 +236,11 @@ uinput_write(PyObject *self, PyObject *args)
     if (!ret) return NULL;
 
     struct input_event event;
+    struct timeval tval;
     memset(&event, 0, sizeof(event));
-    gettimeofday(&event.time, 0);
+    gettimeofday(&tval, 0);
+    event.input_event_usec = tval.tv_usec;
+    event.input_event_sec = tval.tv_sec;
     event.type = type;
     event.code = code;
     event.value = value;
