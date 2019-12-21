@@ -40,6 +40,7 @@ cflags   = ['-std=c99', '-Wno-error=declaration-after-statement']
 input_c  = Extension('evdev._input',  sources=['evdev/input.c'],  extra_compile_args=cflags)
 uinput_c = Extension('evdev._uinput', sources=['evdev/uinput.c'], extra_compile_args=cflags)
 ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_args=cflags)
+iprops_c = Extension('evdev.iprops', sources=['evdev/iprops.c'], extra_compile_args=cflags)
 
 #-----------------------------------------------------------------------------
 kw = {
@@ -57,7 +58,7 @@ kw = {
     'classifiers':          classifiers,
 
     'packages':             ['evdev'],
-    'ext_modules':          [input_c, uinput_c, ecodes_c],
+    'ext_modules':          [input_c, uinput_c, ecodes_c, iprops_c],
     'include_package_data': False,
     'zip_safe':             True,
     'cmdclass':             {},
@@ -107,6 +108,48 @@ def create_ecodes(headers=None):
 
 
 #-----------------------------------------------------------------------------
+def create_iprops(headers=None):
+    if not headers:
+        headers = [
+            '/usr/include/linux/input.h',
+            '/usr/include/linux/input-event-codes.h',
+            '/usr/include/linux/uinput.h',
+        ]
+
+    headers = [header for header in headers if os.path.isfile(header)]
+    if not headers:
+        msg = '''\
+        The 'linux/input.h' and 'linux/input-event-codes.h' include files
+        are missing. You will have to install the kernel header files in
+        order to continue:
+
+            yum install kernel-headers-$(uname -r)
+            apt-get install linux-headers-$(uname -r)
+            emerge sys-kernel/linux-headers
+            pacman -S kernel-headers
+
+        In case they are installed in a non-standard location, you may use
+        the '--evdev-headers' option to specify one or more colon-separated
+        paths. For example:
+
+            python setup.py \\
+              build \\
+              build_iprops --evdev-headers path/input.h:path/input-event-codes.h \\
+              build_ext --include-dirs  path/ \\
+              install
+        '''
+
+        sys.stderr.write(textwrap.dedent(msg))
+        sys.exit(1)
+
+    from subprocess import check_call
+
+    print('writing iprops.c (using %s)' % ' '.join(headers))
+    cmd = '%s geniprops.py %s > iprops.c' % (sys.executable, ' '.join(headers))
+    check_call(cmd, cwd="%s/evdev" % here, shell=True)
+
+
+#-----------------------------------------------------------------------------
 class build_ecodes(Command):
     description = 'generate ecodes.c'
 
@@ -125,6 +168,24 @@ class build_ecodes(Command):
         create_ecodes(self.evdev_headers)
 
 
+class build_iprops(Command):
+    description = 'generate iprops.c'
+
+    user_options = [
+        ('evdev-headers=', None, 'colon-separated paths to input subsystem headers'),
+    ]
+
+    def initialize_options(self):
+        self.evdev_headers = None
+
+    def finalize_options(self):
+        if self.evdev_headers:
+            self.evdev_headers = self.evdev_headers.split(':')
+
+    def run(self):
+        create_iprops(self.evdev_headers)
+
+
 class build_ext(_build_ext.build_ext):
     def has_ecodes(self):
         ecodes_path = os.path.join(here, 'evdev/ecodes.c')
@@ -133,17 +194,25 @@ class build_ext(_build_ext.build_ext):
             print('ecodes.c already exists ... skipping build_ecodes')
         return not res
 
+    def has_iprops(self):
+        iprops_path = os.path.join(here, 'evdev/iprops.c')
+        res = os.path.exists(iprops_path)
+        if res:
+            print('iprops.c already exists ... skipping build_iprops')
+        return not res
+
     def run(self):
         for cmd_name in self.get_sub_commands():
             self.run_command(cmd_name)
         _build_ext.build_ext.run(self)
 
-    sub_commands =  [('build_ecodes', has_ecodes)] + _build_ext.build_ext.sub_commands
+    sub_commands =  [('build_ecodes', has_ecodes), ('build_iprops', has_iprops)] + _build_ext.build_ext.sub_commands
 
 
 #-----------------------------------------------------------------------------
 kw['cmdclass']['build_ext'] = build_ext
 kw['cmdclass']['build_ecodes'] = build_ecodes
+kw['cmdclass']['build_iprops'] = build_iprops
 
 
 #-----------------------------------------------------------------------------

@@ -77,6 +77,26 @@ uinput_set_phys(PyObject *self, PyObject *args)
         return NULL;
 }
 
+static PyObject *
+uinput_set_prop(PyObject *self, PyObject *args)
+{
+    int fd;
+    uint16_t prop;
+
+    int ret = PyArg_ParseTuple(args, "ih", &fd, &prop);
+    if (!ret) return NULL;
+
+    if (ioctl(fd, UI_SET_PROPBIT, prop) < 0)
+        goto on_err;
+
+    Py_RETURN_NONE;
+
+    on_err:
+        _uinput_close(fd);
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+}
+
 
 // Different kernel versions have different device setup methods. You can read
 // more about it here:
@@ -338,6 +358,9 @@ static PyMethodDef MethodTable[] = {
 
     { "set_phys", uinput_set_phys, METH_VARARGS,
       "Set physical path"},
+
+    { "set_prop", uinput_set_prop, METH_VARARGS,
+      "Set device property"},
 
     { NULL, NULL, 0, NULL}
 };

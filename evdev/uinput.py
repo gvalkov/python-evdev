@@ -77,7 +77,7 @@ class UInput(EventIO):
                  events=None,
                  name='py-evdev-uinput',
                  vendor=0x1, product=0x1, version=0x1, bustype=0x3,
-                 devnode='/dev/uinput', phys='py-evdev-uinput'):
+                 devnode='/dev/uinput', phys='py-evdev-uinput', props=[]):
         '''
         Arguments
         ---------
@@ -131,6 +131,10 @@ class UInput(EventIO):
 
         # Set phys name
         _uinput.set_phys(self.fd, phys)
+
+        # Set properties
+        for prop in props:
+            _uinput.set_prop(self.fd, prop)
 
         for etype, code in prepared_events:
             _uinput.enable(self.fd, etype, code)

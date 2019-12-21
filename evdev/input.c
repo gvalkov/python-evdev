@@ -454,6 +454,33 @@ erase_effect(PyObject *self, PyObject *args)
     return Py_None;
 }
 
+static PyObject *
+ioctl_EVIOCGPROP(PyObject *self, PyObject *args)
+{
+    int fd, ret;
+
+    ret = PyArg_ParseTuple(args, "i", &fd);
+    if (!ret) return NULL;
+
+    char bytes[(INPUT_PROP_MAX+7)/8];
+    memset(bytes, 0, sizeof bytes);
+
+    ret = ioctl(fd, EVIOCGPROP(sizeof(bytes)), &bytes);
+
+    if (ret == -1)
+        return NULL;
+
+    PyObject* res = PyList_New(0);
+    for (int i=0; i<INPUT_PROP_MAX; i++) {
+        if (test_bit(bytes, i)) {
+            PyList_Append(res, Py_BuildValue("i", i));
+        }
+    }
+
+    return res;
+}
+
+
 
 static PyMethodDef MethodTable[] = {
     { "ioctl_devinfo",        ioctl_devinfo,        METH_VARARGS, "fetch input device info" },
@@ -468,6 +495,7 @@ static PyMethodDef MethodTable[] = {
     { "device_read_many",     device_read_many,     METH_VARARGS, "read all available input events from a device" },
     { "upload_effect",        upload_effect,        METH_VARARGS, "" },
     { "erase_effect",         erase_effect,         METH_VARARGS, "" },
+    { "ioctl_EVIOCGPROP",     ioctl_EVIOCGPROP,     METH_VARARGS, "get device properties"},
 
     { NULL, NULL, 0, NULL}
 };

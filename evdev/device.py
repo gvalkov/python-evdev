@@ -223,6 +223,11 @@ class InputDevice(EventIO):
         else:
             return self._capabilities(absinfo)
 
+    def props(self):
+        props = _input.ioctl_EVIOCGPROP(self.fd)
+
+        return props
+
     def leds(self, verbose=False):
         '''
         Return currently set LED keys.

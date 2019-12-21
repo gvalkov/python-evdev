@@ -13,6 +13,7 @@ tags
 TAGS
 evdev/*.so
 evdev/ecodes.c
+evdev/iprops.c
 docs/_build
 .#*
 __pycache__
