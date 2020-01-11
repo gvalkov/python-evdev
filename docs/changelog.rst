@@ -383,9 +383,9 @@ Changelog
 .. _`@paulo-raca`: https://github.com/paulo-raca
 .. _`@ndreys`: https://github.com/ndreys
 .. _`@LinusCDE`: https://github.com/gvalkov/python-evdev/pulls/LinusCDE
-.. _`ivaradi`: https://github.com/gvalkov/python-evdev/pull/104
+.. _`@ivaradi`: https://github.com/gvalkov/python-evdev/pull/104
 
 .. _`introduced in Linux 4.5`: https://github.com/torvalds/linux/commit/052876f8e5aec887d22c4d06e54aa5531ffcec75
 .. _issue21121: http://bugs.python.org/issue21121
 .. _`#63`:      https://github.com/gvalkov/python-evdev/issues/63
-.. _`#63`:      https://github.com/gvalkov/python-evdev/issues/67
+.. _`#67`:      https://github.com/gvalkov/python-evdev/issues/67
