@@ -1,7 +1,7 @@
 Changelog
 ---------
 
-Master
+1.3.0 (Jan 12, 2020)
 ====================
 
 - Fix build on 32bit arches with 64bit time_t
