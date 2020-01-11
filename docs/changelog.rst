@@ -14,6 +14,8 @@ Master
   The default and behavior so far has been to raise ``KeyError``. If set to
   ``True``, the keycode will be set to the event code formatted as a hex number.
 
+- Add ``InputDevice.set_absinfo()`` and ``InputDevice.get_absinfo()``.
+
 
 1.2.0 (Apr 7, 2019)
 ====================

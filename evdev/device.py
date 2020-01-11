@@ -400,7 +400,7 @@ class InputDevice(EventIO):
         return self.path
 
     def get_absinfo(self, axis_num):
-        """
+        '''
         Return current :class:`AbsInfo` for input device axis
 
         Arguments
@@ -410,20 +410,14 @@ class InputDevice(EventIO):
 
         Example
         -------
-
         >>> device.get_absinfo(ecodes.ABS_X)
         AbsInfo(value=1501, min=-32768, max=32767, fuzz=0, flat=128, resolution=0)
-
-        """
+        '''
         return AbsInfo(*_input.ioctl_EVIOCGABS(self.fd, axis_num))
 
     def set_absinfo(self, axis_num, value=None, min=None, max=None, fuzz=None, flat=None, resolution=None):
-        """
-        Set AbsInfo values for input device.
-
-        Only values set will be overwritten.
-
-        See :class:`AbsInfo` for more info about the arguments
+        '''
+        Update :class:`AbsInfo` values. Only specified values will be overwritten.
 
         Arguments
         ---------
@@ -437,9 +431,8 @@ class InputDevice(EventIO):
         You can also unpack AbsInfo tuple that will overwrite all values
 
         >>> device.set_absinfo(ecodes.ABS_Y, *AbsInfo(0, -2000, 2000, 0, 15, 0))
+        '''
 
-
-        """
         cur_absinfo = self.get_absinfo(axis_num)
         new_absinfo = AbsInfo(value if value else cur_absinfo.value,
                               min if min else cur_absinfo.min,
