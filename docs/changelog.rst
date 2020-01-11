@@ -9,6 +9,11 @@ Master
 - Add functionality to query device properties. See ``InputDevice.input_props``
   and the ``input_props`` argument to ``Uinput``.
 
+- ``KeyEvent`` received an ``allow_unknown`` constructor argument, which
+  determines what will happen when an event code cannot be mapped to a keycode.
+  The default and behavior so far has been to raise ``KeyError``. If set to
+  ``True``, the keycode will be set to the event code formatted as a hex number.
+
 
 1.2.0 (Apr 7, 2019)
 ====================

@@ -86,7 +86,15 @@ class KeyEvent(object):
 
     __slots__ = 'scancode', 'keycode', 'keystate', 'event'
 
-    def __init__(self, event):
+    def __init__(self, event, allow_unknown=False):
+        '''
+        The ``allow_unknown`` argument determines what to do in the event of a event code
+        for which a key code cannot be found. If ``False`` a ``KeyError`` will be raised.
+        If ``True`` the keycode will be set to the hex value of the event code.
+        '''
+
+        self.scancode = event.code
+
         if event.value == 0:
             self.keystate = KeyEvent.key_up
         elif event.value == 2:
@@ -94,10 +102,13 @@ class KeyEvent(object):
         elif event.value == 1:
             self.keystate = KeyEvent.key_down
 
-        if not (event.code in keys):
-            keys[event.code] = ''.join('{:02X}'.format(event.code))
-        self.keycode = keys[event.code]
-        self.scancode = event.code
+        try:
+            self.keycode = keys[event.code]
+        except KeyError:
+            if allow_unknown:
+                self.keycode = '0x{:02X}'.format(event.code)
+            else:
+                raise
 
         #: Reference to an :class:`InputEvent` instance.
         self.event = event
