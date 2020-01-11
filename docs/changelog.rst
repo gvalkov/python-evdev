@@ -14,7 +14,7 @@ Master
   The default and behavior so far has been to raise ``KeyError``. If set to
   ``True``, the keycode will be set to the event code formatted as a hex number.
 
-- Add ``InputDevice.set_absinfo()`` and ``InputDevice.get_absinfo()``.
+- Add ``InputDevice.set_absinfo()`` and ``InputDevice.absinfo()``.
 
 - Instruct the asyncio event loop to stop monitoring the fd of the input device
   when the device is closed.

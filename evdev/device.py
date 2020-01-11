@@ -400,7 +400,7 @@ class InputDevice(EventIO):
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
         return self.path
 
-    def get_absinfo(self, axis_num):
+    def absinfo(self, axis_num):
         '''
         Return current :class:`AbsInfo` for input device axis
 
@@ -411,7 +411,7 @@ class InputDevice(EventIO):
 
         Example
         -------
-        >>> device.get_absinfo(ecodes.ABS_X)
+        >>> device.absinfo(ecodes.ABS_X)
         AbsInfo(value=1501, min=-32768, max=32767, fuzz=0, flat=128, resolution=0)
         '''
         return AbsInfo(*_input.ioctl_EVIOCGABS(self.fd, axis_num))
@@ -434,7 +434,7 @@ class InputDevice(EventIO):
         >>> device.set_absinfo(ecodes.ABS_Y, *AbsInfo(0, -2000, 2000, 0, 15, 0))
         '''
 
-        cur_absinfo = self.get_absinfo(axis_num)
+        cur_absinfo = self.absinfo(axis_num)
         new_absinfo = AbsInfo(value if value else cur_absinfo.value,
                               min if min else cur_absinfo.min,
                               max if max else cur_absinfo.max,
