@@ -16,6 +16,9 @@ Master
 
 - Add ``InputDevice.set_absinfo()`` and ``InputDevice.get_absinfo()``.
 
+- Instruct the asyncio event loop to stop monitoring the fd of the input device
+  when the device is closed.
+
 
 1.2.0 (Apr 7, 2019)
 ====================

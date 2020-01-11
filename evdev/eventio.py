@@ -134,3 +134,6 @@ class EventIO(object):
         '''
 
         _uinput.write(self.fd, etype, code, value)
+
+    def close(self):
+        pass

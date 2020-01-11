@@ -50,6 +50,10 @@ class EventIO(eventio.EventIO):
         '''
         return ReadIterator(self)
 
+    def close(self):
+        loop = asyncio.get_event_loop()
+        loop.remove_reader(self.fileno())
+
 
 class ReadIterator(object):
     def __init__(self, device):
