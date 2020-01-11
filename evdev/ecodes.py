@@ -7,7 +7,7 @@ This modules exposes the integer constants defined in ``linux/input.h`` and
 Exposed constants::
 
     KEY, ABS, REL, SW, MSC, LED, BTN, REP, SND, ID, EV,
-    BUS, SYN, FF, FF_STATUS
+    BUS, SYN, FF, FF_STATUS, INPUT_PROP
 
 This module also provides reverse and forward mappings of the names and values
 of the above mentioned constants::
@@ -47,7 +47,7 @@ from evdev import _ecodes
 #: Mapping of names to values.
 ecodes = {}
 
-prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF'
+prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF INPUT_PROP'
 prev_prefix = ''
 g = globals()
 
@@ -94,7 +94,8 @@ bytype = {
     _ecodes.EV_SND: SND,
     _ecodes.EV_SYN: SYN,
     _ecodes.EV_FF:  FF,
-    _ecodes.EV_FF_STATUS: FF_STATUS, }
+    _ecodes.EV_FF_STATUS: FF_STATUS,
+}
 
 from evdev._ecodes import *
 

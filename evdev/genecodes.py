@@ -20,7 +20,7 @@ if sys.argv[1:]:
 
 
 #-----------------------------------------------------------------------------
-macro_regex = r'#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF)_\w+)'
+macro_regex = r'#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)'
 macro_regex = re.compile(macro_regex)
 
 uname = list(os.uname()); del uname[1]

@@ -1,6 +1,15 @@
 Changelog
 ---------
 
+Master
+====================
+
+- Fix build on 32bit arches with 64bit time_t
+
+- Add functionality to query device properties. See ``InputDevice.input_props``
+  and the ``input_props`` argument to ``Uinput``.
+
+
 1.2.0 (Apr 7, 2019)
 ====================
 

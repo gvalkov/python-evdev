@@ -491,11 +491,11 @@ static PyMethodDef MethodTable[] = {
     { "ioctl_EVIOCGRAB",      ioctl_EVIOCGRAB,      METH_VARARGS},
     { "ioctl_EVIOCGEFFECTS",  ioctl_EVIOCGEFFECTS,  METH_VARARGS, "fetch the number of effects the device can keep in its memory." },
     { "ioctl_EVIOCG_bits",    ioctl_EVIOCG_bits,    METH_VARARGS, "get state of KEY|LED|SND|SW"},
+    { "ioctl_EVIOCGPROP",     ioctl_EVIOCGPROP,     METH_VARARGS, "get device properties"},
     { "device_read",          device_read,          METH_VARARGS, "read an input event from a device" },
     { "device_read_many",     device_read_many,     METH_VARARGS, "read all available input events from a device" },
     { "upload_effect",        upload_effect,        METH_VARARGS, "" },
     { "erase_effect",         erase_effect,         METH_VARARGS, "" },
-    { "ioctl_EVIOCGPROP",     ioctl_EVIOCGPROP,     METH_VARARGS, "get device properties"},
 
     { NULL, NULL, 0, NULL}
 };

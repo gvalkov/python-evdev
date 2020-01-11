@@ -223,8 +223,24 @@ class InputDevice(EventIO):
         else:
             return self._capabilities(absinfo)
 
-    def props(self):
+    def input_props(self, verbose=False):
+        '''
+        Get device properties and quirks.
+
+        Example
+        -------
+        >>> device.input_props()
+        [0, 5]
+
+        If ``verbose`` is ``True``, input properties are resolved to their
+        names. Unknown codes are resolved to ``'?'``::
+
+        [('INPUT_PROP_POINTER', 0), ('INPUT_PROP_POINTING_STICK', 5)]
+
+        '''
         props = _input.ioctl_EVIOCGPROP(self.fd)
+        if verbose:
+            return util.resolve_ecodes(ecodes.INPUT_PROP, props)
 
         return props
 

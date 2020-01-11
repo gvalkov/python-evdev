@@ -360,7 +360,7 @@ static PyMethodDef MethodTable[] = {
       "Set physical path"},
 
     { "set_prop", uinput_set_prop, METH_VARARGS,
-      "Set device property"},
+      "Set device input property"},
 
     { NULL, NULL, 0, NULL}
 };

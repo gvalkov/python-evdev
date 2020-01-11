@@ -77,7 +77,7 @@ class UInput(EventIO):
                  events=None,
                  name='py-evdev-uinput',
                  vendor=0x1, product=0x1, version=0x1, bustype=0x3,
-                 devnode='/dev/uinput', phys='py-evdev-uinput', props=[]):
+                 devnode='/dev/uinput', phys='py-evdev-uinput', input_props=None):
         '''
         Arguments
         ---------
@@ -96,13 +96,16 @@ class UInput(EventIO):
           Product identifier.
 
         version
-          version identifier.
+          Version identifier.
 
         bustype
-          bustype identifier.
+          Bustype identifier.
 
         phys
-          physical path.
+          Physical path.
+
+        input_props
+          Input properties and quirks.
 
         Note
         ----
@@ -133,7 +136,8 @@ class UInput(EventIO):
         _uinput.set_phys(self.fd, phys)
 
         # Set properties
-        for prop in props:
+        input_props = input_props or []
+        for prop in input_props:
             _uinput.set_prop(self.fd, prop)
 
         for etype, code in prepared_events:
