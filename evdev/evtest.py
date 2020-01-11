@@ -121,6 +121,7 @@ def select_devices(device_dir='/dev/input'):
 
 def print_capabilities(device):
     capabilities = device.capabilities(verbose=True)
+    input_props = device.input_props(verbose=True)
 
     print('Device name: {.name}'.format(device))
     print('Device info: {.info}'.format(device))
@@ -132,6 +133,12 @@ def print_capabilities(device):
 
     active_keys = ','.join(k[0] for k in device.active_keys(True))
     print('Active keys: %s\n' % active_keys)
+
+    if input_props:
+        print('Input properties:')
+        for type, code in input_props:
+            print('  %s %s' % (type, code))
+        print()
 
     print('Device capabilities:')
     for type, codes in capabilities.items():
