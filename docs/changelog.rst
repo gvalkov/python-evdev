@@ -1,6 +1,12 @@
 Changelog
 ---------
 
+Master
+====================
+
+- Fix ``InputDevice.set_absinfo`` to allow setting parameters to zero.
+
+
 1.3.0 (Jan 12, 2020)
 ====================
 
