@@ -413,7 +413,7 @@ ioctl_EVIOCG_bits(PyObject *self, PyObject *args)
         return NULL;
 
     PyObject* res = PyList_New(0);
-    for (int i=0; i<max; i++) {
+    for (int i=0; i<=max; i++) {
         if (test_bit(bytes, i)) {
             PyList_Append(res, Py_BuildValue("i", i));
         }
