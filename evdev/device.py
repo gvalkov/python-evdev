@@ -435,10 +435,10 @@ class InputDevice(EventIO):
         '''
 
         cur_absinfo = self.absinfo(axis_num)
-        new_absinfo = AbsInfo(value if value else cur_absinfo.value,
-                              min if min else cur_absinfo.min,
-                              max if max else cur_absinfo.max,
-                              fuzz if fuzz else cur_absinfo.fuzz,
-                              flat if flat else cur_absinfo.flat,
-                              resolution if resolution else cur_absinfo.resolution)
+        new_absinfo = AbsInfo(value if value is not None else cur_absinfo.value,
+                              min if min is not None else cur_absinfo.min,
+                              max if max is not None else cur_absinfo.max,
+                              fuzz if fuzz is not None else cur_absinfo.fuzz,
+                              flat if flat is not None else cur_absinfo.flat,
+                              resolution if resolution is not None else cur_absinfo.resolution)
         _input.ioctl_EVIOCSABS(self.fd, axis_num, new_absinfo)
