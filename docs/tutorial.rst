@@ -312,6 +312,21 @@ Injecting events (using a context manager)
     ...    ui.syn()
 
 
+Injecting events (using specific capabilities)
+==============================================
+
+::
+
+    >>> events = {ecodes.EV_KEY: util.filter_ecodes(r'KEY_[A-C]')}
+    >>> with UInput(events) as ui:
+    ...    for letter in ('A', 'B', 'C'):
+    ...        key = ecodes.ecodes['KEY_' + letter]
+    ...        ui.write(e.EV_KEY, key, 1)  # KEY down
+    ...        ui.write(e.EV_KEY, key, 0)  # KEY up
+    ...        time.sleep(.05)
+    ...        ui.syn()
+
+
 Specifying ``uinput`` device options
 ====================================
 

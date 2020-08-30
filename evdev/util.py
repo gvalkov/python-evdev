@@ -3,6 +3,7 @@
 import os
 import stat
 import glob
+import re
 
 from evdev import ecodes
 from evdev.events import event_factory
@@ -112,4 +113,32 @@ def resolve_ecodes(ecode_dict, ecode_list, unknown='?'):
     return res
 
 
-__all__ = ('list_devices', 'is_device', 'categorize', 'resolve_ecodes', 'resolve_ecodes_dict')
+def filter_ecodes(r):
+    '''
+    Filter event key codes by regular expression.
+
+    Example
+    -------
+    >>> list(filter_ecodes(r'KEY_([A-C]|ENTER|SPACE)$'))
+    [30, 48, 46, 28, 57]
+    '''
+    c = re.compile(r)
+    for key, value in ecodes.keys.items():
+        if isinstance(value, str):
+            codes = (value,)
+        elif isinstance(value, list):
+            codes = value
+
+        for code in codes:
+            if c.match(code):
+                yield key
+
+
+__all__ = (
+    'list_devices',
+    'is_device',
+    'categorize',
+    'resolve_ecodes',
+    'resolve_ecodes_dict',
+    'filter_ecodes',
+)
