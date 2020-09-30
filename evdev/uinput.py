@@ -229,26 +229,30 @@ class UInput(EventIO):
         upload = ff.UInputUpload()
         upload.effect_id = effect_id
 
-        if self.dll._uinput_begin_upload(self.fd, ctypes.byref(upload)):
-            raise UInputError('Failed to begin uinput upload: ' + os.strerror())
+        ret = self.dll._uinput_begin_upload(self.fd, ctypes.byref(upload))
+        if ret:
+            raise UInputError('Failed to begin uinput upload: ' + os.strerror(ret))
 
         return upload
 
     def end_upload(self, upload):
-        if self.dll._uinput_end_upload(self.fd, ctypes.byref(upload)):
-            raise UInputError('Failed to end uinput upload: ' + os.strerror())
+        ret = self.dll._uinput_end_upload(self.fd, ctypes.byref(upload))
+        if ret:
+            raise UInputError('Failed to end uinput upload: ' + os.strerror(ret))
 
     def begin_erase(self, effect_id):
         erase = ff.UInputErase()
         erase.effect_id = effect_id
 
-        if self.dll._uinput_begin_erase(self.fd, ctypes.byref(erase)):
-            raise UInputError('Failed to begin uinput erase: ' + os.strerror())
+        ret = self.dll._uinput_begin_erase(self.fd, ctypes.byref(erase))
+        if ret:
+            raise UInputError('Failed to begin uinput erase: ' + os.strerror(ret))
         return erase
 
     def end_erase(self, erase):
-        if self.dll._uinput_end_erase(self.fd, ctypes.byref(erase)):
-            raise UInputError('Failed to end uinput erase: ' + os.strerror())
+        ret = self.dll._uinput_end_erase(self.fd, ctypes.byref(erase))
+        if ret:
+            raise UInputError('Failed to end uinput erase: ' + os.strerror(ret))
 
     def _verify(self):
         '''
