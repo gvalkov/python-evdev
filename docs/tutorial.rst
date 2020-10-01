@@ -391,7 +391,7 @@ Create ``uinput`` device capable of receiving FF-effects
                 upload = device.begin_upload(event.value)
                 upload.retval = 0
 
-                print(f'[upload] effect_id: {upload.effect_id}, type: {upload.effect.type}')
+                print(f'[upload] effect_id: {upload.effect.id}, type: {upload.effect.type}')
                 device.end_upload(upload)
 
             elif event.code == ecodes.UI_FF_ERASE:
