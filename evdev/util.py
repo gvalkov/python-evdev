@@ -1,8 +1,10 @@
 # encoding: utf-8
 
+import re
 import os
 import stat
 import glob
+import collections
 
 from evdev import ecodes
 from evdev.events import event_factory
@@ -112,4 +114,34 @@ def resolve_ecodes(ecode_dict, ecode_list, unknown='?'):
     return res
 
 
-__all__ = ('list_devices', 'is_device', 'categorize', 'resolve_ecodes', 'resolve_ecodes_dict')
+def find_ecodes_by_regex(regex):
+    '''
+    Find ecodes matching a regex and return a mapping of event type to event codes.
+
+    Example
+    -------
+    >>> find_ecodes_by_regex(r'(ABS|KEY)_BR(AKE|EAK)')
+    {1: [411], 3: [10]}
+    >>> res = find_ecodes_by_regex(r'(ABS|KEY)_BR(AKE|EAK)')
+    >>> resolve_ecodes_dict(res)
+    {
+        ('EV_KEY', 1): [('KEY_BREAK', 411)],
+        ('EV_ABS', 3): [('ABS_BRAKE', 10)]
+    }
+    '''
+
+    regex = regex if isinstance(regex, re.Pattern) else re.compile(regex)
+    result = collections.defaultdict(list)
+
+    for type_code, codes in ecodes.bytype.items():
+        for code, names in codes.items():
+            names = (names,) if isinstance(names, str) else names
+            for name in names:
+                if regex.match(name):
+                    result[type_code].append(code)
+                    break
+
+    return dict(result)
+
+
+__all__ = ('list_devices', 'is_device', 'categorize', 'resolve_ecodes', 'resolve_ecodes_dict', 'find_ecodes_by_regex')

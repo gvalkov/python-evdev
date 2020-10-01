@@ -253,6 +253,20 @@ Accessing evdev constants
     ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
 
 
+Searching event codes by regex
+==============================
+
+::
+
+    >>> from evdev import util
+
+    >>> res = util.find_ecodes_by_regex(r'(ABS|KEY)_BR(AKE|EAK)')
+    >>> res
+    ... {1: [411], 3: [10]}
+    >>> util.resolve_ecodes_dict(res)
+    ... {('EV_KEY', 1): [('KEY_BREAK', 411)], ('EV_ABS', 3): [('ABS_BRAKE', 10)]}
+
+
 Getting exclusive access to a device
 ====================================
 
