@@ -91,8 +91,8 @@ def resolve_ecodes(ecode_dict, ecode_list, unknown='?'):
 
     Example
     -------
-    >>> resolve_ecodes([272, 273, 274])
-    [('BTN_MOUSE',  272), ('BTN_RIGHT',  273), ('BTN_MIDDLE', 274)]
+    >>> resolve_ecodes(ecodes.BTN, [272, 273, 274])
+    [(['BTN_LEFT', 'BTN_MOUSE'], 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274)]
     '''
     res = []
     for ecode in ecode_list:
