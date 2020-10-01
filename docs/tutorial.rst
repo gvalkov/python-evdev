@@ -385,7 +385,7 @@ Create ``uinput`` device capable of receiving FF-effects
             # Wait for an EV_UINPUT event that will signal us that an
             # effect upload/erase operation is in progress.
             if event.type != ecodes.EV_UINPUT:
-                pass
+                continue
 
             if event.code == ecodes.UI_FF_UPLOAD:
                 upload = device.begin_upload(event.value)
