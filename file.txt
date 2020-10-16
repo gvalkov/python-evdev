@@ -1,0 +1,5 @@
+pytest>=3.8.0
+Sphinx>=2.10.0
+bump2version
+sphinx_rtd_theme
+twine
