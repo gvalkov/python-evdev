@@ -102,6 +102,7 @@ device_read_many(PyObject *self, PyObject *args)
 
     if (nread < 0) {
         PyErr_SetFromErrno(PyExc_IOError);
+        Py_DECREF(event_list);
         return NULL;
     }
 
