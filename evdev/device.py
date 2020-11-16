@@ -303,6 +303,8 @@ class InputDevice(EventIO):
         if self.fd > -1:
             try:
                 super().close()
+                # avoid blocking at the end of functions when the destructor
+                # is called.
                 threading.Thread(target=os.close, args=(self.fd,)).start()
             finally:
                 self.fd = -1
