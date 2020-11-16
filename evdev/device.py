@@ -4,6 +4,7 @@ import os
 import warnings
 import contextlib
 import collections
+import threading
 
 from evdev import _input, ecodes, util
 from evdev.events import InputEvent
@@ -302,7 +303,7 @@ class InputDevice(EventIO):
         if self.fd > -1:
             try:
                 super().close()
-                os.close(self.fd)
+                threading.Thread(target=os.close, args=(self.fd,)).start()
             finally:
                 self.fd = -1
 
