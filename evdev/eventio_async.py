@@ -56,7 +56,7 @@ class EventIO(eventio.EventIO):
             loop.remove_reader(self.fileno())
         except RuntimeError:
             # no event loop present, so there is nothing to
-            # remove the header from. ignore
+            # remove the reader from. Ignore
             pass
 
 
