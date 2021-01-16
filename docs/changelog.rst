@@ -1,10 +1,29 @@
 Changelog
 ---------
 
-Master
+
+1.4.0 (Jan 16, 2021)
 ====================
 
 - Fix ``InputDevice.set_absinfo`` to allow setting parameters to zero.
+
+- Fix off-by-one in ``ioctl_EVIOCG_bits``, which causes value at the end of the
+  list to not be reported back (`#131 <https://github.com/gvalkov/python-evdev/pull/131>`_).
+
+- Fix ``set_absinfo`` to allow setting parameters to zero (`#128 <https://github.com/gvalkov/python-evdev/pull/128>`_).
+
+- Fix leak when returning ``BlockingIOError`` from a read (`#143 <https://github.com/gvalkov/python-evdev/pull/143>`_).
+
+- Fix "There is no current event loop in thread" error for non asyncio code
+  (`#146 <https://github.com/gvalkov/python-evdev/pull/146>`_).
+
+- Prevent ``InputDevice`` destructor from blocking (`#145 <https://github.com/gvalkov/python-evdev/pull/145>`_).
+
+- Add missing return codes to ``os.strerror()`` calls and fix force feedback
+  example in docs (`#138 <https://github.com/gvalkov/python-evdev/pull/137>`_).
+
+- Add the ``util.find_ecodes_by_regex()`` helper function.
+
 
 
 1.3.0 (Jan 12, 2020)
