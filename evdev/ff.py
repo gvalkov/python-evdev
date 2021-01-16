@@ -51,7 +51,7 @@ class Envelope(ctypes.Structure):
     '''
 
     _fields_ = [
-        ('attach_length', _u16),
+        ('attack_length', _u16),
         ('attack_level', _u16),
         ('fade_length', _u16),
         ('fade_level', _u16),
