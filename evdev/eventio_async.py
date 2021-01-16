@@ -51,8 +51,13 @@ class EventIO(eventio.EventIO):
         return ReadIterator(self)
 
     def close(self):
-        loop = asyncio.get_event_loop()
-        loop.remove_reader(self.fileno())
+        try:
+            loop = asyncio.get_event_loop()
+            loop.remove_reader(self.fileno())
+        except RuntimeError:
+            # no event loop present, so there is nothing to
+            # remove the reader from. Ignore
+            pass
 
 
 class ReadIterator(object):
