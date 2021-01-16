@@ -18,13 +18,13 @@ injection support.
 
 - python-uinput_
 - uinput-mapper_
-- PyUserInput_ (cross-platform, works on the display server level)
+- pynput_
 - pygame_ (cross-platform)
 
 
 .. _python-uinput:     https://github.com/tuomasjjrasanen/python-uinput
 .. _uinput-mapper:     https://github.com/MerlijnWajer/uinput-mapper
-.. _PyUserInput:       https://github.com/PyUserInput/PyUserInput
+.. _pynput:            https://github.com/moses-palmer/pynput
 .. _pygame:            http://www.pygame.org/
 
 .. _`#7`:  https://github.com/gvalkov/python-evdev/issues/7
