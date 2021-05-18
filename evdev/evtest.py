@@ -67,7 +67,7 @@ def main():
     # Disable tty echoing if stdin is a tty.
     if sys.stdin.isatty():
         toggle_tty_echo(sys.stdin, enable=False)
-        atexit.register(toggle_tty_echo, sys.stdin, enable=False)
+        atexit.register(toggle_tty_echo, sys.stdin, enable=True)
 
     print('Listening for events (press ctrl-c to exit) ...')
     fd_to_device = {dev.fd: dev for dev in devices}
