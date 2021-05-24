@@ -54,7 +54,7 @@ class EventIO(eventio.EventIO):
         try:
             loop = asyncio.get_event_loop()
             loop.remove_reader(self.fileno())
-        except RuntimeError, AttributeError:
+        except (RuntimeError, AttributeError):
             # no event loop present, so there is nothing to
             # remove the reader from. Ignore
             pass
