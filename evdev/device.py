@@ -107,14 +107,16 @@ class InputDevice(EventIO):
     '''
 
     __slots__ = ('path', 'fd', 'info', 'name', 'phys', 'uniq', '_rawcapabilities',
-                 'version', 'ff_effects_count')
+                 'version', 'ff_effects_count', 'threaded_close')
 
-    def __init__(self, dev):
+    def __init__(self, dev, threaded_close):
         '''
         Arguments
         ---------
         dev : str|bytes|PathLike
           Path to input device
+        threaded_close : boolean
+          If True, run a thread to close the devnode to avoid lags during garbage collection
         '''
 
         #: Path to input device.
@@ -153,6 +155,8 @@ class InputDevice(EventIO):
 
         #: The number of force feedback effects the device can keep in its memory.
         self.ff_effects_count = _input.ioctl_EVIOCGEFFECTS(self.fd)
+
+        self.threaded_close = threaded_close
 
     def __del__(self):
         if hasattr(self, 'fd') and self.fd is not None:
@@ -303,9 +307,12 @@ class InputDevice(EventIO):
         if self.fd > -1:
             try:
                 super().close()
-                # avoid blocking at the end of functions when the destructor
-                # is called.
-                threading.Thread(target=os.close, args=(self.fd,)).start()
+                if self.threaded_close:
+                    # avoid blocking at the end of functions when the
+                    # destructor is called.
+                    threading.Thread(target=os.close, args=(self.fd,)).start()
+                else:
+                    os.close(self.fd)
             finally:
                 self.fd = -1
 
