@@ -109,14 +109,15 @@ class InputDevice(EventIO):
     __slots__ = ('path', 'fd', 'info', 'name', 'phys', 'uniq', '_rawcapabilities',
                  'version', 'ff_effects_count', 'threaded_close')
 
-    def __init__(self, dev, threaded_close):
+    def __init__(self, dev, threaded_close=False):
         '''
         Arguments
         ---------
         dev : str|bytes|PathLike
           Path to input device
         threaded_close : boolean
-          If True, run a thread to close the devnode to avoid lags during garbage collection
+          If True, run a thread to close the devnode to avoid lags during garbage
+          collection
         '''
 
         #: Path to input device.
