@@ -118,6 +118,8 @@ def find_ecodes_by_regex(regex):
     '''
     Find ecodes matching a regex and return a mapping of event type to event codes.
 
+    regex can be a pattern string or a compiled regular expression object.
+
     Example
     -------
     >>> find_ecodes_by_regex(r'(ABS|KEY)_BR(AKE|EAK)')
@@ -130,7 +132,7 @@ def find_ecodes_by_regex(regex):
     }
     '''
 
-    regex = regex if isinstance(regex, re.Pattern) else re.compile(regex)
+    regex = re.compile(regex)  # re.compile is idempotent
     result = collections.defaultdict(list)
 
     for type_code, codes in ecodes.bytype.items():
