@@ -425,10 +425,11 @@ Injecting an FF-event into first FF-capable device found
 
 ::
 
-    from evdev import ecodes, InputDevice, ff
+    from evdev import ecodes, InputDevice, ff, list_devices
+    import time
 
     # Find first EV_FF capable event device (that we have permissions to use).
-    for name in evdev.list_devices():
+    for name in list_devices():
         dev = InputDevice(name)
         if ecodes.EV_FF in dev.capabilities():
             break
@@ -446,5 +447,6 @@ Injecting an FF-event into first FF-capable device found
 
     repeat_count = 1
     effect_id = dev.upload_effect(effect)
-    dev.write(e.EV_FF, effect_id, repeat_count)
+    dev.write(ecodes.EV_FF, effect_id, repeat_count)
+    time.sleep(duration_ms)
     dev.erase_effect(effect_id)
