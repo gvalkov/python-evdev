@@ -175,14 +175,14 @@ This can also be achieved using the :mod:`selectors` module in Python 3.4:
    from evdev import InputDevice
    from selectors import DefaultSelector, EVENT_READ
 
-   selector = selectors.DefaultSelector()
+   selector = DefaultSelector()
 
-   mouse = evdev.InputDevice('/dev/input/event1')
-   keybd = evdev.InputDevice('/dev/input/event2')
+   mouse = InputDevice('/dev/input/event1')
+   keybd = InputDevice('/dev/input/event2')
 
    # This works because InputDevice has a `fileno()` method.
-   selector.register(mouse, selectors.EVENT_READ)
-   selector.register(keybd, selectors.EVENT_READ)
+   selector.register(mouse, EVENT_READ)
+   selector.register(keybd, EVENT_READ)
 
    while True:
        for key, mask in selector.select():
