@@ -158,7 +158,7 @@ class InputDevice(EventIO):
         if hasattr(self, 'fd') and self.fd is not None:
             try:
                 self.close()
-            except OSError:
+            except (OSError, ImportError, AttributeError):
                 pass
 
     def _capabilities(self, absinfo=True):
