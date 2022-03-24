@@ -22,12 +22,12 @@ here = abspath(dirname(__file__))
 #-----------------------------------------------------------------------------
 classifiers = [
     'Development Status :: 5 - Production/Stable',
-    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.3',
-    'Programming Language :: Python :: 3.4',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
     'Operating System :: POSIX :: Linux',
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Libraries',
@@ -44,7 +44,7 @@ ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_
 #-----------------------------------------------------------------------------
 kw = {
     'name':                 'evdev',
-    'version':              '1.4.0',
+    'version':              '1.5.0',
 
     'description':          'Bindings to the Linux input handling subsystem',
     'long_description':     open(pjoin(here, 'README.rst')).read(),

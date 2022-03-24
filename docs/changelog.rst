@@ -1,6 +1,22 @@
 Changelog
 ---------
 
+1.5.0 (Mar 24, 2022)
+==================
+
+- Fix documentation (`#163 <https://github.com/gvalkov/python-evdev/pull/163>`_, `#160 <https://github.com/gvalkov/python-evdev/pull/160>`_).
+
+- Re-enable TTY echo at evtest exit (`#155 <https://github.com/gvalkov/python-evdev/pull/155>`_).
+
+- Fix ``ImportError: sys.meta_path is None, Python is likely shutting down`` (`#154 <https://github.com/gvalkov/python-evdev/pull/154>`_).
+
+- Closing the input device file descriptor in ``InputDevice.close()`` now
+  happens in the main thread, instead of in a new thread (reverts `#146
+  <https://github.com/gvalkov/python-evdev/pull/146>`_).
+
+- Fix ``util.find_ecodes_by_regex`` not working across all supported Python versions (`#152 <https://github.com/gvalkov/python-evdev/pull/152>`_).
+
+
 
 1.4.0 (Jan 16, 2021)
 ====================
