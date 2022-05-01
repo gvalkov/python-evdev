@@ -380,6 +380,8 @@ Create ``uinput`` device with capabilities of another device
 Create ``uinput`` device capable of receiving FF-effects
 ========================================================
 
+Note that ``ecodes.EV_SYN`` cannot be in the ``cap`` dictionary or the device will not be created.
+
 ::
 
     import asyncio
