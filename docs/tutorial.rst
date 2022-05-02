@@ -329,7 +329,9 @@ Injecting events (using a context manager)
 Specifying ``uinput`` device options
 ====================================
 
-Note that ``ecodes.EV_SYN`` cannot be in the ``cap`` dictionary or the device will not be created.
+.. note::
+
+   ``ecodes.EV_SYN`` cannot be in the ``cap`` dictionary or the device will not be created.
 
 ::
 
