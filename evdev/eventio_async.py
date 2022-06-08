@@ -85,8 +85,7 @@ class ReadIterator(object):
     def __aiter__(self):
         return self
 
-    @asyncio.coroutine
-    def __anext__(self):
+    async def __anext__(self):
         future = asyncio.Future()
         try:
             # Read from the previous batch of events.
