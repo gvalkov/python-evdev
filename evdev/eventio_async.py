@@ -60,7 +60,7 @@ class EventIO(eventio.EventIO):
             pass
 
 
-class ReadIterator(object):
+class ReadIterator:
     def __init__(self, device):
         self.current_batch = iter(())
         self.device = device
@@ -68,10 +68,6 @@ class ReadIterator(object):
     # Standard iterator protocol.
     def __iter__(self):
         return self
-
-    # Python 2.x compatibility.
-    def next(self):
-        return self.__next__()
 
     def __next__(self):
         try:

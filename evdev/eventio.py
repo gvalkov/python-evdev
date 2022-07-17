@@ -13,7 +13,7 @@ class EvdevError(Exception):
     pass
 
 
-class EventIO(object):
+class EventIO:
     '''
     Base class for reading and writing input events.
 

@@ -34,7 +34,7 @@ class UInput(EventIO):
     )
 
     @classmethod
-    def from_device(cls, *devices, **kwargs):
+    def from_device(cls, *devices, filtered_types=(ecodes.EV_SYN, ecodes.EV_FF), **kwargs):
         '''
         Create an UInput device with the capabilities of one or more input
         devices.
@@ -50,9 +50,6 @@ class UInput(EventIO):
         **kwargs
           Keyword arguments to UInput constructor (i.e. name, vendor etc.).
         '''
-
-        # TODO: Move back to the argument list once Python 2 support is dropped.
-        filtered_types = kwargs.pop('filtered_types', (ecodes.EV_SYN, ecodes.EV_FF))
 
         device_instances = []
         for dev in devices:

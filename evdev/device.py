@@ -282,11 +282,6 @@ class InputDevice(EventIO):
         return isinstance(other, self.__class__) and self.info == other.info \
             and self.path == other.path
 
-    def __ne__(self, other):
-        # Python 2 compatibility. Python 3 automatically negates the value of
-        # __eq__, in case __ne__ is not defined.
-        return not self == other
-
     def __str__(self):
         msg = 'device {}, name "{}", phys "{}"'
         return msg.format(self.path, self.name, self.phys)

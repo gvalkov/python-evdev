@@ -290,7 +290,7 @@ Associating classes with event types
 
     >>> from evdev import categorize, event_factory, ecodes
 
-    >>> class SynEvent(object):
+    >>> class SynEvent:
     ...     def __init__(self, event):
     ...         ...
 
