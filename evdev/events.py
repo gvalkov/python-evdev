@@ -88,7 +88,7 @@ class KeyEvent:
 
     def __init__(self, event, allow_unknown=False):
         '''
-        The ``allow_unknown`` argument determines what to do in the event of a event code
+        The ``allow_unknown`` argument determines what to do in the event of an event code
         for which a key code cannot be found. If ``False`` a ``KeyError`` will be raised.
         If ``True`` the keycode will be set to the hex value of the event code.
         '''
@@ -179,10 +179,8 @@ class AbsEvent:
 
 class SynEvent:
     '''
-    A synchronization event. Synchronization events are used as
-    markers to separate event. Used as markers to separate
-    events. Events may be separated in time or in space, such as with
-    the multitouch protocol.
+    A synchronization event. Used as markers to separate events. Events may be
+    separated in time or in space, such as with the multitouch protocol.
     '''
 
     __slots__ = 'event', 'keycode'
