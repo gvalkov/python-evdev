@@ -1,6 +1,12 @@
 Changelog
 ---------
 
+1.6.0 (Jul 17, 2022)
+==================
+
+- Fix Python 3.11 compatibility (`#174 <https://github.com/gvalkov/python-evdev/pull/174>`_)
+
+
 1.5.0 (Mar 24, 2022)
 ==================
 
