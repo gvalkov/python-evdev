@@ -137,7 +137,7 @@ class RelEvent:
         self.event = event
 
     def __str__(self):
-        msg = 'relative axis event at {:f}, {} '
+        msg = 'relative axis event at {:f}, {}'
         return msg.format(self.event.timestamp(), REL[self.event.code])
 
     def __repr__(s):
@@ -154,7 +154,7 @@ class AbsEvent:
         self.event = event
 
     def __str__(self):
-        msg = 'absolute axis event at {:f}, {} '
+        msg = 'absolute axis event at {:f}, {}'
         return msg.format(self.event.timestamp(), ABS[self.event.code])
 
     def __repr__(s):
@@ -174,7 +174,7 @@ class SynEvent:
         self.event = event
 
     def __str__(self):
-        msg = 'synchronization event at {:f}, {} '
+        msg = 'synchronization event at {:f}, {}'
         return msg.format(self.event.timestamp(), SYN[self.event.code])
 
     def __repr__(s):
