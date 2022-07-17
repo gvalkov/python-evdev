@@ -187,7 +187,7 @@ class SynEvent(object):
 
     __slots__ = 'event', 'keycode'
 
-    def __init__(self, event, allow_known):
+    def __init__(self, event, allow_unknown):
         try:
             self.keycode = SYN[event.code]
         except KeyError:
