@@ -130,23 +130,15 @@ class KeyEvent:
 class RelEvent:
     '''A relative axis event (e.g moving the mouse 5 units to the left).'''
 
-    __slots__ = 'event', 'keycode'
+    __slots__ = 'event'
 
-    def __init__(self, event, allow_unknown=False):
-        try:
-            self.keycode = REL[event.code]
-        except KeyError:
-            if allow_unknown:
-                self.keycode = '0x{:02X}'.format(event.code)
-            else:
-                raise
-
+    def __init__(self, event):
         #: Reference to an :class:`InputEvent` instance.
         self.event = event
 
     def __str__(self):
-        msg = 'relative axis event at {:f}, {} {} '
-        return msg.format(self.event.timestamp(), self.keycode, self.event.value)
+        msg = 'relative axis event at {:f}, {} '
+        return msg.format(self.event.timestamp(), REL[self.event.code])
 
     def __repr__(s):
         return '{}({!r})'.format(s.__class__.__name__, s.event)
@@ -155,23 +147,15 @@ class RelEvent:
 class AbsEvent:
     '''An absolute axis event (e.g the coordinates of a tap on a touchscreen).'''
 
-    __slots__ = 'event', 'keycode'
+    __slots__ = 'event'
 
-    def __init__(self, event, allow_unknown=False):
-        try:
-            self.keycode = ABS[event.code]
-        except KeyError:
-            if allow_unknown:
-                self.keycode = '0x{:02X}'.format(event.code)
-            else:
-                raise
-
+    def __init__(self, event):
         #: Reference to an :class:`InputEvent` instance.
         self.event = event
 
     def __str__(self):
-        msg = 'absolute axis event at {:f}, {} {} '
-        return msg.format(self.event.timestamp(), self.keycode, self.event.value)
+        msg = 'absolute axis event at {:f}, {} '
+        return msg.format(self.event.timestamp(), ABS[self.event.code])
 
     def __repr__(s):
         return '{}({!r})'.format(s.__class__.__name__, s.event)
@@ -183,23 +167,15 @@ class SynEvent:
     separated in time or in space, such as with the multitouch protocol.
     '''
 
-    __slots__ = 'event', 'keycode'
+    __slots__ = 'event'
 
-    def __init__(self, event, allow_unknown=True):
-        try:
-            self.keycode = SYN[event.code]
-        except KeyError:
-            if allow_unknown:
-                self.keycode = '0x{:02X}'.format(event.code)
-            else:
-                raise
-
+    def __init__(self, event):
         #: Reference to an :class:`InputEvent` instance.
         self.event = event
 
     def __str__(self):
         msg = 'synchronization event at {:f}, {} '
-        return msg.format(self.event.timestamp(), self.keycode)
+        return msg.format(self.event.timestamp(), SYN[self.event.code])
 
     def __repr__(s):
         return '{}({!r})'.format(s.__class__.__name__, s.event)
