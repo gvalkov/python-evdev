@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-# encoding: utf-8
 
 import os
 import sys
 import textwrap
+from pathlib import Path
 
-from os.path import abspath, dirname, join as pjoin
 
 #-----------------------------------------------------------------------------
 try:
@@ -17,7 +16,8 @@ except ImportError:
 
 
 #-----------------------------------------------------------------------------
-here = abspath(dirname(__file__))
+curdir = Path(__file__).resolve().parent
+ecodes_path = curdir / 'evdev/ecodes.c'
 
 #-----------------------------------------------------------------------------
 classifiers = [
@@ -47,7 +47,7 @@ kw = {
     'version':              '1.6.0',
 
     'description':          'Bindings to the Linux input handling subsystem',
-    'long_description':     open(pjoin(here, 'README.rst')).read(),
+    'long_description':     (curdir / 'README.rst').read_text(),
 
     'author':               'Georgi Valkov',
     'author_email':         'georgi.t.valkov@gmail.com',
@@ -99,11 +99,12 @@ def create_ecodes(headers=None):
         sys.stderr.write(textwrap.dedent(msg))
         sys.exit(1)
 
-    from subprocess import check_call
+    from subprocess import run
 
-    print('writing ecodes.c (using %s)' % ' '.join(headers))
-    cmd = '%s genecodes.py %s > ecodes.c' % (sys.executable, ' '.join(headers))
-    check_call(cmd, cwd="%s/evdev" % here, shell=True)
+    print('writing %s (using %s)' % (ecodes_path, ' '.join(headers)))
+    with ecodes_path.open('w') as fh:
+        cmd = [sys.executable, 'evdev/genecodes.py', *headers]
+        run(cmd, check=True, stdout=fh)
 
 
 #-----------------------------------------------------------------------------
@@ -127,11 +128,9 @@ class build_ecodes(Command):
 
 class build_ext(_build_ext.build_ext):
     def has_ecodes(self):
-        ecodes_path = os.path.join(here, 'evdev/ecodes.c')
-        res = os.path.exists(ecodes_path)
-        if res:
+        if ecodes_path.exists():
             print('ecodes.c already exists ... skipping build_ecodes')
-        return not res
+        return not ecodes_path.exists()
 
     def run(self):
         for cmd_name in self.get_sub_commands():
