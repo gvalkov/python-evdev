@@ -47,7 +47,6 @@ static PyMethodDef MethodTable[] = {
     { NULL, NULL, 0, NULL}
 };
 
-#if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     MODULE_NAME,
@@ -59,38 +58,17 @@ static struct PyModuleDef moduledef = {
     NULL,        /* m_clear */
     NULL,        /* m_free */
 };
-#endif
 
-static PyObject *
-moduleinit(void)
+PyMODINIT_FUNC
+PyInit__ecodes(void)
 {
-
-#if PY_MAJOR_VERSION >= 3
     PyObject* m = PyModule_Create(&moduledef);
-#else
-    PyObject* m = Py_InitModule3(MODULE_NAME, MethodTable, MODULE_HELP);
-#endif
-
     if (m == NULL) return NULL;
 
 %s
 
     return m;
 }
-
-#if PY_MAJOR_VERSION >= 3
-PyMODINIT_FUNC
-PyInit__ecodes(void)
-{
-    return moduleinit();
-}
-#else
-PyMODINIT_FUNC
-init_ecodes(void)
-{
-    moduleinit();
-}
-#endif
 '''
 
 def parse_header(header):
