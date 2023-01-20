@@ -7,12 +7,8 @@ from pathlib import Path
 
 
 #-----------------------------------------------------------------------------
-try:
-    from setuptools import setup, Extension, Command
-    from setuptools.command import build_ext as _build_ext
-except ImportError:
-    from distutils.core import setup, Extension, Command
-    from distutils.command import build_ext as _build_ext
+from setuptools import setup, Extension, Command
+from setuptools.command import build_ext as _build_ext
 
 
 #-----------------------------------------------------------------------------
