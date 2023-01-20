@@ -41,7 +41,7 @@ ecodes_c = Extension('evdev._ecodes', sources=['evdev/ecodes.c'], extra_compile_
 #-----------------------------------------------------------------------------
 kw = {
     'name':                 'evdev',
-    'version':              '1.6.0',
+    'version':              '1.6.1',
 
     'description':          'Bindings to the Linux input handling subsystem',
     'long_description':     (curdir / 'README.rst').read_text(),

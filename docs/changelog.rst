@@ -1,6 +1,12 @@
 Changelog
 ---------
 
+1.6.1 (Jan 20, 2023)
+==================
+
+- Fix generation of ``ecodes.c`` when the path to ````sys.executable`` contains spaces.
+
+
 1.6.0 (Jul 17, 2022)
 ==================
 
