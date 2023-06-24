@@ -59,7 +59,7 @@ class EventIO:
 
 	    '''
 	            It is different from it's blocking counterpart because it does not stop the execution when the device is
-	            idle, instead it replicates the previous event until another event happens. This is made possible by
+	            idle, instead it replicates the previous event until another one happens. This is made possible by
                 making use of a custom :func: 'read_blockless()' function that doesn't raise 'BlockingIOError' if there
                 are no available events at the moment.
 	    '''
