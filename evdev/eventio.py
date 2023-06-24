@@ -47,51 +47,51 @@ class EventIO:
                 yield event
 
 	def read_loop_blockless(self):
-	    '''
-	            Enter a blockless :func:`select.select()` loop that yields input events endlessly.
-	    '''
+		'''
+				Enter a blockless :func:`select.select()` loop that yields input events endlessly.
+		'''
 
-	    # previous -> [sec, usec, type, code, val]
-	    previous = [0, 0, 0, 0, 0]
+		# previous -> [sec, usec, type, code, val]
+		previous = [0, 0, 0, 0, 0]
 
-	    # flag for 0
-	    nothing = 0
+		# flag for 0
+		nothing = 0
 
-	    '''
-	            It is different from it's blocking counterpart because it does not stop the execution when the device is
-	            idle, instead it replicates the previous event until another one happens. This is made possible by
-                making use of a custom :func: 'read_blockless()' function that doesn't raise 'BlockingIOError' if there
-                are no available events at the moment.
-	    '''
+		'''
+				It is different from it's blocking counterpart because it does not stop the execution when the device is
+				idle, instead it replicates the previous event until another one happens. This is made possible by
+				making use of a custom :func: 'read_blockless()' function that doesn't raise 'BlockingIOError' if there
+				are no available events at the moment.
+		'''
 
-	    def read_blockless(previous1, previous2, previous3, previous4, previous5):
-	        '''
-	                Read and yield a single input event as an instance of :class:`InputEvent <evdev.events.InputEvent>`.
+		def read_blockless(previous1, previous2, previous3, previous4, previous5):
+			'''
+					Read and yield a single input event as an instance of :class:`InputEvent <evdev.events.InputEvent>`.
 
-	                Return previous event as an instance of :class:`InputEvent <evdev.events.InputEvent>` if there are
-	                no pending input events.
-	        '''
+					Return previous event as an instance of :class:`InputEvent <evdev.events.InputEvent>` if there are
+					no pending input events.
+			'''
 
-	        # event -> (sec, usec, type, code, val)
-	        present_event = _input.device_read(self.fd)
+			# event -> (sec, usec, type, code, val)
+			present_event = _input.device_read(self.fd)
 
-	        try:
-	            if present_event[2] + present_event[3] + present_event[4] != nothing:
-	                yield evdev.events.InputEvent(*present_event)
+			try:
+				if present_event[2] + present_event[3] + present_event[4] != nothing:
+					yield evdev.events.InputEvent(*present_event)
 
-	            else:
-	                yield evdev.events.InputEvent(present_event[0], present_event[1], previous3, previous4, previous5)
-	        except TypeError:
-	            yield evdev.events.InputEvent(previous1, previous2, previous3, previous4, previous5)
+				else:
+					yield evdev.events.InputEvent(present_event[0], present_event[1], previous3, previous4, previous5)
+			except TypeError:
+				yield evdev.events.InputEvent(previous1, previous2, previous3, previous4, previous5)
 
-	    while True:
-	        # selecting device and setting timeout to 0 / nothing, thus allowing non-blocking feature
-	        select([self.fd], [], [], nothing)
+		while True:
+			# selecting device and setting timeout to 0 / nothing, thus allowing non-blocking feature
+			select([self.fd], [], [], nothing)
 
-	        for event in read_blockless(previous[0], previous[1], previous[2], previous[3], previous[4]):
-	            previous[0], previous[1], previous[2], previous[3], previous[4] = event.usec, event.sec, event.type,\
-	                                                                              event.code, event.value
-	            yield event
+			for event in read_blockless(previous[0], previous[1], previous[2], previous[3], previous[4]):
+				previous[0], previous[1], previous[2], previous[3], previous[4] = event.usec, event.sec, event.type,\
+																				  event.code, event.value
+				yield event
 
 
     def read_one(self):
