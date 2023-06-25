@@ -86,7 +86,7 @@ class EventIO:
 
         while True:
             # selecting device and setting timeout to 0 / nothing, thus allowing non-blocking feature
-            select([self.fd], [], [], nothing)
+            select.select([self.fd], [], [], nothing)
         
             for event in read_blockless(previous[0], previous[1], previous[2], previous[3], previous[4]):
                 previous[0], previous[1], previous[2], previous[3], previous[4] = event.usec, event.sec, event.type, event.code, event.value
