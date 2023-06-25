@@ -46,7 +46,7 @@ class EventIO:
             for event in self.read():
                 yield event
 
-   def read_loop_blockless(self):
+    def read_loop_blockless(self):
         '''
                 Enter a blockless :func:`select.select()` loop that yields input events endlessly.
         '''
