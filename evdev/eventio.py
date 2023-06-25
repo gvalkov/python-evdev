@@ -77,12 +77,12 @@ class EventIO:
         
             try:
                 if present_event[2] + present_event[3] + present_event[4] != nothing:
-                    yield evdev.events.InputEvent(*present_event)
+                    yield InputEvent(*present_event)
         
                 else:
-                    yield evdev.events.InputEvent(present_event[0], present_event[1], previous3, previous4, previous5)
+                    yield InputEvent(present_event[0], present_event[1], previous3, previous4, previous5)
             except TypeError:
-                yield evdev.events.InputEvent(previous1, previous2, previous3, previous4, previous5)
+                yield InputEvent(previous1, previous2, previous3, previous4, previous5)
 
         while True:
             # selecting device and setting timeout to 0 / nothing, thus allowing non-blocking feature
