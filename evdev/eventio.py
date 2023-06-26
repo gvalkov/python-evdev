@@ -46,7 +46,7 @@ class EventIO:
             for event in self.read():
                 yield event
 
-    def read_loop_blockless(self):
+    def read_loop_blockless(self, timeout=0.001):
         '''
         Enter a blockless :func:`select.select()` loop that yields input events endlessly.
         '''
@@ -74,24 +74,26 @@ class EventIO:
         
             # event -> (sec, usec, type, code, val)
             present_event = _input.device_read(self.fd)
-        
-            try:
-                if present_event[2] + present_event[3] + present_event[4] != nothing:
-                    yield InputEvent(*present_event)
-        
-                else:
-                    yield InputEvent(present_event[0], present_event[1], previous3, previous4, previous5)
-            except TypeError:
-                yield InputEvent(previous1, previous2, previous3, previous4, previous5)
+            
+            if present_event == None:
+                present_event = InputEvent(previous1, previous2, previous3, previous4, previous5)
+                yield present_event
+                return
+
+            # transforming result of device_read into an InputEvent        
+            present_event = InputEvent(*present_event)
+
+            if present_event.type + present_event.code + present_event.value != nothing:
+                yield present_event
 
         while True:
-            # selecting device and setting timeout to 0 / nothing, thus allowing non-blocking feature
-            select.select([self.fd], [], [], nothing)
+            # selecting device and setting timeout value, thus allowing non-blocking feature and iteration rate control
+            select.select([self.fd], [], [], timeout)
         
-            for event in read_blockless(previous[0], previous[1], previous[2], previous[3], previous[4]):
+            for event in read_blockless(*previous):
                 previous[0], previous[1], previous[2], previous[3], previous[4] = event.usec, event.sec, event.type, event.code, event.value
                 yield event
-
+                
     def read_one(self):
         '''
         Read and return a single input event as an instance of
