@@ -51,11 +51,11 @@ class EventIO:
         Enter a blockless :func:`select.select()` loop that yields input events endlessly.
         '''
         
-        # previous -> [sec, usec, type, code, val]
-        previous = [0, 0, 0, 0, 0]
+        # previous -> InputEvent.sec, InputEvent.usec, InputEvent.type, InputEvent.code, InputEvent.val
+        previous = InputEvent(sec=0, usec=0, type=0, code=0, value=0)
         
-        # flag for 0
-        nothing = 0
+        # flag for 0 / SynEvent type value
+        syn_event = 0
         
         '''
         It is different from it's blocking counterpart because it does not stop the execution when the device is
@@ -64,7 +64,7 @@ class EventIO:
         are no available events at the moment.
         '''
         
-        def read_blockless(previous1, previous2, previous3, previous4, previous5):
+        def read_one_blockless(prev_sec, prev_usec, prev_type, prev_code, prev_value):
             '''
             Read and yield a single input event as an instance of :class:`InputEvent <evdev.events.InputEvent>`.
 
@@ -72,27 +72,31 @@ class EventIO:
             no pending input events.
             '''
         
-            # event -> (sec, usec, type, code, val)
+            # present_event -> (sec, usec, type, code, val)
             present_event = _input.device_read(self.fd)
-            
+
             if present_event == None:
-                present_event = InputEvent(previous1, previous2, previous3, previous4, previous5)
-                yield present_event
-                return
+                present_event = InputEvent(prev_sec, prev_usec, prev_type, prev_code, prev_value)
+                return present_event
 
             # transforming result of device_read into an InputEvent        
             present_event = InputEvent(*present_event)
 
-            if present_event.type + present_event.code + present_event.value != nothing:
-                yield present_event
+            if present_event.type == syn_event:
+                present_event = InputEvent(present_event.sec, present_event.usec, prev_type, prev_code, prev_value)
+                return present_event
+
+            # returns present_event as InputEvent containing new data if none of the above applies    
+            return present_event
 
         while True:
-            # selecting device and setting timeout value, thus allowing non-blocking feature and iteration rate control
+            # selecting device and setting timeout value, thus allowing non-blocking feature and replication rate control
             select.select([self.fd], [], [], timeout)
         
-            for event in read_blockless(*previous):
-                previous[0], previous[1], previous[2], previous[3], previous[4] = event.usec, event.sec, event.type, event.code, event.value
-                yield event
+            # event -> InputEvent.sec, InputEvent.usec, InputEvent.type, InputEvent.code, InputEvent.value
+            event = read_one_blockless(previous.sec, previous.usec, previous.type, previous.code, previous.value)
+            previous.sec, previous.usec, previous.type, previous.code, previous.value = event.sec, event.usec, event.type, event.code, event.value
+            yield event
                 
     def read_one(self):
         '''
