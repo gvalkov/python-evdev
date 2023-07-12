@@ -49,22 +49,20 @@ class EventIO:
     def read_loop_blockless(self, timeout=0.001):
         '''
         Enter a blockless :func:`select.select()` loop that yields input events endlessly.
-        '''
-        
-        # previous -> InputEvent.sec, InputEvent.usec, InputEvent.type, InputEvent.code, InputEvent.val
-        previous = InputEvent(sec=0, usec=0, type=0, code=0, value=0)
-        
-        # flag for 0 / SynEvent type value
-        syn_event = 0
-        
-        '''
-        It is different from it's blocking counterpart because it does not stop the execution when the device is
+
+        It is different from its blocking counterpart because it does not stop the execution when the device is
         idle, instead it replicates the previous event until another one happens. This is made possible by
-        making use of a custom :func: 'read_blockless()' function that doesn't raise 'BlockingIOError' if there
+        making use of a custom :func: 'read_one_blockless()' function that doesn't raise 'BlockingIOError' if there
         are no available events at the moment.
         '''
         
-        def read_one_blockless(previous):
+        # previous_event -> InputEvent.sec, InputEvent.usec, InputEvent.type, InputEvent.code, InputEvent.val
+        previous_event = InputEvent(sec=0, usec=0, type=0, code=0, value=0)
+        
+        # flag for 0 / SynEvent type value
+        syn_event = 0
+                
+        def read_one_blockless(previous_event):
             '''
             Read and yield a single input event as an instance of :class:`InputEvent <evdev.events.InputEvent>`.
 
@@ -76,14 +74,13 @@ class EventIO:
             current_event = _input.device_read(self.fd)
 
             if current_event == None:
-                current_event = InputEvent(previous.sec, previous.usec, previous.type, previous.code, previous.value)
-                return current_event
+                return previous_event
 
             # transforming result of device_read into an InputEvent        
             current_event = InputEvent(*current_event)
 
             if current_event.type == syn_event:
-                current_event = InputEvent(current_event.sec, current_event.usec, previous.type, previous.code, previous.value)
+                current_event = InputEvent(current_event.sec, current_event.usec, previous_event.type, previous_event.code, previous_event.value)
                 return current_event
 
             # returns current_event as InputEvent containing new data if none of the above applies    
@@ -94,11 +91,11 @@ class EventIO:
             select.select([self.fd], [], [], timeout)
         
             # event -> InputEvent.sec, InputEvent.usec, InputEvent.type, InputEvent.code, InputEvent.value
-            event = read_one_blockless(previous)
+            current_event = read_one_blockless(previous_event)
             
             # updating previous event with current event data
-            previous.sec, previous.usec, previous.type, previous.code, previous.value = event.sec, event.usec, event.type, event.code, event.value
-            yield event
+            previous_event = current_event
+            yield current_event
                 
     def read_one(self):
         '''
