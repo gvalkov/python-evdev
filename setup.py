@@ -64,11 +64,14 @@ kw = {
 #-----------------------------------------------------------------------------
 def create_ecodes(headers=None):
     if not headers:
-        headers = [
-            '/usr/include/linux/input.h',
-            '/usr/include/linux/input-event-codes.h',
-            '/usr/include/linux/uinput.h',
-        ]
+        include_paths = set()
+        if os.environ.get("CPATH", "").strip() != "":
+            include_paths.update(os.environ["CPATH"].split(":"))
+        if os.environ.get("C_INCLUDE_PATH", "").strip() != "":
+            include_paths.update(os.environ["C_INCLUDE_PATH"].split(":"))
+        include_paths.add("/usr/include")
+        files = ["linux/input.h", "linux/input-event-codes.h", "linux/uinput.h"]
+        headers = [os.path.join(path, file) for path in include_paths for file in files]
 
     headers = [header for header in headers if os.path.isfile(header)]
     if not headers:
