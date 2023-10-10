@@ -147,7 +147,7 @@ uinput_setup(PyObject *self, PyObject *args) {
     usetup.id.product = product;
     usetup.id.version = version;
     usetup.id.bustype = bustype;
-    usetup.ff_effects_max = FF_MAX_EFFECTS;
+    usetup.ff_effects_max = FF_MAX_EFFECTS - FF_EFFECT_MIN;
 
     if(ioctl(fd, UI_DEV_SETUP, &usetup) < 0)
         goto on_err;
@@ -182,7 +182,7 @@ uinput_setup(PyObject *self, PyObject *args) {
     uidev.id.product = product;
     uidev.id.version = version;
     uidev.id.bustype = bustype;
-    uidev.ff_effects_max = FF_MAX_EFFECTS;
+    uidev.ff_effects_max = FF_MAX_EFFECTS - FF_EFFECT_MIN;
 
     len = PyList_Size(absinfo);
     for (i=0; i<len; i++) {
