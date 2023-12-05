@@ -13,6 +13,7 @@ import os, sys, re
 headers = [
     '/usr/include/linux/input.h',
     '/usr/include/linux/input-event-codes.h',
+    '/usr/include/linux/uinput.h',
 ]
 
 if sys.argv[1:]:
