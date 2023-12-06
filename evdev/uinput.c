@@ -108,14 +108,15 @@ static PyObject *
 uinput_setup(PyObject *self, PyObject *args) {
     int fd, len, i;
     uint16_t vendor, product, version, bustype;
+    uint32_t max_effects;
 
     PyObject *absinfo = NULL, *item = NULL;
 
     struct uinput_abs_setup abs_setup;
 
     const char* name;
-    int ret = PyArg_ParseTuple(args, "isHHHHO", &fd, &name, &vendor,
-                               &product, &version, &bustype, &absinfo);
+    int ret = PyArg_ParseTuple(args, "isHHHHOI", &fd, &name, &vendor,
+                               &product, &version, &bustype, &absinfo, &max_effects);
     if (!ret) return NULL;
 
     // Setup absinfo:
@@ -147,7 +148,7 @@ uinput_setup(PyObject *self, PyObject *args) {
     usetup.id.product = product;
     usetup.id.version = version;
     usetup.id.bustype = bustype;
-    usetup.ff_effects_max = FF_MAX_EFFECTS - FF_EFFECT_MIN;
+    usetup.ff_effects_max = max_effects;
 
     if(ioctl(fd, UI_DEV_SETUP, &usetup) < 0)
         goto on_err;
@@ -166,14 +167,15 @@ static PyObject *
 uinput_setup(PyObject *self, PyObject *args) {
     int fd, len, i, abscode;
     uint16_t vendor, product, version, bustype;
+    uint32_t max_effects;
 
     PyObject *absinfo = NULL, *item = NULL;
 
     struct uinput_user_dev uidev;
     const char* name;
 
-    int ret = PyArg_ParseTuple(args, "isHHHHO", &fd, &name, &vendor,
-                               &product, &version, &bustype, &absinfo);
+    int ret = PyArg_ParseTuple(args, "isHHHHOI", &fd, &name, &vendor,
+                               &product, &version, &bustype, &absinfo, &max_effects);
     if (!ret) return NULL;
 
     memset(&uidev, 0, sizeof(uidev));
@@ -182,7 +184,7 @@ uinput_setup(PyObject *self, PyObject *args) {
     uidev.id.product = product;
     uidev.id.version = version;
     uidev.id.bustype = bustype;
-    uidev.ff_effects_max = FF_MAX_EFFECTS - FF_EFFECT_MIN;
+    uidev.ff_effects_max = max_effects;
 
     len = PyList_Size(absinfo);
     for (i=0; i<len; i++) {
