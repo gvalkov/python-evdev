@@ -284,7 +284,7 @@ class InputDevice(EventIO):
 
     def __str__(self):
         msg = 'device {}, name "{}", phys "{}"'
-        return msg.format(self.path, self.name, self.phys)
+        return msg.format(self.path, self.name, self.uniq if self.uniq else self.phys)
 
     def __repr__(self):
         msg = (self.__class__.__name__, self.path)
