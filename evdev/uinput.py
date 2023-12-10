@@ -59,6 +59,9 @@ class UInput(EventIO):
 
         all_capabilities = defaultdict(set)
 
+        if 'max_effects' not in kwargs:
+            kwargs['max_effects'] = min([dev.ff_effects_count for dev in device_instances])
+
         # Merge the capabilities of all devices into one dictionary.
         for dev in device_instances:
             for ev_type, ev_codes in dev.capabilities().items():
