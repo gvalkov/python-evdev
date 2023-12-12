@@ -108,6 +108,9 @@ class UInput(EventIO):
         input_props
           Input properties and quirks.
 
+        max_effects
+          Maximum simultaneous force-feedback effects.
+
         Note
         ----
         If you do not specify any events, the uinput device will be able
