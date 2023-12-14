@@ -453,3 +453,55 @@ Injecting an FF-event into first FF-capable device found
     dev.write(ecodes.EV_FF, effect_id, repeat_count)
     time.sleep(duration_ms)
     dev.erase_effect(effect_id)
+
+Forwarding force-feedback from uinput to a real device
+======================================================
+
+::
+
+    import evdev
+    from evdev import ecodes as e
+
+    # Find first EV_FF capable event device (that we have permissions to use).
+    for name in evdev.list_devices():
+        dev = evdev.InputDevice(name)
+        if e.EV_FF in dev.capabilities():
+            break
+    # To ensure forwarding works correctly it is important that `max_effects` 
+    # of the uinput device is <= `dev.ff_effects_count`.
+    # `from_device()` will do this automatically, but in some situations you may 
+    # want to set the `max_effects` parameter manually, such as when using `Uinput()`.
+    # `filtered_types` is specified as by default EV_FF events are filtered
+    uinput = evdev.UInput.from_device(dev, filtered_types=[e.EV_SYN])
+
+    # Keeps track of which effects have been uploaded to the device
+    effects = set()
+
+    for event in uinput.read_loop():
+        
+        # Handle the special uinput events
+        if event.type == e.EV_UINPUT:
+
+            if event.code == e.UI_FF_UPLOAD:
+                upload = uinput.begin_upload(event.value)
+
+                # Checks if this is a new effect
+                if upload.effect.id not in effects:
+                    effects.add(upload.effect.id)
+                    # Setting id to 1 indicates that a new effect must be allocated
+                    upload.effect.id = -1
+
+                dev.upload_effect(upload.effect)
+                upload.retval = 0
+                uinput.end_upload(upload)
+                
+            elif event.code == e.UI_FF_ERASE:
+                erase = uinput.begin_erase(event.value)
+                erase.retval = 0
+                dev.erase_effect(erase.effect_id)
+                effects.remove(erase.effect_id)
+                uinput.end_erase(erase)
+        
+        # Forward writes to actual rumble device.
+        elif event.type == e.EV_FF:
+            dev.write(event.type, event.code, event.value)

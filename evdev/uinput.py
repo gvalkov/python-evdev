@@ -59,6 +59,9 @@ class UInput(EventIO):
 
         all_capabilities = defaultdict(set)
 
+        if 'max_effects' not in kwargs:
+            kwargs['max_effects'] = min([dev.ff_effects_count for dev in device_instances])
+
         # Merge the capabilities of all devices into one dictionary.
         for dev in device_instances:
             for ev_type, ev_codes in dev.capabilities().items():
@@ -74,7 +77,8 @@ class UInput(EventIO):
                  events=None,
                  name='py-evdev-uinput',
                  vendor=0x1, product=0x1, version=0x1, bustype=0x3,
-                 devnode='/dev/uinput', phys='py-evdev-uinput', input_props=None):
+                 devnode='/dev/uinput', phys='py-evdev-uinput', input_props=None,
+                 max_effects=ecodes.FF_MAX_EFFECTS):
         '''
         Arguments
         ---------
@@ -103,6 +107,9 @@ class UInput(EventIO):
 
         input_props
           Input properties and quirks.
+
+        max_effects
+          Maximum simultaneous force-feedback effects.
 
         Note
         ----
@@ -140,7 +147,7 @@ class UInput(EventIO):
         for etype, code in prepared_events:
             _uinput.enable(self.fd, etype, code)
 
-        _uinput.setup(self.fd, name, vendor, product, version, bustype, absinfo)
+        _uinput.setup(self.fd, name, vendor, product, version, bustype, absinfo, max_effects)
 
         # Create the uinput device.
         _uinput.create(self.fd)
