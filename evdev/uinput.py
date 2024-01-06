@@ -288,18 +288,14 @@ class UInput(EventIO):
         Tries to find the device node. Will delegate this task to one of
         several platform-specific functions.
         '''
-        try:
-            sysname = _uinput.get_sysname(fd)
-        except OSError:
-            # UI_GET_SYSNAME returned an error code. We're likely dealing with
-            # an old kernel. Guess the device based on the filesystem.
-            return self._find_device_fallback()
-
-        try:
-            if platform.system() == 'Linux':
+        if platform.system() == 'Linux':
+            try:
+                sysname = _uinput.get_sysname(fd)
                 return self._find_device_linux(sysname)
-        except OSError:
-            pass
+            except OSError:
+                # UI_GET_SYSNAME returned an error code. We're likely dealing with
+                # an old kernel. Guess the device based on the filesystem.
+                pass
 
         # If we're not running or Linux or the above method fails for any reason,
         # use the generic fallback method.
