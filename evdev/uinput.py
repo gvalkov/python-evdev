@@ -315,9 +315,18 @@ class UInput(EventIO):
         for entry in os.listdir(syspath):
             if regex.fullmatch(entry):
                 device_path = f'/dev/input/{entry}'
-                return device.InputDevice(device_path)
+                break
+        else:  # no break
+            raise FileNotFoundError()
 
-        raise FileNotFoundError()
+        # It is possible that there is some delay before /dev/input/event* shows
+        # up on old systems that do not use devtmpfs, so if the device cannot be
+        # found, wait for a short amount and then try again once.
+        try:
+            return device.InputDevice(device_path)
+        except FileNotFoundError:
+            time.sleep(0.1)
+            return device.InputDevice(device_path)
 
     def _find_device_fallback(self):
         '''
