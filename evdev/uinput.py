@@ -328,7 +328,21 @@ class UInput(EventIO):
         #:bug: the device node might not be immediately available
         time.sleep(0.1)
 
+        # Strictly speaking, we cannot be certain that everything returned by list_devices()
+        # ends at event[0-9]+: it might return something like "/dev/input/events_all". Find
+        # the devices that have the expected structure and extract their device number.
+        path_number_pairs = []
+        regex = re.compile('/dev/input/event([0-9]+)')
         for path in util.list_devices('/dev/input/'):
+            regex_match = regex.fullmatch(path)
+            if not regex_match:
+                continue
+            device_number = int(regex_match[1])
+            path_number_pairs.append((path, device_number))
+
+        path_number_pairs.sort(key=lambda pair: pair[1], reverse=True)
+
+        for (path, _) in path_number_pairs:
             d = device.InputDevice(path)
             if d.name == self.name:
                 return d
