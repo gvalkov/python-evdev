@@ -97,6 +97,24 @@ uinput_set_prop(PyObject *self, PyObject *args)
         return NULL;
 }
 
+static PyObject *
+uinput_get_sysname(PyObject *self, PyObject *args)
+{
+    int fd;
+    char sysname[64];
+
+    int ret = PyArg_ParseTuple(args, "i", &fd);
+    if (!ret) return NULL;
+
+    if (ioctl(fd, UI_GET_SYSNAME(sizeof(sysname)), &sysname) < 0)
+        goto on_err;
+
+    return Py_BuildValue("s", &sysname);
+
+    on_err:
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+}
 
 // Different kernel versions have different device setup methods. You can read
 // more about it here:
@@ -360,6 +378,9 @@ static PyMethodDef MethodTable[] = {
 
     { "set_phys", uinput_set_phys, METH_VARARGS,
       "Set physical path"},
+
+    { "get_sysname", uinput_get_sysname, METH_VARARGS,
+      "Obtain the sysname of the uinput device."},
 
     { "set_prop", uinput_set_prop, METH_VARARGS,
       "Set device input property"},
