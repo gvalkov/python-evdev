@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 import os
+import platform
+import re
 import stat
 import time
 from collections import defaultdict
@@ -159,7 +161,7 @@ class UInput(EventIO):
         #: An :class:`InputDevice <evdev.device.InputDevice>` instance
         #: for the fake input device. ``None`` if the device cannot be
         #: opened for reading and writing.
-        self.device = self._find_device()
+        self.device = self._find_device(self.fd)
 
     def _prepare_events(self, events):
         '''Prepare events for passing to _uinput.enable and _uinput.setup'''
@@ -281,7 +283,52 @@ class UInput(EventIO):
             msg = 'uinput device name must not be longer than {} characters'
             raise UInputError(msg.format(_uinput.maxnamelen))
 
-    def _find_device(self):
+    def _find_device(self, fd):
+        '''
+        Tries to find the device node. Will delegate this task to one of
+        several platform-specific functions.
+        '''
+        try:
+            sysname = _uinput.get_sysname(fd)
+        except OSError:
+            # UI_GET_SYSNAME returned an error code. We're likely dealing with
+            # an old kernel. Guess the device based on the filesystem.
+            return self._find_device_fallback()
+
+        try:
+            if platform.system() == 'Linux':
+                return self._find_device_linux(sysname)
+        except OSError:
+            pass
+
+        # If we're not running or Linux or the above method fails for any reason,
+        # use the generic fallback method.
+        return self._find_device_fallback()
+
+    def _find_device_linux(self, sysname):
+        '''
+        Tries to find the device node when running on Linux.
+        '''
+
+        syspath = f'/sys/devices/virtual/input/{sysname}'
+
+        # The sysfs entry for event devices should contain exactly one folder
+        # whose name matches the format "event[0-9]+". It is then assumed that
+        # the device node in /dev/input uses the same name.
+        regex = re.compile('event[0-9]+')
+        for entry in os.listdir(syspath):
+            if regex.fullmatch(entry):
+                device_path = f'/dev/input/{entry}'
+                return device.InputDevice(device_path)
+
+        raise FileNotFoundError()
+
+    def _find_device_fallback(self):
+        '''
+        Tries to find the device node when UI_GET_SYSNAME is not available or
+        we're running on a system sufficiently exotic that we do not know how
+        to interpret its return value.
+        '''
         #:bug: the device node might not be immediately available
         time.sleep(0.1)
 
