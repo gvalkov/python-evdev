@@ -349,6 +349,8 @@ class UInput(EventIO):
             device_number = int(regex_match[1])
             path_number_pairs.append((path, device_number))
 
+        # The modification date of the devnode is not reliable unfortunately, so we
+        # are sorting by the number in the name
         path_number_pairs.sort(key=lambda pair: pair[1], reverse=True)
 
         for (path, _) in path_number_pairs:
