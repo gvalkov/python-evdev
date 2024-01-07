@@ -309,7 +309,7 @@ class InputDevice(EventIO):
 
         Warning
         -------
-        Grabbing an already grabbed device will raise an ``IOError``.
+        Grabbing an already grabbed device will raise an ``OSError``.
         '''
 
         _input.ioctl_EVIOCGRAB(self.fd, 1)
@@ -321,7 +321,7 @@ class InputDevice(EventIO):
         Warning
         -------
         Releasing an already released device will raise an
-        ``IOError('Invalid argument')``.
+        ``OSError('Invalid argument')``.
         '''
 
         _input.ioctl_EVIOCGRAB(self.fd, 0)
