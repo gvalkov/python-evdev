@@ -49,7 +49,7 @@ uinput_open(PyObject *self, PyObject *args)
 
     int fd = open(devnode, O_RDWR | O_NONBLOCK);
     if (fd < 0) {
-        PyErr_SetString(PyExc_IOError, "could not open uinput device in write mode");
+        PyErr_SetString(PyExc_OSError, "could not open uinput device in write mode");
         return NULL;
     }
 
@@ -73,7 +73,7 @@ uinput_set_phys(PyObject *self, PyObject *args)
 
     on_err:
         _uinput_close(fd);
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
@@ -93,7 +93,7 @@ uinput_set_prop(PyObject *self, PyObject *args)
 
     on_err:
         _uinput_close(fd);
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
@@ -112,7 +112,7 @@ uinput_get_sysname(PyObject *self, PyObject *args)
     return Py_BuildValue("s", &sysname);
 
     on_err:
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
@@ -175,7 +175,7 @@ uinput_setup(PyObject *self, PyObject *args) {
 
     on_err:
         _uinput_close(fd);
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
@@ -224,7 +224,7 @@ uinput_setup(PyObject *self, PyObject *args) {
 
     on_err:
         _uinput_close(fd);
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 #endif
@@ -245,7 +245,7 @@ uinput_create(PyObject *self, PyObject *args)
 
     on_err:
         _uinput_close(fd);
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
@@ -259,7 +259,7 @@ uinput_close(PyObject *self, PyObject *args)
     if (!ret) return NULL;
 
     if (_uinput_close(fd) < 0) {
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 
@@ -287,8 +287,8 @@ uinput_write(PyObject *self, PyObject *args)
 
     if (write(fd, &event, sizeof(event)) != sizeof(event)) {
         // @todo: elaborate
-        // PyErr_SetString(PyExc_IOError, "error writing event to uinput device");
-        PyErr_SetFromErrno(PyExc_IOError);
+        // PyErr_SetString(PyExc_OSError, "error writing event to uinput device");
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 
@@ -330,7 +330,7 @@ uinput_enable_event(PyObject *self, PyObject *args)
 
     on_err:
         _uinput_close(fd);
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
