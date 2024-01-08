@@ -337,6 +337,8 @@ class UInput(EventIO):
         #:bug: the device node might not be immediately available
         time.sleep(0.1)
 
+        # There could also be another device with the same name already present,
+        # make sure to select the newest one.
         # Strictly speaking, we cannot be certain that everything returned by list_devices()
         # ends at event[0-9]+: it might return something like "/dev/input/events_all". Find
         # the devices that have the expected structure and extract their device number.
