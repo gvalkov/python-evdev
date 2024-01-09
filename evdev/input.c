@@ -61,7 +61,7 @@ device_read(PyObject *self, PyObject *args)
             return Py_None;
         }
 
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 
@@ -101,7 +101,7 @@ device_read_many(PyObject *self, PyObject *args)
     ssize_t nread = read(fd, event, event_size*64);
 
     if (nread < 0) {
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         Py_DECREF(event_list);
         return NULL;
     }
@@ -208,7 +208,7 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     return capabilities;
 
     on_err:
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
@@ -243,7 +243,7 @@ ioctl_devinfo(PyObject *self, PyObject *args)
                          name, phys, uniq);
 
     on_err:
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
 
@@ -261,7 +261,7 @@ ioctl_EVIOCGABS(PyObject *self, PyObject *args)
     memset(&absinfo, 0, sizeof(absinfo));
     ret = ioctl(fd, EVIOCGABS(ev_code), &absinfo);
     if (ret == -1) {
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 
@@ -296,7 +296,7 @@ ioctl_EVIOCSABS(PyObject *self, PyObject *args)
 
     ret = ioctl(fd, EVIOCSABS(ev_code), &absinfo);
     if (ret == -1) {
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 
@@ -362,7 +362,7 @@ ioctl_EVIOCGRAB(PyObject *self, PyObject *args)
 
     ret = ioctl(fd, EVIOCGRAB, (intptr_t)flag);
     if (ret != 0) {
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 
@@ -485,7 +485,7 @@ upload_effect(PyObject *self, PyObject *args)
 
     ret = ioctl(fd, EVIOCSFF, &effect);
     if (ret != 0) {
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 
@@ -504,7 +504,7 @@ erase_effect(PyObject *self, PyObject *args)
     long ff_id = PyLong_AsLong(ff_id_obj);
     ret = ioctl(fd, EVIOCRMFF, ff_id);
     if (ret != 0) {
-        PyErr_SetFromErrno(PyExc_IOError);
+        PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
 

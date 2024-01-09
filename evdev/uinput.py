@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 import os
+import platform
+import re
 import stat
 import time
 from collections import defaultdict
@@ -159,7 +161,7 @@ class UInput(EventIO):
         #: An :class:`InputDevice <evdev.device.InputDevice>` instance
         #: for the fake input device. ``None`` if the device cannot be
         #: opened for reading and writing.
-        self.device = self._find_device()
+        self.device = self._find_device(self.fd)
 
     def _prepare_events(self, events):
         '''Prepare events for passing to _uinput.enable and _uinput.setup'''
@@ -281,11 +283,79 @@ class UInput(EventIO):
             msg = 'uinput device name must not be longer than {} characters'
             raise UInputError(msg.format(_uinput.maxnamelen))
 
-    def _find_device(self):
+    def _find_device(self, fd):
+        '''
+        Tries to find the device node. Will delegate this task to one of
+        several platform-specific functions.
+        '''
+        if platform.system() == 'Linux':
+            try:
+                sysname = _uinput.get_sysname(fd)
+                return self._find_device_linux(sysname)
+            except OSError:
+                # UI_GET_SYSNAME returned an error code. We're likely dealing with
+                # an old kernel. Guess the device based on the filesystem.
+                pass
+
+        # If we're not running or Linux or the above method fails for any reason,
+        # use the generic fallback method.
+        return self._find_device_fallback()
+
+    def _find_device_linux(self, sysname):
+        '''
+        Tries to find the device node when running on Linux.
+        '''
+
+        syspath = f'/sys/devices/virtual/input/{sysname}'
+
+        # The sysfs entry for event devices should contain exactly one folder
+        # whose name matches the format "event[0-9]+". It is then assumed that
+        # the device node in /dev/input uses the same name.
+        regex = re.compile('event[0-9]+')
+        for entry in os.listdir(syspath):
+            if regex.fullmatch(entry):
+                device_path = f'/dev/input/{entry}'
+                break
+        else:  # no break
+            raise FileNotFoundError()
+
+        # It is possible that there is some delay before /dev/input/event* shows
+        # up on old systems that do not use devtmpfs, so if the device cannot be
+        # found, wait for a short amount and then try again once.
+        try:
+            return device.InputDevice(device_path)
+        except FileNotFoundError:
+            time.sleep(0.1)
+            return device.InputDevice(device_path)
+
+    def _find_device_fallback(self):
+        '''
+        Tries to find the device node when UI_GET_SYSNAME is not available or
+        we're running on a system sufficiently exotic that we do not know how
+        to interpret its return value.
+        '''
         #:bug: the device node might not be immediately available
         time.sleep(0.1)
 
+        # There could also be another device with the same name already present,
+        # make sure to select the newest one.
+        # Strictly speaking, we cannot be certain that everything returned by list_devices()
+        # ends at event[0-9]+: it might return something like "/dev/input/events_all". Find
+        # the devices that have the expected structure and extract their device number.
+        path_number_pairs = []
+        regex = re.compile('/dev/input/event([0-9]+)')
         for path in util.list_devices('/dev/input/'):
+            regex_match = regex.fullmatch(path)
+            if not regex_match:
+                continue
+            device_number = int(regex_match[1])
+            path_number_pairs.append((path, device_number))
+
+        # The modification date of the devnode is not reliable unfortunately, so we
+        # are sorting by the number in the name
+        path_number_pairs.sort(key=lambda pair: pair[1], reverse=True)
+
+        for (path, _) in path_number_pairs:
             d = device.InputDevice(path)
             if d.name == self.name:
                 return d
