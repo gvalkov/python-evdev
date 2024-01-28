@@ -141,7 +141,7 @@ class InputDevice(EventIO):
         #: The physical topology of the device.
         self.phys = info_res[5]
 
-        #: The unique address of the device.
+        #: The unique identifier of the device.
         self.uniq = info_res[6]
 
         #: The evdev protocol version.
@@ -283,9 +283,8 @@ class InputDevice(EventIO):
             and self.path == other.path
 
     def __str__(self):
-        msg = 'device {}, name "{}", phys "{}"{}'
-        uniq = ', uniq "{}"'.format(self.uniq) if self.uniq else ''
-        return msg.format(self.path, self.name, self.phys, uniq)
+        msg = 'device {}, name "{}", phys "{}", uniq "{}"'
+        return msg.format(self.path, self.name, self.phys, self.uniq or "")
 
     def __repr__(self):
         msg = (self.__class__.__name__, self.path)
