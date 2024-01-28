@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-'''
+"""
 This is an example of using pyudev[1] alongside evdev.
 [1]: https://pyudev.readthedocs.org/
-'''
+"""
 
 import functools
 import pyudev
@@ -13,7 +13,7 @@ from evdev import InputDevice
 
 context = pyudev.Context()
 monitor = pyudev.Monitor.from_netlink(context)
-monitor.filter_by(subsystem='input')
+monitor.filter_by(subsystem="input")
 monitor.start()
 
 fds = {monitor.fileno(): monitor}
@@ -32,16 +32,16 @@ while True:
                 break
 
             # find the device we're interested in and add it to fds
-            for name in (i['NAME'] for i in udev.ancestors if 'NAME' in i):
+            for name in (i["NAME"] for i in udev.ancestors if "NAME" in i):
                 # I used a virtual input device for this test - you
                 # should adapt this to your needs
-                if u'py-evdev-uinput' in name:
-                    if udev.action == u'add':
-                        print('Device added: %s' % udev)
+                if "py-evdev-uinput" in name:
+                    if udev.action == "add":
+                        print("Device added: %s" % udev)
                         fds[dev.fd] = InputDevice(udev.device_node)
                         break
-                    if udev.action == u'remove':
-                        print('Device removed: %s' % udev)
+                    if udev.action == "remove":
+                        print("Device removed: %s" % udev)
 
                         def helper():
                             global fds

@@ -1,35 +1,34 @@
-# -*- coding: utf-8; -*-
-
-'''
+"""
 Generate a Python extension module with the constants defined in linux/input.h.
-'''
+"""
 
 from __future__ import print_function
 import os, sys, re
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # The default header file locations to try.
 headers = [
-    '/usr/include/linux/input.h',
-    '/usr/include/linux/input-event-codes.h',
-    '/usr/include/linux/uinput.h',
+    "/usr/include/linux/input.h",
+    "/usr/include/linux/input-event-codes.h",
+    "/usr/include/linux/uinput.h",
 ]
 
 if sys.argv[1:]:
     headers = sys.argv[1:]
 
 
-#-----------------------------------------------------------------------------
-macro_regex = r'#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)'
+# -----------------------------------------------------------------------------
+macro_regex = r"#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)"
 macro_regex = re.compile(macro_regex)
 
-uname = list(os.uname()); del uname[1]
-uname = ' '.join(uname)
+uname = list(os.uname())
+del uname[1]
+uname = " ".join(uname)
 
 
-#-----------------------------------------------------------------------------
-template = r'''
+# -----------------------------------------------------------------------------
+template = r"""
 #include <Python.h>
 #ifdef __FreeBSD__
 #include <dev/evdev/input.h>
@@ -70,13 +69,15 @@ PyInit__ecodes(void)
 
     return m;
 }
-'''
+"""
+
 
 def parse_header(header):
     for line in open(header):
         macro = macro_regex.search(line)
         if macro:
-            yield '    PyModule_AddIntMacro(m, %s);' % macro.group(1)
+            yield "    PyModule_AddIntMacro(m, %s);" % macro.group(1)
+
 
 all_macros = []
 for header in headers:
@@ -87,7 +88,7 @@ for header in headers:
     all_macros += parse_header(header)
 
 if not all_macros:
-    print('no input macros found in: %s' % ' '.join(headers), file=sys.stderr)
+    print("no input macros found in: %s" % " ".join(headers), file=sys.stderr)
     sys.exit(1)
 
 

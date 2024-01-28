@@ -1,6 +1,4 @@
-# encoding: utf-8
-
-'''
+"""
 This modules exposes the integer constants defined in ``linux/input.h`` and
 ``linux/input-event-codes.h``.
 
@@ -38,7 +36,7 @@ codes. For example::
 
     >>> evdev.ecodes.FF[81]
     'FF_PERIODIC'
-'''
+"""
 
 from inspect import getmembers
 from evdev import _ecodes
@@ -47,8 +45,8 @@ from evdev import _ecodes
 #: Mapping of names to values.
 ecodes = {}
 
-prefixes = 'KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF INPUT_PROP'
-prev_prefix = ''
+prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF INPUT_PROP"
+prev_prefix = ""
 g = globals()
 
 # eg. code: 'REL_Z', val: 2
@@ -87,13 +85,13 @@ bytype = {
     _ecodes.EV_KEY: keys,
     _ecodes.EV_ABS: ABS,
     _ecodes.EV_REL: REL,
-    _ecodes.EV_SW:  SW,
+    _ecodes.EV_SW: SW,
     _ecodes.EV_MSC: MSC,
     _ecodes.EV_LED: LED,
     _ecodes.EV_REP: REP,
     _ecodes.EV_SND: SND,
     _ecodes.EV_SYN: SYN,
-    _ecodes.EV_FF:  FF,
+    _ecodes.EV_FF: FF,
     _ecodes.EV_FF_STATUS: FF_STATUS,
 }
 

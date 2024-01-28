@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import os
 import platform
 import re
@@ -19,25 +17,31 @@ except ImportError:
     from evdev.eventio import EventIO
 
 
-
 class UInputError(Exception):
     pass
 
 
 class UInput(EventIO):
-    '''
+    """
     A userland input device and that can inject input events into the
     linux input subsystem.
-    '''
+    """
 
     __slots__ = (
-        'name', 'vendor', 'product', 'version', 'bustype',
-        'events', 'devnode', 'fd', 'device',
+        "name",
+        "vendor",
+        "product",
+        "version",
+        "bustype",
+        "events",
+        "devnode",
+        "fd",
+        "device",
     )
 
     @classmethod
     def from_device(cls, *devices, filtered_types=(ecodes.EV_SYN, ecodes.EV_FF), **kwargs):
-        '''
+        """
         Create an UInput device with the capabilities of one or more input
         devices.
 
@@ -51,7 +55,7 @@ class UInput(EventIO):
 
         **kwargs
           Keyword arguments to UInput constructor (i.e. name, vendor etc.).
-        '''
+        """
 
         device_instances = []
         for dev in devices:
@@ -61,8 +65,8 @@ class UInput(EventIO):
 
         all_capabilities = defaultdict(set)
 
-        if 'max_effects' not in kwargs:
-            kwargs['max_effects'] = min([dev.ff_effects_count for dev in device_instances])
+        if "max_effects" not in kwargs:
+            kwargs["max_effects"] = min([dev.ff_effects_count for dev in device_instances])
 
         # Merge the capabilities of all devices into one dictionary.
         for dev in device_instances:
@@ -75,13 +79,20 @@ class UInput(EventIO):
 
         return cls(events=all_capabilities, **kwargs)
 
-    def __init__(self,
-                 events=None,
-                 name='py-evdev-uinput',
-                 vendor=0x1, product=0x1, version=0x1, bustype=0x3,
-                 devnode='/dev/uinput', phys='py-evdev-uinput', input_props=None,
-                 max_effects=ecodes.FF_MAX_EFFECTS):
-        '''
+    def __init__(
+        self,
+        events=None,
+        name="py-evdev-uinput",
+        vendor=0x1,
+        product=0x1,
+        version=0x1,
+        bustype=0x3,
+        devnode="/dev/uinput",
+        phys="py-evdev-uinput",
+        input_props=None,
+        max_effects=ecodes.FF_MAX_EFFECTS,
+    ):
+        """
         Arguments
         ---------
         events : dict
@@ -117,15 +128,15 @@ class UInput(EventIO):
         ----
         If you do not specify any events, the uinput device will be able
         to inject only ``KEY_*`` and ``BTN_*`` event codes.
-        '''
+        """
 
-        self.name = name         #: Uinput device name.
-        self.vendor = vendor     #: Device vendor identifier.
-        self.product = product   #: Device product identifier.
-        self.version = version   #: Device version identifier.
-        self.bustype = bustype   #: Device bustype - e.g. ``BUS_USB``.
-        self.phys    = phys      #: Uinput device physical path.
-        self.devnode = devnode   #: Uinput device node - e.g. ``/dev/uinput/``.
+        self.name = name  #: Uinput device name.
+        self.vendor = vendor  #: Device vendor identifier.
+        self.product = product  #: Device product identifier.
+        self.version = version  #: Device version identifier.
+        self.bustype = bustype  #: Device bustype - e.g. ``BUS_USB``.
+        self.phys = phys  #: Uinput device physical path.
+        self.devnode = devnode  #: Uinput device node - e.g. ``/dev/uinput/``.
 
         if not events:
             events = {ecodes.EV_KEY: ecodes.keys.keys()}
@@ -164,7 +175,7 @@ class UInput(EventIO):
         self.device = self._find_device(self.fd)
 
     def _prepare_events(self, events):
-        '''Prepare events for passing to _uinput.enable and _uinput.setup'''
+        """Prepare events for passing to _uinput.enable and _uinput.setup"""
         absinfo, prepared_events = [], []
         for etype, codes in events.items():
             for code in codes:
@@ -185,23 +196,21 @@ class UInput(EventIO):
         return self
 
     def __exit__(self, type, value, tb):
-        if hasattr(self, 'fd'):
+        if hasattr(self, "fd"):
             self.close()
 
     def __repr__(self):
         # TODO:
-        v = (repr(getattr(self, i)) for i in
-             ('name', 'bustype', 'vendor', 'product', 'version', 'phys'))
-        return '{}({})'.format(self.__class__.__name__, ', '.join(v))
+        v = (repr(getattr(self, i)) for i in ("name", "bustype", "vendor", "product", "version", "phys"))
+        return "{}({})".format(self.__class__.__name__, ", ".join(v))
 
     def __str__(self):
-        msg = ('name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}", phys "{}"\n'
-               'event types: {}')
+        msg = 'name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}", phys "{}"\n' "event types: {}"
 
         evtypes = [i[0] for i in self.capabilities(True).keys()]
-        msg = msg.format(self.name, ecodes.BUS[self.bustype],
-                         self.vendor, self.product,
-                         self.version, self.phys, ' '.join(evtypes))
+        msg = msg.format(
+            self.name, ecodes.BUS[self.bustype], self.vendor, self.product, self.version, self.phys, " ".join(evtypes)
+        )
 
         return msg
 
@@ -216,18 +225,18 @@ class UInput(EventIO):
             self.fd = -1
 
     def syn(self):
-        '''
+        """
         Inject a ``SYN_REPORT`` event into the input subsystem. Events
         queued by :func:`write()` will be fired. If possible, events
         will be merged into an 'atomic' event.
-        '''
+        """
 
         _uinput.write(self.fd, ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
 
     def capabilities(self, verbose=False, absinfo=True):
-        '''See :func:`capabilities <evdev.device.InputDevice.capabilities>`.'''
+        """See :func:`capabilities <evdev.device.InputDevice.capabilities>`."""
         if self.device is None:
-            raise UInputError('input device not opened - cannot read capabilities')
+            raise UInputError("input device not opened - cannot read capabilities")
 
         return self.device.capabilities(verbose, absinfo)
 
@@ -237,14 +246,14 @@ class UInput(EventIO):
 
         ret = self.dll._uinput_begin_upload(self.fd, ctypes.byref(upload))
         if ret:
-            raise UInputError('Failed to begin uinput upload: ' + os.strerror(ret))
+            raise UInputError("Failed to begin uinput upload: " + os.strerror(ret))
 
         return upload
 
     def end_upload(self, upload):
         ret = self.dll._uinput_end_upload(self.fd, ctypes.byref(upload))
         if ret:
-            raise UInputError('Failed to end uinput upload: ' + os.strerror(ret))
+            raise UInputError("Failed to end uinput upload: " + os.strerror(ret))
 
     def begin_erase(self, effect_id):
         erase = ff.UInputErase()
@@ -252,27 +261,26 @@ class UInput(EventIO):
 
         ret = self.dll._uinput_begin_erase(self.fd, ctypes.byref(erase))
         if ret:
-            raise UInputError('Failed to begin uinput erase: ' + os.strerror(ret))
+            raise UInputError("Failed to begin uinput erase: " + os.strerror(ret))
         return erase
 
     def end_erase(self, erase):
         ret = self.dll._uinput_end_erase(self.fd, ctypes.byref(erase))
         if ret:
-            raise UInputError('Failed to end uinput erase: ' + os.strerror(ret))
+            raise UInputError("Failed to end uinput erase: " + os.strerror(ret))
 
     def _verify(self):
-        '''
+        """
         Verify that an uinput device exists and is readable and writable
         by the current process.
-        '''
+        """
 
         try:
             m = os.stat(self.devnode)[stat.ST_MODE]
             if not stat.S_ISCHR(m):
                 raise
         except (IndexError, OSError):
-            msg = '"{}" does not exist or is not a character device file '\
-                  '- verify that the uinput module is loaded'
+            msg = '"{}" does not exist or is not a character device file ' "- verify that the uinput module is loaded"
             raise UInputError(msg.format(self.devnode))
 
         if not os.access(self.devnode, os.W_OK):
@@ -280,15 +288,15 @@ class UInput(EventIO):
             raise UInputError(msg.format(self.devnode))
 
         if len(self.name) > _uinput.maxnamelen:
-            msg = 'uinput device name must not be longer than {} characters'
+            msg = "uinput device name must not be longer than {} characters"
             raise UInputError(msg.format(_uinput.maxnamelen))
 
     def _find_device(self, fd):
-        '''
+        """
         Tries to find the device node. Will delegate this task to one of
         several platform-specific functions.
-        '''
-        if platform.system() == 'Linux':
+        """
+        if platform.system() == "Linux":
             try:
                 sysname = _uinput.get_sysname(fd)
                 return self._find_device_linux(sysname)
@@ -302,19 +310,19 @@ class UInput(EventIO):
         return self._find_device_fallback()
 
     def _find_device_linux(self, sysname):
-        '''
+        """
         Tries to find the device node when running on Linux.
-        '''
+        """
 
-        syspath = f'/sys/devices/virtual/input/{sysname}'
+        syspath = f"/sys/devices/virtual/input/{sysname}"
 
         # The sysfs entry for event devices should contain exactly one folder
         # whose name matches the format "event[0-9]+". It is then assumed that
         # the device node in /dev/input uses the same name.
-        regex = re.compile('event[0-9]+')
+        regex = re.compile("event[0-9]+")
         for entry in os.listdir(syspath):
             if regex.fullmatch(entry):
-                device_path = f'/dev/input/{entry}'
+                device_path = f"/dev/input/{entry}"
                 break
         else:  # no break
             raise FileNotFoundError()
@@ -329,11 +337,11 @@ class UInput(EventIO):
             return device.InputDevice(device_path)
 
     def _find_device_fallback(self):
-        '''
+        """
         Tries to find the device node when UI_GET_SYSNAME is not available or
         we're running on a system sufficiently exotic that we do not know how
         to interpret its return value.
-        '''
+        """
         #:bug: the device node might not be immediately available
         time.sleep(0.1)
 
@@ -343,8 +351,8 @@ class UInput(EventIO):
         # ends at event[0-9]+: it might return something like "/dev/input/events_all". Find
         # the devices that have the expected structure and extract their device number.
         path_number_pairs = []
-        regex = re.compile('/dev/input/event([0-9]+)')
-        for path in util.list_devices('/dev/input/'):
+        regex = re.compile("/dev/input/event([0-9]+)")
+        for path in util.list_devices("/dev/input/"):
             regex_match = regex.fullmatch(path)
             if not regex_match:
                 continue
@@ -355,7 +363,7 @@ class UInput(EventIO):
         # are sorting by the number in the name
         path_number_pairs.sort(key=lambda pair: pair[1], reverse=True)
 
-        for (path, _) in path_number_pairs:
+        for path, _ in path_number_pairs:
             d = device.InputDevice(path)
             if d.name == self.name:
                 return d

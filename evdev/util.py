@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import re
 import os
 import stat
@@ -10,17 +8,17 @@ from evdev import ecodes
 from evdev.events import event_factory
 
 
-def list_devices(input_device_dir='/dev/input'):
-    '''List readable character devices in ``input_device_dir``.'''
+def list_devices(input_device_dir="/dev/input"):
+    """List readable character devices in ``input_device_dir``."""
 
-    fns = glob.glob('{}/event*'.format(input_device_dir))
+    fns = glob.glob("{}/event*".format(input_device_dir))
     fns = list(filter(is_device, fns))
 
     return fns
 
 
 def is_device(fn):
-    '''Check if ``fn`` is a readable and writable character device.'''
+    """Check if ``fn`` is a readable and writable character device."""
 
     if not os.path.exists(fn):
         return False
@@ -36,13 +34,13 @@ def is_device(fn):
 
 
 def categorize(event):
-    '''
+    """
     Categorize an event according to its type.
 
     The :data:`event_factory <evdev.events.event_factory>` dictionary
     maps event types to sub-classes of :class:`InputEvent
     <evdev.events.InputEvent>`. If the event cannot be categorized, it
-    is returned unmodified.'''
+    is returned unmodified."""
 
     if event.type in event_factory:
         return event_factory[event.type](event)
@@ -50,8 +48,8 @@ def categorize(event):
         return event
 
 
-def resolve_ecodes_dict(typecodemap, unknown='?'):
-    '''
+def resolve_ecodes_dict(typecodemap, unknown="?"):
+    """
     Resolve event codes and types to their verbose names.
 
     :param typecodemap: mapping of event types to lists of event codes.
@@ -70,7 +68,7 @@ def resolve_ecodes_dict(typecodemap, unknown='?'):
 
     >>> resolve_ecodes_dict({ 3: [(0, AbsInfo(...))] })
     { ('EV_ABS', 3L): [(('ABS_X', 0L), AbsInfo(...))] }
-    '''
+    """
 
     for etype, codes in typecodemap.items():
         type_name = ecodes.EV[etype]
@@ -79,21 +77,21 @@ def resolve_ecodes_dict(typecodemap, unknown='?'):
         if etype == ecodes.EV_KEY:
             ecode_dict = ecodes.keys
         else:
-            ecode_dict = getattr(ecodes, type_name.split('_')[-1])
+            ecode_dict = getattr(ecodes, type_name.split("_")[-1])
 
         resolved = resolve_ecodes(ecode_dict, codes, unknown)
         yield (type_name, etype), resolved
 
 
-def resolve_ecodes(ecode_dict, ecode_list, unknown='?'):
-    '''
+def resolve_ecodes(ecode_dict, ecode_list, unknown="?"):
+    """
     Resolve event codes and types to their verbose names.
 
     Example
     -------
     >>> resolve_ecodes(ecodes.BTN, [272, 273, 274])
     [(['BTN_LEFT', 'BTN_MOUSE'], 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274)]
-    '''
+    """
     res = []
     for ecode in ecode_list:
         # elements with AbsInfo(), eg { 3 : [(0, AbsInfo(...)), (1, AbsInfo(...))] }
@@ -115,7 +113,7 @@ def resolve_ecodes(ecode_dict, ecode_list, unknown='?'):
 
 
 def find_ecodes_by_regex(regex):
-    '''
+    """
     Find ecodes matching a regex and return a mapping of event type to event codes.
 
     regex can be a pattern string or a compiled regular expression object.
@@ -130,7 +128,7 @@ def find_ecodes_by_regex(regex):
         ('EV_KEY', 1): [('KEY_BREAK', 411)],
         ('EV_ABS', 3): [('ABS_BRAKE', 10)]
     }
-    '''
+    """
 
     regex = re.compile(regex)  # re.compile is idempotent
     result = collections.defaultdict(list)
@@ -146,4 +144,4 @@ def find_ecodes_by_regex(regex):
     return dict(result)
 
 
-__all__ = ('list_devices', 'is_device', 'categorize', 'resolve_ecodes', 'resolve_ecodes_dict', 'find_ecodes_by_regex')
+__all__ = ("list_devices", "is_device", "categorize", "resolve_ecodes", "resolve_ecodes_dict", "find_ecodes_by_regex")

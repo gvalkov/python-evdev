@@ -1,6 +1,6 @@
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Gather everything into a single, convenient namespace.
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 
 from evdev.device import DeviceInfo, InputDevice, AbsInfo, EvdevError
 from evdev.events import InputEvent, KeyEvent, RelEvent, SynEvent, AbsEvent, event_factory

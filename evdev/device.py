@@ -14,19 +14,16 @@ except ImportError:
     from evdev.eventio import EventIO, EvdevError
 
 
-#--------------------------------------------------------------------------
-_AbsInfo = collections.namedtuple(
-    'AbsInfo', ['value', 'min', 'max', 'fuzz', 'flat', 'resolution'])
+# --------------------------------------------------------------------------
+_AbsInfo = collections.namedtuple("AbsInfo", ["value", "min", "max", "fuzz", "flat", "resolution"])
 
-_KbdInfo = collections.namedtuple(
-    'KbdInfo', ['repeat', 'delay'])
+_KbdInfo = collections.namedtuple("KbdInfo", ["repeat", "delay"])
 
-_DeviceInfo = collections.namedtuple(
-    'DeviceInfo', ['bustype', 'vendor', 'product', 'version'])
+_DeviceInfo = collections.namedtuple("DeviceInfo", ["bustype", "vendor", "product", "version"])
 
 
 class AbsInfo(_AbsInfo):
-    '''Absolute axis information.
+    """Absolute axis information.
 
     A ``namedtuple`` used for storing absolute axis information -
     corresponds to the ``input_absinfo`` struct:
@@ -62,14 +59,14 @@ class AbsInfo(_AbsInfo):
     The input core does not clamp reported values to the ``[minimum,
     maximum]`` limits, such task is left to userspace.
 
-    '''
+    """
 
     def __str__(self):
-        return 'val {}, min {}, max {}, fuzz {}, flat {}, res {}'.format(*self)
+        return "val {}, min {}, max {}, fuzz {}, flat {}, res {}".format(*self)
 
 
 class KbdInfo(_KbdInfo):
-    '''Keyboard repeat rate.
+    """Keyboard repeat rate.
 
     Attributes
     ----------
@@ -79,45 +76,44 @@ class KbdInfo(_KbdInfo):
     delay
       Amount of time that a key must be depressed before it will start
       to repeat (in milliseconds).
-    '''
+    """
 
     def __str__(self):
-        return 'repeat {}, delay {}'.format(*self)
+        return "repeat {}, delay {}".format(*self)
 
 
 class DeviceInfo(_DeviceInfo):
-    '''
+    """
     Attributes
     ----------
     bustype
     vendor
     product
     version
-    '''
+    """
 
     def __str__(self):
-        msg = 'bus: {:04x}, vendor {:04x}, product {:04x}, version {:04x}'
+        msg = "bus: {:04x}, vendor {:04x}, product {:04x}, version {:04x}"
         return msg.format(*self)
 
 
 class InputDevice(EventIO):
-    '''
+    """
     A linux input device from which input events can be read.
-    '''
+    """
 
-    __slots__ = ('path', 'fd', 'info', 'name', 'phys', 'uniq', '_rawcapabilities',
-                 'version', 'ff_effects_count')
+    __slots__ = ("path", "fd", "info", "name", "phys", "uniq", "_rawcapabilities", "version", "ff_effects_count")
 
     def __init__(self, dev):
-        '''
+        """
         Arguments
         ---------
         dev : str|bytes|PathLike
           Path to input device
-        '''
+        """
 
         #: Path to input device.
-        self.path = dev if not hasattr(dev, '__fspath__') else dev.__fspath__()
+        self.path = dev if not hasattr(dev, "__fspath__") else dev.__fspath__()
 
         # Certain operations are possible only when the device is opened in
         # read-write mode.
@@ -154,7 +150,7 @@ class InputDevice(EventIO):
         self.ff_effects_count = _input.ioctl_EVIOCGEFFECTS(self.fd)
 
     def __del__(self):
-        if hasattr(self, 'fd') and self.fd is not None:
+        if hasattr(self, "fd") and self.fd is not None:
             try:
                 self.close()
             except (OSError, ImportError, AttributeError):
@@ -179,7 +175,7 @@ class InputDevice(EventIO):
         return res
 
     def capabilities(self, verbose=False, absinfo=True):
-        '''
+        """
         Return the event types that this device supports as a mapping of
         supported event types to lists of handled event codes.
 
@@ -216,7 +212,7 @@ class InputDevice(EventIO):
           { ('EV_ABS', 3): [ (('ABS_X', 0), AbsInfo(min=0, max=255, fuzz=0, flat=0)),
                              (('ABS_Y', 1), AbsInfo(min=0, max=255, fuzz=0, flat=0)) ]}
 
-        '''
+        """
 
         if verbose:
             return dict(util.resolve_ecodes_dict(self._capabilities(absinfo)))
@@ -224,7 +220,7 @@ class InputDevice(EventIO):
             return self._capabilities(absinfo)
 
     def input_props(self, verbose=False):
-        '''
+        """
         Get device properties and quirks.
 
         Example
@@ -237,7 +233,7 @@ class InputDevice(EventIO):
 
         [('INPUT_PROP_POINTER', 0), ('INPUT_PROP_POINTING_STICK', 5)]
 
-        '''
+        """
         props = _input.ioctl_EVIOCGPROP(self.fd)
         if verbose:
             return util.resolve_ecodes(ecodes.INPUT_PROP, props)
@@ -245,7 +241,7 @@ class InputDevice(EventIO):
         return props
 
     def leds(self, verbose=False):
-        '''
+        """
         Return currently set LED keys.
 
         Example
@@ -258,7 +254,7 @@ class InputDevice(EventIO):
 
         [('LED_NUML', 0), ('LED_CAPSL', 1), ('LED_MISC', 8), ('LED_MAIL', 9)]
 
-        '''
+        """
         leds = _input.ioctl_EVIOCG_bits(self.fd, ecodes.EV_LED)
         if verbose:
             return util.resolve_ecodes(ecodes.LED, leds)
@@ -266,21 +262,20 @@ class InputDevice(EventIO):
         return leds
 
     def set_led(self, led_num, value):
-        '''
+        """
         Set the state of the selected LED.
 
         Example
         -------
         >>> device.set_led(ecodes.LED_NUML, 1)
-        '''
+        """
         self.write(ecodes.EV_LED, led_num, value)
 
     def __eq__(self, other):
-        '''
+        """
         Two devices are equal if their :data:`info` attributes are equal.
-        '''
-        return isinstance(other, self.__class__) and self.info == other.info \
-            and self.path == other.path
+        """
+        return isinstance(other, self.__class__) and self.info == other.info and self.path == other.path
 
     def __str__(self):
         msg = 'device {}, name "{}", phys "{}", uniq "{}"'
@@ -288,7 +283,7 @@ class InputDevice(EventIO):
 
     def __repr__(self):
         msg = (self.__class__.__name__, self.path)
-        return '{}({!r})'.format(*msg)
+        return "{}({!r})".format(*msg)
 
     def __fspath__(self):
         return self.path
@@ -302,7 +297,7 @@ class InputDevice(EventIO):
                 self.fd = -1
 
     def grab(self):
-        '''
+        """
         Grab input device using ``EVIOCGRAB`` - other applications will
         be unable to receive events until the device is released. Only
         one process can hold a ``EVIOCGRAB`` on a device.
@@ -310,55 +305,55 @@ class InputDevice(EventIO):
         Warning
         -------
         Grabbing an already grabbed device will raise an ``OSError``.
-        '''
+        """
 
         _input.ioctl_EVIOCGRAB(self.fd, 1)
 
     def ungrab(self):
-        '''
+        """
         Release device if it has been already grabbed (uses `EVIOCGRAB`).
 
         Warning
         -------
         Releasing an already released device will raise an
         ``OSError('Invalid argument')``.
-        '''
+        """
 
         _input.ioctl_EVIOCGRAB(self.fd, 0)
 
     @contextlib.contextmanager
     def grab_context(self):
-        '''
+        """
         A context manager for the duration of which only the current
         process will be able to receive events from the device.
-        '''
+        """
         self.grab()
         yield
         self.ungrab()
 
     def upload_effect(self, effect):
-        '''
+        """
         Upload a force feedback effect to a force feedback device.
-        '''
+        """
 
         data = memoryview(effect).tobytes()
         ff_id = _input.upload_effect(self.fd, data)
         return ff_id
 
     def erase_effect(self, ff_id):
-        '''
+        """
         Erase a force effect from a force feedback device. This also
         stops the effect.
-        '''
+        """
 
         _input.erase_effect(self.fd, ff_id)
 
     @property
     def repeat(self):
-        '''
+        """
         Get or set the keyboard repeat rate (in characters per
         minute) and delay (in milliseconds).
-        '''
+        """
 
         return KbdInfo(*_input.ioctl_EVIOCGREP(self.fd))
 
@@ -367,7 +362,7 @@ class InputDevice(EventIO):
         return _input.ioctl_EVIOCSREP(self.fd, *value)
 
     def active_keys(self, verbose=False):
-        '''
+        """
         Return currently active keys.
 
         Example
@@ -382,7 +377,7 @@ class InputDevice(EventIO):
 
           [('KEY_ESC', 1), ('KEY_LEFTSHIFT', 42)]
 
-        '''
+        """
         active_keys = _input.ioctl_EVIOCG_bits(self.fd, ecodes.EV_KEY)
         if verbose:
             return util.resolve_ecodes(ecodes.KEY, active_keys)
@@ -391,12 +386,12 @@ class InputDevice(EventIO):
 
     @property
     def fn(self):
-        msg = 'Please use {0}.path instead of {0}.fn'.format(self.__class__.__name__)
+        msg = "Please use {0}.path instead of {0}.fn".format(self.__class__.__name__)
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
         return self.path
 
     def absinfo(self, axis_num):
-        '''
+        """
         Return current :class:`AbsInfo` for input device axis
 
         Arguments
@@ -408,11 +403,11 @@ class InputDevice(EventIO):
         -------
         >>> device.absinfo(ecodes.ABS_X)
         AbsInfo(value=1501, min=-32768, max=32767, fuzz=0, flat=128, resolution=0)
-        '''
+        """
         return AbsInfo(*_input.ioctl_EVIOCGABS(self.fd, axis_num))
 
     def set_absinfo(self, axis_num, value=None, min=None, max=None, fuzz=None, flat=None, resolution=None):
-        '''
+        """
         Update :class:`AbsInfo` values. Only specified values will be overwritten.
 
         Arguments
@@ -427,13 +422,15 @@ class InputDevice(EventIO):
         You can also unpack AbsInfo tuple that will overwrite all values
 
         >>> device.set_absinfo(ecodes.ABS_Y, *AbsInfo(0, -2000, 2000, 0, 15, 0))
-        '''
+        """
 
         cur_absinfo = self.absinfo(axis_num)
-        new_absinfo = AbsInfo(value if value is not None else cur_absinfo.value,
-                              min if min is not None else cur_absinfo.min,
-                              max if max is not None else cur_absinfo.max,
-                              fuzz if fuzz is not None else cur_absinfo.fuzz,
-                              flat if flat is not None else cur_absinfo.flat,
-                              resolution if resolution is not None else cur_absinfo.resolution)
+        new_absinfo = AbsInfo(
+            value if value is not None else cur_absinfo.value,
+            min if min is not None else cur_absinfo.min,
+            max if max is not None else cur_absinfo.max,
+            fuzz if fuzz is not None else cur_absinfo.fuzz,
+            flat if flat is not None else cur_absinfo.flat,
+            resolution if resolution is not None else cur_absinfo.resolution,
+        )
         _input.ioctl_EVIOCSABS(self.fd, axis_num, new_absinfo)
