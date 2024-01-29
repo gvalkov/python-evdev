@@ -14,10 +14,14 @@ ecodes_path = curdir / "evdev/ecodes.c"
 def create_ecodes(headers=None):
     if not headers:
         include_paths = set()
-        if os.environ.get("CPATH", "").strip() != "":
-            include_paths.update(os.environ["CPATH"].split(":"))
-        if os.environ.get("C_INCLUDE_PATH", "").strip() != "":
-            include_paths.update(os.environ["C_INCLUDE_PATH"].split(":"))
+        cpath = os.environ.get("CPATH", "").strip()
+        c_inc_path = os.environ.get("C_INCLUDE_PATH", "").strip()
+
+        if cpath:
+            include_paths.update(cpath.split(":"))
+        if c_inc_path:
+            include_paths.update(c_inc_path.split(":"))
+
         include_paths.add("/usr/include")
         files = ["linux/input.h", "linux/input-event-codes.h", "linux/uinput.h"]
         headers = [os.path.join(path, file) for path in include_paths for file in files]
