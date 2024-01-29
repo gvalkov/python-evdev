@@ -1,2 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evdev"
+version = "1.6.1"
+description = "Bindings to the Linux input handling subsystem"
+keywords = ["evdev", "input", "uinput"]
+readme = "README.rst"
+license = {file = "LICENSE"}
+requires-python = ">=3.6"
+authors = [
+  { name="Georgi Valkov", email="georgi.t.valkov@gmail.com" },
+]
+maintainers = [
+  { name="Tobi", email="proxima@sezanzeb.de" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/gvalkov/python-evdev"
+
+[tool.setuptools]
+packages = ["evdev"]
+
 [tool.ruff]
 line-length = 120

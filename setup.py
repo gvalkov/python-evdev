@@ -1,64 +1,16 @@
-#!/usr/bin/env python
-
 import os
 import sys
 import textwrap
 from pathlib import Path
 
-
-# -----------------------------------------------------------------------------
 from setuptools import setup, Extension, Command
 from setuptools.command import build_ext as _build_ext
 
 
-# -----------------------------------------------------------------------------
 curdir = Path(__file__).resolve().parent
 ecodes_path = curdir / "evdev/ecodes.c"
 
-# -----------------------------------------------------------------------------
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Operating System :: POSIX :: Linux",
-    "Intended Audience :: Developers",
-    "Topic :: Software Development :: Libraries",
-    "License :: OSI Approved :: BSD License",
-    "Programming Language :: Python :: Implementation :: CPython",
-]
 
-# -----------------------------------------------------------------------------
-cflags = ["-std=c99", "-Wno-error=declaration-after-statement"]
-input_c = Extension("evdev._input", sources=["evdev/input.c"], extra_compile_args=cflags)
-uinput_c = Extension("evdev._uinput", sources=["evdev/uinput.c"], extra_compile_args=cflags)
-ecodes_c = Extension("evdev._ecodes", sources=["evdev/ecodes.c"], extra_compile_args=cflags)
-
-# -----------------------------------------------------------------------------
-kw = {
-    "name": "evdev",
-    "version": "1.6.1",
-    "description": "Bindings to the Linux input handling subsystem",
-    "long_description": (curdir / "README.rst").read_text(),
-    "author": "Georgi Valkov",
-    "author_email": "georgi.t.valkov@gmail.com",
-    "license": "Revised BSD License",
-    "keywords": "evdev input uinput",
-    "url": "https://github.com/gvalkov/python-evdev",
-    "classifiers": classifiers,
-    "packages": ["evdev"],
-    "ext_modules": [input_c, uinput_c, ecodes_c],
-    "include_package_data": False,
-    "zip_safe": True,
-    "cmdclass": {},
-}
-
-
-# -----------------------------------------------------------------------------
 def create_ecodes(headers=None):
     if not headers:
         include_paths = set()
@@ -77,7 +29,7 @@ def create_ecodes(headers=None):
         are missing. You will have to install the kernel header files in
         order to continue:
 
-            yum install kernel-headers-$(uname -r)
+            dnf install kernel-headers-$(uname -r)
             apt-get install linux-headers-$(uname -r)
             emerge sys-kernel/linux-headers
             pacman -S kernel-headers
@@ -89,7 +41,7 @@ def create_ecodes(headers=None):
             python setup.py \\
               build \\
               build_ecodes --evdev-headers path/input.h:path/input-event-codes.h \\
-              build_ext --include-dirs  path/ \\
+              build_ext --include-dirs path/ \\
               install
         """
 
@@ -104,7 +56,6 @@ def create_ecodes(headers=None):
         run(cmd, check=True, stdout=fh)
 
 
-# -----------------------------------------------------------------------------
 class build_ecodes(Command):
     description = "generate ecodes.c"
 
@@ -137,11 +88,15 @@ class build_ext(_build_ext.build_ext):
     sub_commands = [("build_ecodes", has_ecodes)] + _build_ext.build_ext.sub_commands
 
 
-# -----------------------------------------------------------------------------
-kw["cmdclass"]["build_ext"] = build_ext
-kw["cmdclass"]["build_ecodes"] = build_ecodes
-
-
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    setup(**kw)
+cflags = ["-std=c99", "-Wno-error=declaration-after-statement"]
+setup(
+    ext_modules=[
+        Extension("evdev._input", sources=["evdev/input.c"], extra_compile_args=cflags),
+        Extension("evdev._uinput", sources=["evdev/uinput.c"], extra_compile_args=cflags),
+        Extension("evdev._ecodes", sources=["evdev/ecodes.c"], extra_compile_args=cflags),
+    ],
+    cmdclass={
+        "build_ext": build_ext,
+        "build_ecodes": build_ecodes,
+    },
+)
