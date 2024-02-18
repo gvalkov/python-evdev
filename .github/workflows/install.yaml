@@ -1,0 +1,29 @@
+name: Test install
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.7"
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install python-evdev
+        run: |
+          python -m pip install -v .
+          (cd /tmp && python -c "import evdev.ecodes; print(evdev.ecodes)")
