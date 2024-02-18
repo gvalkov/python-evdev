@@ -37,3 +37,15 @@ line-length = 120
 
 [tool.ruff.lint]
 ignore = ["E265", "E241", "F403", "F401", "E401", "E731"]
+
+[tool.bumpversion]
+current_version = "1.6.1"
+commit = true
+tag = true
+allow_dirty = true
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+
+[[tool.bumpversion.files]]
+filename = "docs/conf.py"
