@@ -34,3 +34,6 @@ packages = ["evdev"]
 
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint]
+ignore = ["E265", "E241", "F403", "F401", "E401", "E731"]

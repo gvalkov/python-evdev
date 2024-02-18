@@ -6,9 +6,9 @@ from evdev import ecodes
 prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF"
 
 
-def to_tuples(l):
+def to_tuples(val):
     t = lambda x: tuple(x) if isinstance(x, list) else x
-    return map(t, l)
+    return map(t, val)
 
 
 def test_equality():
@@ -28,4 +28,4 @@ def test_access():
 def test_overlap():
     vals_ff = set(to_tuples(ecodes.FF.values()))
     vals_ff_status = set(to_tuples(ecodes.FF_STATUS.values()))
-    assert bool(vals_ff & vals_ff_status) == False
+    assert bool(vals_ff & vals_ff_status) is False

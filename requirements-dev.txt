@@ -1,7 +1,6 @@
-pytest ~= 7.1.0
-Sphinx ~= 4.4.0
-sphinx-copybutton ~= 0.5.0
-bump2version
-sphinx_rtd_theme
-twine
+pytest
+Sphinx
+sphinx-copybutton ~= 0.5.2
+sphinx-rtd-theme
 ruff
+bump-my-version ~= 0.17.4

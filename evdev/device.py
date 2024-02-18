@@ -159,8 +159,8 @@ class InputDevice(EventIO):
     def _capabilities(self, absinfo=True):
         res = {}
 
-        for etype, ecodes in self._rawcapabilities.items():
-            for code in ecodes:
+        for etype, _ecodes in self._rawcapabilities.items():
+            for code in _ecodes:
                 l = res.setdefault(etype, [])
                 if isinstance(code, tuple):
                     if absinfo:
