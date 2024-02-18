@@ -16,7 +16,7 @@ Python-evdev has been packaged for the following GNU/Linux distributions:
     <a href="https://packages.ubuntu.com/search?suite=default&section=all&arch=any&keywords=python-evdev&searchon=names">
       <img height="30px" src="_static/pacifica-icon-set/distributor-logo-ubuntu.png">
     </a>
-    <a href="https://apps.fedoraproject.org/packages/python3-evdev">
+    <a href="https://packages.fedoraproject.org/pkgs/python-evdev/python3-evdev/">
       <img height="30px" src="_static/pacifica-icon-set/distributor-logo-fedora.png">
     </a>
     <!--
@@ -34,23 +34,23 @@ From source
 ===========
 
 The latest stable version of *python-evdev* can be installed from pypi_,
-provided that you have gcc/clang, pip_ and the Python and Linux development
-headers installed on your system. Installing them is distribution specific and
-typically falls in one of the following categories:
+provided that you have a compiler, pip_ and the Python and Linux development
+headers installed on your system. Installing these is distribution specific and
+typically falls in one of the following:
 
 On a Debian compatible OS:
 
 .. code-block:: bash
 
-    $ apt-get install python-dev python-pip gcc
-    $ apt-get install linux-headers-$(uname -r)
+    $ apt install python-dev python-pip gcc
+    $ apt install linux-headers-$(uname -r)
 
 On a Redhat compatible OS:
 
 .. code-block:: bash
 
-    $ yum install python-devel python-pip gcc
-    $ yum install kernel-headers-$(uname -r)
+    $ dnf install python-devel python-pip gcc
+    $ dnf install kernel-headers-$(uname -r)
 
 On Arch Linux and derivatives:
 
@@ -73,7 +73,7 @@ By default, the setup script will look for the ``input.h`` and
 ``input-event-codes.h`` [#f1]_ header files ``/usr/include/linux``.
 
 You may use the ``--evdev-headers`` option to the ``build_ext`` setuptools
-command to specify the location of these header files. It accepts one or more
+command to  the location of these header files. It accepts one or more
 colon-separated paths. For example:
 
 .. code-block:: bash

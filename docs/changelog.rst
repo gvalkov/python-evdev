@@ -1,20 +1,32 @@
 Changelog
 ---------
 
-1.6.1 (Jan 20, 2023)
-==================
+1.7.0 (Feb 18, 2024)
+====================
 
-- Fix generation of ``ecodes.c`` when the path to ````sys.executable`` contains spaces.
+- Respect the ``CPATH/C_INCLUDE_PATH`` environment variables during install.
+
+- Add the uniq address to the string representation of ``InputDevice``.
+
+- Improved method for finding the device node corresponding to a uinput device (`#206 https://github.com/gvalkov/python-evdev/pull/206`_).
+
+- Repository TLC (reformatted with ruff, fixed linting warnings, moved packaging metadata to ``pyproject.toml`` etc.).
+
+
+1.6.1 (Jan 20, 2023)
+====================
+
+- Fix generation of ``ecodes.c`` when the path to ``sys.executable`` contains spaces.
 
 
 1.6.0 (Jul 17, 2022)
-==================
+====================
 
-- Fix Python 3.11 compatibility (`#174 <https://github.com/gvalkov/python-evdev/pull/174>`_)
+- Fix Python 3.11 compatibility (`#174 <https://github.com/gvalkov/python-evdev/pull/174>`_).
 
 
 1.5.0 (Mar 24, 2022)
-==================
+====================
 
 - Fix documentation (`#163 <https://github.com/gvalkov/python-evdev/pull/163>`_, `#160 <https://github.com/gvalkov/python-evdev/pull/160>`_).
 
