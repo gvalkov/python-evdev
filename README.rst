@@ -11,14 +11,14 @@ subsystem. *Uinput* allows userspace programs to create and handle
 input devices that can inject events directly into the input
 subsystem.
 
-Documentation (stable):
-    http://python-evdev.readthedocs.io/en/latest/
+Documentation:
+    https://python-evdev.readthedocs.io/en/latest/
 
 Development:
     https://github.com/gvalkov/python-evdev
 
 Package:
-    http://pypi.python.org/pypi/evdev
+    https://pypi.python.org/pypi/evdev
 
 Changelog:
-    http://python-evdev.readthedocs.io/en/latest/changelog.html
+    https://python-evdev.readthedocs.io/en/latest/changelog.html
