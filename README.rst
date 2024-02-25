@@ -1,6 +1,13 @@
 *evdev*
 -------
 
+.. raw:: html
+
+    <p>
+        <a href="https://pypi.python.org/pypi/evdev"><img alt="pypi version" src="https://img.shields.io/pypi/v/evdev.svg"></a>
+        <a href="https://github.com/gvalkov/python-evdev/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/pypi/l/evdev"></a>
+    </p>
+
 This package provides bindings to the generic input event interface in
 Linux. The *evdev* interface serves the purpose of passing events
 generated in the kernel directly to userspace through character
