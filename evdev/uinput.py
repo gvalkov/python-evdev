@@ -330,11 +330,20 @@ class UInput(EventIO):
         # It is possible that there is some delay before /dev/input/event* shows
         # up on old systems that do not use devtmpfs, so if the device cannot be
         # found, wait for a short amount and then try again once.
-        try:
-            return device.InputDevice(device_path)
-        except FileNotFoundError:
-            time.sleep(0.1)
-            return device.InputDevice(device_path)
+        #
+        # Furthermore, even if devtmpfs is in use, it is possible that the device
+        # does show up immediately, but without the correct permissions that
+        # still need to be set by udev. Wait for up to two seconds for either the
+        # device to show up or the permissions to be set.
+        for attempt in range(19):
+            try:
+                return device.InputDevice(device_path)
+            except (FileNotFoundError, PermissionError):
+                time.sleep(0.1)
+
+        # Last attempt. If this fails, whatever exception the last attempt raises
+        # shall be the exception that this function raises.
+        return device.InputDevice(device_path)
 
     def _find_device_fallback(self):
         """
