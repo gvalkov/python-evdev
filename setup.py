@@ -5,10 +5,11 @@ from pathlib import Path
 
 from setuptools import setup, Extension, Command
 from setuptools.command import build_ext as _build_ext
-
+from setuptools.command import install as _install
 
 curdir = Path(__file__).resolve().parent
-ecodes_path = curdir / "evdev/ecodes.c"
+ecodes_c_path = curdir / "evdev/ecodes.c"
+ecodes_pyi_path = curdir / "evdev/ecodes.pyi"
 
 
 def create_ecodes(headers=None):
@@ -54,9 +55,14 @@ def create_ecodes(headers=None):
 
     from subprocess import run
 
-    print("writing %s (using %s)" % (ecodes_path, " ".join(headers)))
-    with ecodes_path.open("w") as fh:
+    print("writing %s (using %s)" % (ecodes_c_path, " ".join(headers)))
+    with ecodes_c_path.open("w") as fh:
         cmd = [sys.executable, "evdev/genecodes.py", *headers]
+        run(cmd, check=True, stdout=fh)
+
+    print("writing %s (using %s)" % (ecodes_pyi_path, " ".join(headers)))
+    with ecodes_pyi_path.open("w") as fh:
+        cmd = [sys.executable, "evdev/genpyi.py", *headers]
         run(cmd, check=True, stdout=fh)
 
 
@@ -80,20 +86,36 @@ class build_ecodes(Command):
 
 class build_ext(_build_ext.build_ext):
     def has_ecodes(self):
-        if ecodes_path.exists():
+        if ecodes_c_path.exists():
             print("ecodes.c already exists ... skipping build_ecodes")
-        return not ecodes_path.exists()
+        return not ecodes_c_path.exists()
 
     def run(self):
         for cmd_name in self.get_sub_commands():
             self.run_command(cmd_name)
         _build_ext.build_ext.run(self)
 
-    sub_commands = [("build_ecodes", has_ecodes)] + _build_ext.build_ext.sub_commands
+    sub_commands = [("build_ecodes", has_ecodes)] + _build_ext.build_ext.sub_commands # type: ignore
+    use_stubs = True
+
+# I've been reading through setuptools docs, but i can't for the lofe of me figure out how to bring the pyi stubs into the package "cleanly"
+class install(_install.install):
+    def run(self):
+        print(os.listdir(os.getenv("src")))
+        #_install.install.copy_file(self, "evdev/ecodes.pyi", "evdev/ecodes.pyi")
+        installdir = "build/lib.linux-x86_64-cpython-311/evdev"
+        Path(f"{installdir}/ecodes.pyi").write_bytes(Path("evdev/ecodes.pyi").read_bytes())
+        print("CUSTOM INSTALLER")
+        print(self.build_lib)
+        _install.install.run(self)
 
 
 cflags = ["-std=c99", "-Wno-error=declaration-after-statement"]
 setup(
+    #include_package_data=True,
+    packages=["evdev"],
+    package_dir={'evdev': 'evdev'},
+    package_data={'evdev': ["*.pyi"]},
     ext_modules=[
         Extension("evdev._input", sources=["evdev/input.c"], extra_compile_args=cflags),
         Extension("evdev._uinput", sources=["evdev/uinput.c"], extra_compile_args=cflags),
@@ -102,5 +124,6 @@ setup(
     cmdclass={
         "build_ext": build_ext,
         "build_ecodes": build_ecodes,
+        "install": install,
     },
 )
