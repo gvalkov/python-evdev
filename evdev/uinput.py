@@ -90,7 +90,10 @@ class UInput(EventIO):
         devnode="/dev/uinput",
         phys="py-evdev-uinput",
         input_props=None,
-        max_effects=ecodes.FF_MAX_EFFECTS,
+        # CentOS 7 has sufficiently old headers that FF_MAX_EFFECTS is not defined there,
+        # which causes the whole module to fail loading. Fallback on a hardcoded value of
+        # FF_MAX_EFFECTS if it is not defined in the ecodes.
+        max_effects=ecodes.ecodes.get("FF_MAX_EFFECTS", 96),
     ):
         """
         Arguments
