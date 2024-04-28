@@ -106,10 +106,12 @@ uinput_get_sysname(PyObject *self, PyObject *args)
     int ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
 
+    #ifdef UI_GET_SYSNAME
     if (ioctl(fd, UI_GET_SYSNAME(sizeof(sysname)), &sysname) < 0)
         goto on_err;
 
     return Py_BuildValue("s", &sysname);
+    #endif
 
     on_err:
         PyErr_SetFromErrno(PyExc_OSError);
