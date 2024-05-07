@@ -7,7 +7,7 @@ name = "evdev"
 version = "1.7.0"
 description = "Bindings to the Linux input handling subsystem"
 keywords = ["evdev", "input", "uinput"]
-readme = "README.rst"
+readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.6"
 authors = [
