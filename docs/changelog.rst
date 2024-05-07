@@ -1,6 +1,16 @@
 Changelog
 ---------
 
+1.7.1 (May 8, 2024)
+====================
+
+- Provide fallback value for ``FF_MAX_EFFECTS``, which fixes the build on EL 7 (#219).
+
+- Add ``#ifdef`` guards around ``UI_GET_SYSNAME`` to improve kernel compatibility (#218) .
+
+- Wait up to two seconds for uinput devices to appear. (#215)
+
+
 1.7.0 (Feb 18, 2024)
 ====================
 
