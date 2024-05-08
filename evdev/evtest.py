@@ -16,7 +16,6 @@ Examples:
   evtest /dev/input/event0 /dev/input/event1
 """
 
-from __future__ import print_function
 
 import re
 import sys

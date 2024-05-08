@@ -2,7 +2,6 @@
 Generate a Python extension module with the constants defined in linux/input.h.
 """
 
-from __future__ import print_function
 import os, sys, re
 
 
@@ -22,9 +21,9 @@ if sys.argv[1:]:
 macro_regex = r"#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)"
 macro_regex = re.compile(macro_regex)
 
+# Uname without hostname.
 uname = list(os.uname())
-del uname[1]
-uname = " ".join(uname)
+uname = " ".join((uname[0], *uname[2:]))
 
 
 # -----------------------------------------------------------------------------
