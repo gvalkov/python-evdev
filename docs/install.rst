@@ -18,7 +18,7 @@ From source
 The latest stable version of *python-evdev* can be installed from pypi_,
 provided that you have a compiler, pip_ and the Python and Linux development
 headers installed on your system. Installing these is distribution specific and
-typically falls in one of the following:
+typically falls into one of the following:
 
 On a Debian compatible OS:
 
@@ -40,12 +40,21 @@ On Arch Linux and derivatives:
 
     $ pacman -S core/linux-api-headers python-pip gcc
 
-Once all dependencies are available, you may install *python-evdev* using pip_:
+Once all OS dependencies are available, you may install *python-evdev* using
+pip_, preferably in a [virtualenv]_:
 
 .. code-block:: bash
 
-    $ sudo pip install evdev    # available globally
-    $ pip install --user evdev  # available to the current user
+    # Install globally (not recommended).
+    $ sudo python3 -m pip install evdev
+
+    # Install for the current user.
+    $ python3 -m pip install --user evdev
+
+    # Install in a virtual environment.
+    $ python3 -m venv abc
+    $ source abc/bin/activate
+    $ python3 -m pip install evdev
 
 
 Specifying header locations
@@ -73,3 +82,4 @@ colon-separated paths. For example:
 .. _pip:               http://pip.readthedocs.org/en/latest/installing.html
 .. _example:           https://github.com/gvalkov/python-evdev/tree/master/examples
 .. _`async/await`:     https://docs.python.org/3/library/asyncio-task.html
+.. _virtualenv:        https://docs.python.org/3/library/venv.html
