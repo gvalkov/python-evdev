@@ -3,6 +3,7 @@
 <p>
     <a href="https://pypi.python.org/pypi/evdev"><img alt="pypi version" src="https://img.shields.io/pypi/v/evdev.svg"></a>
     <a href="https://github.com/gvalkov/python-evdev/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/pypi/l/evdev"></a>
+    <a href="https://repology.org/project/python:evdev/versions"><img alt="Packaging status" src="https://repology.org/badge/tiny-repos/python:evdev.svg"></a>
 </p>
 
 This package provides bindings to the generic input event interface in Linux.
