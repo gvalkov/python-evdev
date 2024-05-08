@@ -1,6 +1,13 @@
 Changelog
 ---------
 
+1.8.0 (Unreleased)
+==================
+
+- Binary wheels are now provided by the `evdev-binary http://pypi.python.org/pypi/evdev-binary`_ package.
+  The package is compiled on manylinux_2_28 against kernel 4.18.
+
+
 1.7.1 (May 8, 2024)
 ====================
 

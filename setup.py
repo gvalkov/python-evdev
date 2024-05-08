@@ -47,6 +47,10 @@ def create_ecodes(headers=None):
               build_ecodes --evdev-headers path/input.h:path/input-event-codes.h \\
               build_ext --include-dirs path/ \\
               install
+
+        If you prefer to avoid building this package from source, then please consider
+        installing the `evdev-binary` package instead. Keep in mind that it may not be
+        fully compatible with, or support all the features of your current kernel.
         """
 
         sys.stderr.write(textwrap.dedent(msg))

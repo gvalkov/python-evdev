@@ -5,20 +5,21 @@
 develop-eggs/
 dist/
 build/
+wheelhouse/
 dropin.cache
 pip-log.txt
 .installed.cfg
 .coverage
 tags
 TAGS
-evdev/*.so
-evdev/ecodes.c
-evdev/iprops.c
-docs/_build
 .#*
 __pycache__
 .pytest_cache
 
+evdev/*.so
+evdev/ecodes.c
+evdev/iprops.c
+docs/_build
 evdev/_ecodes.py
 evdev/_input.py
 evdev/_uinput.py

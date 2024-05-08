@@ -58,13 +58,13 @@ pip_, preferably in a [virtualenv]_:
 
 
 Specifying header locations
-===========================
+---------------------------
 
 By default, the setup script will look for the ``input.h`` and
 ``input-event-codes.h`` [#f1]_ header files ``/usr/include/linux``.
 
 You may use the ``--evdev-headers`` option to the ``build_ext`` setuptools
-command to  the location of these header files. It accepts one or more
+command to the location of these header files. It accepts one or more
 colon-separated paths. For example:
 
 .. code-block:: bash
@@ -74,12 +74,27 @@ colon-separated paths. For example:
         --include-dirs  buildroot/ \
         install  # or any other command (e.g. develop, bdist, bdist_wheel)
 
-.. [#f1] ``input-event-codes.h`` is found only in more recent kernel versions.
+
+From a binary package
+=====================
+
+You may choose to install a precompiled version of *python-evdev* from pypi. The
+`evdev-binary`_ package provides binary wheels that have been compiled on EL8
+against the 4.18.0 kernel headers.
+
+.. code-block:: bash
+
+    $ python3 -m pip install evdev-binary
+
+While the evdev interface is stable, the precompiled version may not be fully
+compatible or expose all the features of your running kernel. For best results,
+it is recommended to use an OS package or to install from source.
 
 
+.. [#f1] ``input-event-codes.h`` is found only in recent kernel versions.
 .. _pypi:              http://pypi.python.org/pypi/evdev
+.. _evdev-binary:      http://pypi.python.org/pypi/evdev-binary
 .. _github:            https://github.com/gvalkov/python-evdev
 .. _pip:               http://pip.readthedocs.org/en/latest/installing.html
 .. _example:           https://github.com/gvalkov/python-evdev/tree/master/examples
-.. _`async/await`:     https://docs.python.org/3/library/asyncio-task.html
 .. _virtualenv:        https://docs.python.org/3/library/venv.html
