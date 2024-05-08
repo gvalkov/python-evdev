@@ -451,8 +451,9 @@ Injecting an FF-event into first FF-capable device found
     repeat_count = 1
     effect_id = dev.upload_effect(effect)
     dev.write(ecodes.EV_FF, effect_id, repeat_count)
-    time.sleep(duration_ms)
+    time.sleep(duration_ms / 1000) 
     dev.erase_effect(effect_id)
+
 
 Forwarding force-feedback from uinput to a real device
 ======================================================
