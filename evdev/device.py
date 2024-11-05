@@ -434,3 +434,12 @@ class InputDevice(EventIO):
             resolution if resolution is not None else cur_absinfo.resolution,
         )
         _input.ioctl_EVIOCSABS(self.fd, axis_num, new_absinfo)
+
+    def syn(self):
+        """
+        Inject a ``SYN_REPORT`` event into the device. Events queued
+        by :func:`write()` will be fired. If possible, events will
+        be merged into an 'atomic' event.
+        """
+
+        self.write(ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
