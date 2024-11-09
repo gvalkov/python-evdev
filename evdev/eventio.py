@@ -136,5 +136,14 @@ class EventIO:
 
         _uinput.write(self.fd, etype, code, value)
 
+    def syn(self):
+        """
+        Inject a ``SYN_REPORT`` event into the input subsystem. Events
+        queued by :func:`write()` will be fired. If possible, events
+        will be merged into an 'atomic' event.
+        """
+
+        self.write(ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
+
     def close(self):
         pass
