@@ -227,15 +227,6 @@ class UInput(EventIO):
             _uinput.close(self.fd)
             self.fd = -1
 
-    def syn(self):
-        """
-        Inject a ``SYN_REPORT`` event into the input subsystem. Events
-        queued by :func:`write()` will be fired. If possible, events
-        will be merged into an 'atomic' event.
-        """
-
-        _uinput.write(self.fd, ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
-
     def capabilities(self, verbose=False, absinfo=True):
         """See :func:`capabilities <evdev.device.InputDevice.capabilities>`."""
         if self.device is None:
