@@ -1,10 +1,12 @@
 # encoding: utf-8
-
+import stat
 from select import select
+from unittest.mock import patch
+
+import pytest
 from pytest import raises, fixture
 
-from evdev import uinput, ecodes, events, device, util
-
+from evdev import uinput, ecodes, device, UInputError
 
 # -----------------------------------------------------------------------------
 uinput_options = {
@@ -114,3 +116,9 @@ def test_write(c):
                 assert evs[3].code == ecodes.KEY_A and evs[3].value == 2
                 assert evs[4].code == ecodes.KEY_A and evs[4].value == 0
                 break
+
+
+@patch.object(stat, 'S_ISCHR', return_value=False)
+def test_not_a_character_device(c):
+    with pytest.raises(UInputError):
+        uinput.UInput(**c)
