@@ -272,7 +272,7 @@ class UInput(EventIO):
             m = os.stat(self.devnode)[stat.ST_MODE]
             assert stat.S_ISCHR(m)
         except (IndexError, OSError, AssertionError):
-            msg = '"{}" does not exist or is not a character device file ' "- verify that the uinput module is loaded"
+            msg = '"{}" does not exist or is not a character device file - verify that the uinput module is loaded'
             raise UInputError(msg.format(self.devnode))
 
         if not os.access(self.devnode, os.W_OK):
