@@ -25,5 +25,4 @@ jobs:
         run: |
           python -m pip install pytest setuptools
           python -m pip install -e .
-          chmod +0666 /dev/uinput
-          python -m pytest tests
+          sudo python -m pytest tests
