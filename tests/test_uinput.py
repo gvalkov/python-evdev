@@ -66,12 +66,12 @@ def test_enable_events(c):
 
 def test_abs_values(c):
     e = ecodes
-    c["events"] = {
+    c = {
         e.EV_KEY: [e.KEY_A, e.KEY_B],
-        e.EV_ABS: [(e.ABS_X, (0, 255, 0, 0)), (e.ABS_Y, device.AbsInfo(0, 255, 5, 10, 0, 0))],
+        e.EV_ABS: [(e.ABS_X, (0, 0, 255, 0, 0)), (e.ABS_Y, device.AbsInfo(0, 0, 255, 5, 10, 0))],
     }
 
-    with uinput.UInput(**c) as ui:
+    with uinput.UInput(events=c) as ui:
         c = ui.capabilities()
         abs = device.AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)
         assert c[e.EV_ABS][0] == (0, abs)
