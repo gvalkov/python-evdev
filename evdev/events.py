@@ -65,13 +65,13 @@ class InputEvent:
         """Return event timestamp as a float."""
         return self.sec + (self.usec / 1000000.0)
 
-    def __str__(s):
+    def __str__(self):
         msg = "event at {:f}, code {:02d}, type {:02d}, val {:02d}"
-        return msg.format(s.timestamp(), s.code, s.type, s.value)
+        return msg.format(self.timestamp(), self.code, self.type, self.value)
 
-    def __repr__(s):
+    def __repr__(self):
         msg = "{}({!r}, {!r}, {!r}, {!r}, {!r})"
-        return msg.format(s.__class__.__name__, s.sec, s.usec, s.type, s.code, s.value)
+        return msg.format(self.__class__.__name__, self.sec, self.usec, self.type, self.code, self.value)
 
 
 class KeyEvent:
@@ -119,8 +119,8 @@ class KeyEvent:
         msg = "key event at {:f}, {} ({}), {}"
         return msg.format(self.event.timestamp(), self.scancode, self.keycode, ks)
 
-    def __repr__(s):
-        return "{}({!r})".format(s.__class__.__name__, s.event)
+    def __repr__(self):
+        return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
 class RelEvent:
@@ -136,8 +136,8 @@ class RelEvent:
         msg = "relative axis event at {:f}, {}"
         return msg.format(self.event.timestamp(), REL[self.event.code])
 
-    def __repr__(s):
-        return "{}({!r})".format(s.__class__.__name__, s.event)
+    def __repr__(self):
+        return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
 class AbsEvent:
@@ -153,8 +153,8 @@ class AbsEvent:
         msg = "absolute axis event at {:f}, {}"
         return msg.format(self.event.timestamp(), ABS[self.event.code])
 
-    def __repr__(s):
-        return "{}({!r})".format(s.__class__.__name__, s.event)
+    def __repr__(self):
+        return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
 class SynEvent:
@@ -173,8 +173,8 @@ class SynEvent:
         msg = "synchronization event at {:f}, {}"
         return msg.format(self.event.timestamp(), SYN[self.event.code])
 
-    def __repr__(s):
-        return "{}({!r})".format(s.__class__.__name__, s.event)
+    def __repr__(self):
+        return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
 #: A mapping of event types to :class:`InputEvent` sub-classes. Used
