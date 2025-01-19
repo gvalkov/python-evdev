@@ -21,8 +21,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Run pytest tests
+        # pip install -e . builds _ecodes and such into the evdev directory
         # sudo required to write to uinputs
         run: |
           sudo python -m pip install pytest setuptools
-          sudo python -m pip install .
+          sudo python -m pip install -e .
           sudo python -m pytest tests
