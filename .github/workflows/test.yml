@@ -1,0 +1,28 @@
+name: Test
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Check for pylint errors
+        # pip install -e . builds _ecodes and such into the evdev directory
+        run: |
+          python -m pip install setuptools
+          python -m pip install -e .
+          python -m pytest tests
