@@ -2,7 +2,7 @@
 import os
 import stat
 from select import select
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 from pytest import raises, fixture
