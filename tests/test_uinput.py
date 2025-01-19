@@ -1,7 +1,8 @@
 # encoding: utf-8
+import os
 import stat
 from select import select
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 from pytest import raises, fixture
@@ -119,6 +120,18 @@ def test_write(c):
 
 
 @patch.object(stat, 'S_ISCHR', return_value=False)
-def test_not_a_character_device(c):
-    with pytest.raises(UInputError):
+def test_not_a_character_device(ischr_mock, c):
+    with pytest.raises(UInputError, match='not a character device file'):
+        uinput.UInput(**c)
+
+@patch.object(stat, 'S_ISCHR', return_value=True)
+@patch.object(os, 'stat', side_effect=OSError())
+def test_not_a_character_device_2(stat_mock, ischr_mock, c):
+    with pytest.raises(UInputError, match='not a character device file'):
+        uinput.UInput(**c)
+
+@patch.object(stat, 'S_ISCHR', return_value=True)
+@patch.object(os, 'stat', return_value=[])
+def test_not_a_character_device_3(stat_mock, ischr_mock, c):
+    with pytest.raises(UInputError, match='not a character device file'):
         uinput.UInput(**c)
