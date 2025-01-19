@@ -12,9 +12,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
-        include:
-          - os: ubuntu-latest
-            python-version: "3.12"
 
     steps:
       - uses: actions/checkout@v4
@@ -24,4 +21,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Check for pylint errors
-        run: pylint --disable=no-member -E evdev
+        run: |
+          python -m pip install pylint
+          python -m pylint --disable=no-member -E evdev
