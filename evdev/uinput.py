@@ -268,7 +268,12 @@ class UInput(EventIO):
         Verify that an uinput device exists and is readable and writable
         by the current process.
         """
-        self._verify_character_device()
+        try:
+            m = os.stat(self.devnode)[stat.ST_MODE]
+            assert stat.S_ISCHR(m)
+        except (IndexError, OSError, AssertionError):
+            msg = '"{}" does not exist or is not a character device file ' "- verify that the uinput module is loaded"
+            raise UInputError(msg.format(self.devnode))
 
         if not os.access(self.devnode, os.W_OK):
             msg = '"{}" cannot be opened for writing'
@@ -277,19 +282,6 @@ class UInput(EventIO):
         if len(self.name) > _uinput.maxnamelen:
             msg = "uinput device name must not be longer than {} characters"
             raise UInputError(msg.format(_uinput.maxnamelen))
-
-    def _verify_character_device(self):
-        try:
-            mode = os.stat(self.devnode)[stat.ST_MODE]
-            if stat.S_ISCHR(mode):
-                return
-        except (IndexError, OSError):
-            pass
-
-        raise UInputError(
-            f'"{self.devnode}" does not exist or is not a character device file '
-            "- verify that the uinput module is loaded"
-        )
 
     def _find_device(self, fd):
         """
