@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable
 """
 This modules exposes the integer constants defined in ``linux/input.h`` and
 ``linux/input-event-codes.h``.

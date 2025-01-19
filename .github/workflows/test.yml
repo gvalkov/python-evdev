@@ -1,20 +1,17 @@
-name: Test install
+name: Test
 
 on:
   - push
   - pull_request
 
 jobs:
-  build:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        include:
-          - os: ubuntu-latest
-            python-version: "3.8"
+        python-version: ["3.12"]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +20,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install python-evdev
+      - name: Run pytest tests
+        # pip install -e . builds _ecodes and such into the evdev directory
+        # sudo required to write to uinputs
         run: |
-          python -m pip install -v .
-          (cd /tmp && python -c "import evdev.ecodes; print(evdev.ecodes)")
+          sudo python -m pip install pytest setuptools
+          sudo python -m pip install -e .
+          sudo python -m pytest tests

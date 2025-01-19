@@ -1,10 +1,12 @@
 # encoding: utf-8
-
+import stat
 from select import select
+from unittest.mock import patch
+
+import pytest
 from pytest import raises, fixture
 
-from evdev import uinput, ecodes, events, device, util
-
+from evdev import uinput, ecodes, device, UInputError
 
 # -----------------------------------------------------------------------------
 uinput_options = {
@@ -66,12 +68,12 @@ def test_enable_events(c):
 
 def test_abs_values(c):
     e = ecodes
-    c["events"] = {
+    c = {
         e.EV_KEY: [e.KEY_A, e.KEY_B],
-        e.EV_ABS: [(e.ABS_X, (0, 255, 0, 0)), (e.ABS_Y, device.AbsInfo(0, 255, 5, 10, 0, 0))],
+        e.EV_ABS: [(e.ABS_X, (0, 0, 255, 0, 0)), (e.ABS_Y, device.AbsInfo(0, 0, 255, 5, 10, 0))],
     }
 
-    with uinput.UInput(**c) as ui:
+    with uinput.UInput(events=c) as ui:
         c = ui.capabilities()
         abs = device.AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)
         assert c[e.EV_ABS][0] == (0, abs)
@@ -114,3 +116,9 @@ def test_write(c):
                 assert evs[3].code == ecodes.KEY_A and evs[3].value == 2
                 assert evs[4].code == ecodes.KEY_A and evs[4].value == 0
                 break
+
+
+@patch.object(stat, 'S_ISCHR', return_value=False)
+def test_not_a_character_device(c):
+    with pytest.raises(UInputError):
+        uinput.UInput(**c)

@@ -72,6 +72,7 @@ class EventIO:
         for event in events:
             yield InputEvent(*event)
 
+    # pylint: disable=no-self-argument
     def need_write(func):
         """
         Decorator that raises :class:`EvdevError` if there is no write access to the
@@ -82,6 +83,7 @@ class EventIO:
         def wrapper(*args):
             fd = args[0].fd
             if fcntl.fcntl(fd, fcntl.F_GETFL) & os.O_RDWR:
+                # pylint: disable=not-callable
                 return func(*args)
             msg = 'no write access to device "%s"' % args[0].path
             raise EvdevError(msg)
