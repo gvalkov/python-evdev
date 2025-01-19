@@ -17,7 +17,7 @@ except ImportError:
 # --------------------------------------------------------------------------
 _AbsInfo = collections.namedtuple("AbsInfo", ["value", "min", "max", "fuzz", "flat", "resolution"])
 
-_KbdInfo = collections.namedtuple("KbdInfo", ["repeat", "delay"])
+_KbdInfo = collections.namedtuple("KbdInfo", ["delay", "repeat"])
 
 _DeviceInfo = collections.namedtuple("DeviceInfo", ["bustype", "vendor", "product", "version"])
 
@@ -70,16 +70,16 @@ class KbdInfo(_KbdInfo):
 
     Attributes
     ----------
-    repeat
-      Keyboard repeat rate in characters per second.
-
     delay
       Amount of time that a key must be depressed before it will start
       to repeat (in milliseconds).
+
+    repeat
+      Keyboard repeat rate in characters per second.
     """
 
     def __str__(self):
-        return "repeat {}, delay {}".format(*self)
+        return "delay {}, repeat {}".format(*self)
 
 
 class DeviceInfo(_DeviceInfo):
