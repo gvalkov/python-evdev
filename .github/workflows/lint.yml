@@ -24,4 +24,4 @@ jobs:
         run: |
           python -m pip install pylint setuptools
           python setup.py build
-          python -m pylint --disable=no-member --verbose -E build/lib*/evdev
+          python -m pylint --verbose -E build/lib*/evdev

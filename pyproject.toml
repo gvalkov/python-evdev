@@ -52,3 +52,12 @@ filename = "pyproject.toml"
 
 [[tool.bumpversion.files]]
 filename = "docs/conf.py"
+
+[tool.pylint.'MESSAGES CONTROL']
+disable = """
+    no-member,
+"""
+
+[tool.pylint.typecheck]
+generated-members = ["evdev.ecodes.*"]
+ignored-modules= ["evdev._*"]
