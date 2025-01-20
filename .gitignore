@@ -18,7 +18,7 @@ __pycache__
 
 evdev/*.so
 evdev/ecodes.c
-evdev/iprops.c
+evdev/ecodes.pyi
 docs/_build
 evdev/_ecodes.py
 evdev/_input.py

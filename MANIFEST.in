@@ -2,3 +2,4 @@
 # evdev headers of the running kernel. Refer to the 'build_ecodes' distutils
 # command in setup.py.
 exclude evdev/ecodes.c
+include evdev/ecodes.pyi
