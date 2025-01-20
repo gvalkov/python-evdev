@@ -1,11 +1,11 @@
-import re
-import os
-import stat
-import glob
 import collections
+import glob
+import os
+import re
+import stat
 
-from evdev import ecodes
-from evdev.events import event_factory
+from . import ecodes
+from .events import event_factory
 
 
 def list_devices(input_device_dir="/dev/input"):

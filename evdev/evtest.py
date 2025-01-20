@@ -17,19 +17,14 @@ Examples:
 """
 
 
-import re
-import sys
-import select
 import atexit
-import termios
 import optparse
+import re
+import select
+import sys
+import termios
 
-try:
-    input = raw_input
-except NameError:
-    pass
-
-from evdev import ecodes, list_devices, AbsInfo, InputDevice
+from . import AbsInfo, InputDevice, ecodes, list_devices
 
 
 def parseopt():

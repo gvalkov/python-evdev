@@ -1,3 +1,4 @@
+import ctypes
 import os
 import platform
 import re
@@ -5,11 +6,8 @@ import stat
 import time
 from collections import defaultdict
 
-from evdev import _uinput
-from evdev import ecodes, util, device
-from evdev.events import InputEvent
-import evdev.ff as ff
-import ctypes
+from . import _uinput, device, ecodes, ff, util
+from .events import InputEvent
 
 try:
     from evdev.eventio_async import EventIO

@@ -1,10 +1,10 @@
-import os
 import fcntl
-import select
 import functools
+import os
+import select
 
-from evdev import _input, _uinput, ecodes, util
-from evdev.events import InputEvent
+from . import _input, _uinput, ecodes
+from .events import InputEvent
 
 
 # --------------------------------------------------------------------------

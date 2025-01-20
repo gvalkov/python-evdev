@@ -37,7 +37,7 @@ methods::
 # event type descriptions have been taken mot-a-mot from:
 # http://www.kernel.org/doc/Documentation/input/event-codes.txt
 
-from evdev.ecodes import keys, KEY, SYN, REL, ABS, EV_KEY, EV_REL, EV_ABS, EV_SYN
+from .ecodes import ABS, EV_ABS, EV_KEY, EV_REL, EV_SYN, KEY, REL, SYN, keys
 
 
 class InputEvent:

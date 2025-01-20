@@ -1,10 +1,10 @@
 import asyncio
 import select
 
-from evdev import eventio
+from . import eventio
 
 # needed for compatibility
-from evdev.eventio import EvdevError
+from .eventio import EvdevError
 
 
 class EventIO(eventio.EventIO):

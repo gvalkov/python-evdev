@@ -40,8 +40,8 @@ codes. For example::
 """
 
 from inspect import getmembers
-from evdev import _ecodes
 
+from . import _ecodes
 
 #: Mapping of names to values.
 ecodes = {}

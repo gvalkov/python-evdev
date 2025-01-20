@@ -1,17 +1,16 @@
 # encoding: utf-8
 
+import collections
+import contextlib
 import os
 import warnings
-import contextlib
-import collections
 
-from evdev import _input, ecodes, util
-from evdev.events import InputEvent
+from . import _input, ecodes, util
 
 try:
-    from evdev.eventio_async import EventIO, EvdevError
+    from .eventio_async import EvdevError, EventIO
 except ImportError:
-    from evdev.eventio import EventIO, EvdevError
+    from .eventio import EvdevError, EventIO
 
 
 # --------------------------------------------------------------------------
