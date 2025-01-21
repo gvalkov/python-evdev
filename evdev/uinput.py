@@ -266,13 +266,11 @@ class UInput(EventIO):
         Verify that an uinput device exists and is readable and writable
         by the current process.
         """
-
         try:
             m = os.stat(self.devnode)[stat.ST_MODE]
-            if not stat.S_ISCHR(m):
-                raise OSError
-        except (IndexError, OSError):
-            msg = '"{}" does not exist or is not a character device file ' "- verify that the uinput module is loaded"
+            assert stat.S_ISCHR(m)
+        except (IndexError, OSError, AssertionError):
+            msg = '"{}" does not exist or is not a character device file - verify that the uinput module is loaded'
             raise UInputError(msg.format(self.devnode))
 
         if not os.access(self.devnode, os.W_OK):
