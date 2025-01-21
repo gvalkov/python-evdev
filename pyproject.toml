@@ -32,9 +32,6 @@ classifiers = [
 [tool.setuptools]
 packages = ["evdev"]
 
-[tool.setuptools.data-files]
-"data" = ["evdev/*.pyi"]
-
 [tool.ruff]
 line-length = 120
 

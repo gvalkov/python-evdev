@@ -15,6 +15,7 @@ TAGS
 .#*
 __pycache__
 .pytest_cache
+.ruff_cache
 
 evdev/*.so
 evdev/ecodes.c

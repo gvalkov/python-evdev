@@ -7,6 +7,17 @@ Changelog
 - Binary wheels are now provided by the `evdev-binary http://pypi.python.org/pypi/evdev-binary`_ package.
   The package is compiled on manylinux_2_28 against kernel 4.18.
 
+- The ``evdev.ecodes`` module is now generated at install time and contains only constants. This allows type
+  checking and introspection of the ``evdev.ecodes`` module, without having to execute it first. The old
+  module is available as ``evdev.ecodes_runtime``. In case generation of the static ``ecodes.py`` fails, the
+  install process falls back to using ``ecodes_runtime.py`` as ``ecodes.py``.
+
+- Minimum Python version raised to Python 3.8.
+
+- Fix keyboard delay and repeat being swapped.
+
+- Move `syn()` convenience method from `InputDevice` to `EventIO`.
+
 
 1.7.1 (May 8, 2024)
 ====================

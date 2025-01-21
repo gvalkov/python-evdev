@@ -1,7 +1,9 @@
 import os
 import sys
+import shutil
 import textwrap
 from pathlib import Path
+from subprocess import run
 
 from setuptools import setup, Extension, Command
 from setuptools.command import build_ext as _build_ext
@@ -9,7 +11,6 @@ from setuptools.command import build_ext as _build_ext
 
 curdir = Path(__file__).resolve().parent
 ecodes_c_path = curdir / "evdev/ecodes.c"
-ecodes_pyi_path = curdir / "evdev/ecodes.pyi"
 
 
 def create_ecodes(headers=None):
@@ -49,7 +50,7 @@ def create_ecodes(headers=None):
               build_ext --include-dirs path/ \\
               install
 
-        If you prefer to avoid building this package from source, then please consider
+        If you want to avoid building this package from source, then please consider
         installing the `evdev-binary` package instead. Keep in mind that it may not be
         fully compatible with, or support all the features of your current kernel.
         """
@@ -57,16 +58,9 @@ def create_ecodes(headers=None):
         sys.stderr.write(textwrap.dedent(msg))
         sys.exit(1)
 
-    from subprocess import run
-
     print("writing %s (using %s)" % (ecodes_c_path, " ".join(headers)))
     with ecodes_c_path.open("w") as fh:
-        cmd = [sys.executable, "evdev/genecodes.py", "--ecodes", *headers]
-        run(cmd, check=True, stdout=fh)
-
-    print("writing %s (using %s)" % (ecodes_pyi_path, " ".join(headers)))
-    with ecodes_pyi_path.open("w") as fh:
-        cmd = [sys.executable, "evdev/genecodes.py", "--stubs", *headers]
+        cmd = [sys.executable, "evdev/genecodes_c.py", "--ecodes", *headers]
         run(cmd, check=True, stdout=fh)
 
 
@@ -90,15 +84,27 @@ class build_ecodes(Command):
 
 class build_ext(_build_ext.build_ext):
     def has_ecodes(self):
-        if ecodes_c_path.exists() and ecodes_pyi_path.exists():
-            print("ecodes.c and ecodes.pyi already exist ... skipping build_ecodes")
+        if ecodes_c_path.exists():
+            print("ecodes.c already exists ... skipping build_ecodes")
             return False
         return True
+
+    def generate_ecodes_py(self):
+        ecodes_py = Path(self.build_lib) / "evdev/ecodes.py"
+        print(f"writing {ecodes_py}")
+        with ecodes_py.open("w") as fh:
+            cmd = [sys.executable, "-B", "evdev/genecodes_py.py"]
+            res = run(cmd, env={"PYTHONPATH": self.build_lib}, stdout=fh)
+
+        if res.returncode != 0:
+            print(f"failed to generate static {ecodes_py} - will use ecodes_runtime.py")
+            shutil.copy("evdev/ecodes_runtime.py", ecodes_py)
 
     def run(self):
         for cmd_name in self.get_sub_commands():
             self.run_command(cmd_name)
         _build_ext.build_ext.run(self)
+        self.generate_ecodes_py()
 
     sub_commands = [("build_ecodes", has_ecodes)] + _build_ext.build_ext.sub_commands
 
