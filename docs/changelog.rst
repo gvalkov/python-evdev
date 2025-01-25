@@ -1,7 +1,7 @@
 Changelog
 ---------
 
-1.8.0 (Unreleased)
+1.8.0 (Jan 25, 2025)
 ==================
 
 - Binary wheels are now provided by the `evdev-binary http://pypi.python.org/pypi/evdev-binary`_ package.
@@ -11,6 +11,11 @@ Changelog
   checking and introspection of the ``evdev.ecodes`` module, without having to execute it first. The old
   module is available as ``evdev.ecodes_runtime``. In case generation of the static ``ecodes.py`` fails, the
   install process falls back to using ``ecodes_runtime.py`` as ``ecodes.py``.
+
+- Reverse mappings in ``evdev.ecodes`` that point to more than one value are now tuples and not lists. For example::
+
+    >>> ecodes.KEY[153]
+    153: ('KEY_DIRECTION', 'KEY_ROTATE_DISPLAY'),
 
 - Minimum Python version raised to Python 3.8.
 

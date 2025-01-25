@@ -33,7 +33,7 @@ Keep in mind that values in reverse mappings may point to one or more event
 codes. For example::
 
     >>> evdev.ecodes.FF[80]
-    ['FF_EFFECT_MIN', 'FF_RUMBLE']
+    ('FF_EFFECT_MIN', 'FF_RUMBLE')
 
     >>> evdev.ecodes.FF[81]
     'FF_PERIODIC'
@@ -46,13 +46,13 @@ from . import _ecodes
 #: Mapping of names to values.
 ecodes = {}
 
-prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF INPUT_PROP"
+prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF INPUT_PROP".split()
 prev_prefix = ""
 g = globals()
 
 # eg. code: 'REL_Z', val: 2
 for code, val in getmembers(_ecodes):
-    for prefix in prefixes.split():  # eg. 'REL'
+    for prefix in prefixes:  # eg. 'REL'
         if code.startswith(prefix):
             ecodes[code] = val
             # FF_STATUS codes should not appear in the FF reverse mapping
@@ -70,6 +70,15 @@ for code, val in getmembers(_ecodes):
                     d[val] = code
 
         prev_prefix = prefix
+
+
+# Convert lists to tuples.
+k, v = None, None
+for prefix in prefixes:
+    for k, v in g[prefix].items():
+        if isinstance(v, list):
+            g[prefix][k] = tuple(v)
+
 
 #: Keys are a combination of all BTN and KEY codes.
 keys = {}
@@ -99,4 +108,4 @@ bytype = {
 from evdev._ecodes import *
 
 # cheaper than whitelisting in an __all__
-del code, val, prefix, getmembers, g, d, prefixes, prev_prefix
+del code, val, prefix, getmembers, g, d, k, v, prefixes, prev_prefix
