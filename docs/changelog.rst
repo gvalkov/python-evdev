@@ -4,7 +4,7 @@ Changelog
 1.8.0 (Jan 25, 2025)
 ==================
 
-- Binary wheels are now provided by the `evdev-binary http://pypi.python.org/pypi/evdev-binary`_ package.
+- Binary wheels are now provided by the `evdev-binary <http://pypi.python.org/pypi/evdev-binary>`_ package.
   The package is compiled on manylinux_2_28 against kernel 4.18.
 
 - The ``evdev.ecodes`` module is now generated at install time and contains only constants. This allows type
@@ -12,16 +12,16 @@ Changelog
   module is available as ``evdev.ecodes_runtime``. In case generation of the static ``ecodes.py`` fails, the
   install process falls back to using ``ecodes_runtime.py`` as ``ecodes.py``.
 
-- Reverse mappings in ``evdev.ecodes`` that point to more than one value are now tuples and not lists. For example::
+- Reverse mappings in ``evdev.ecodes`` that point to more than one value are now tuples instead of lists. For example::
 
     >>> ecodes.KEY[153]
-    153: ('KEY_DIRECTION', 'KEY_ROTATE_DISPLAY'),
+    ('KEY_DIRECTION', 'KEY_ROTATE_DISPLAY')
 
-- Minimum Python version raised to Python 3.8.
+- Raise the minimum supported Python version to 3.8.
 
-- Fix keyboard delay and repeat being swapped.
+- Fix keyboard delay and repeat being swapped (#227).
 
-- Move `syn()` convenience method from `InputDevice` to `EventIO`.
+- Move the ``syn()`` convenience method from ``InputDevice`` to ``EventIO`` (#224).
 
 
 1.7.1 (May 8, 2024)
@@ -41,7 +41,7 @@ Changelog
 
 - Add the uniq address to the string representation of ``InputDevice``.
 
-- Improved method for finding the device node corresponding to a uinput device (`#206 https://github.com/gvalkov/python-evdev/pull/206`_).
+- Improved method for finding the device node corresponding to a uinput device (`#206 <https://github.com/gvalkov/python-evdev/pull/206>`_).
 
 - Repository TLC (reformatted with ruff, fixed linting warnings, moved packaging metadata to ``pyproject.toml`` etc.).
 
