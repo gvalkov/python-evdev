@@ -16,6 +16,8 @@ TAGS
 __pycache__
 .pytest_cache
 .ruff_cache
+.venv
+uv.lock
 
 src/evdev/*.so
 src/evdev/ecodes.c

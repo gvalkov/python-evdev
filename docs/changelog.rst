@@ -1,8 +1,16 @@
 Changelog
 ---------
 
-1.8.0 (Jan 25, 2025)
+1.9.0 (Unreleased)
 ==================
+
+- Fix ``CPATH/C_INCLUDE_PATH`` being ignored during build.
+
+- Slightly faster reading of events.
+
+
+1.8.0 (Jan 25, 2025)
+====================
 
 - Binary wheels are now provided by the `evdev-binary <http://pypi.python.org/pypi/evdev-binary>`_ package.
   The package is compiled on manylinux_2_28 against kernel 4.18.

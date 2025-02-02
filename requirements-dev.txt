@@ -7,3 +7,4 @@ bump-my-version ~= 0.17.4
 build
 twine
 cibuildwheel
+setuptools
