@@ -8,6 +8,8 @@ Changelog
 
 - Slightly faster reading of events.
 
+- Fix build on FreeBSD.
+
 
 1.8.0 (Jan 25, 2025)
 ====================

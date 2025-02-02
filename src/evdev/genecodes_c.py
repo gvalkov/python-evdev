@@ -25,7 +25,7 @@ if args:
 
 
 # -----------------------------------------------------------------------------
-macro_regex = r"#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)"
+macro_regex = r"#define\s+((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)"
 macro_regex = re.compile(macro_regex)
 
 # Uname without hostname.
@@ -38,6 +38,7 @@ template_ecodes = r"""
 #include <Python.h>
 #ifdef __FreeBSD__
 #include <dev/evdev/input.h>
+#include <dev/evdev/uinput.h>
 #else
 #include <linux/input.h>
 #include <linux/uinput.h>

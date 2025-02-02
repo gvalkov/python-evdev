@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import textwrap
+import platform
 from pathlib import Path
 from subprocess import run
 
@@ -25,7 +26,11 @@ def create_ecodes(headers=None):
             include_paths.update(c_inc_path.split(":"))
 
         include_paths.add("/usr/include")
-        files = ["linux/input.h", "linux/input-event-codes.h", "linux/uinput.h"]
+        if platform.system().lower() == "freebsd":
+            files = ["dev/evdev/input.h", "dev/evdev/input-event-codes.h", "dev/evdev/uinput.h"]
+        else:
+            files = ["linux/input.h", "linux/input-event-codes.h", "linux/uinput.h"]
+
         headers = [os.path.join(path, file) for path in include_paths for file in files]
 
     headers = [header for header in headers if os.path.isfile(header)]
