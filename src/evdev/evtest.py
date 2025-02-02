@@ -149,9 +149,11 @@ def print_capabilities(device):
 def print_event(e):
     if e.type == ecodes.EV_SYN:
         if e.code == ecodes.SYN_MT_REPORT:
-            msg = "time {:<16} +++++++++ {} ++++++++"
+            msg = "time {:<17} +++++++++++++ {} +++++++++++++"
+        elif e.code == ecodes.SYN_DROPPED:
+            msg = "time {:<17} !!!!!!!!!!!!! {} !!!!!!!!!!!!!"
         else:
-            msg = "time {:<16} --------- {} --------"
+            msg = "time {:<17} ------------- {} -------------"
         print(msg.format(e.timestamp(), ecodes.SYN[e.code]))
     else:
         if e.type in ecodes.bytype:
@@ -159,7 +161,7 @@ def print_event(e):
         else:
             codename = "?"
 
-        evfmt = "time {:<16} type {} ({}), code {:<4} ({}), value {}"
+        evfmt = "time {:<17} type {} ({}), code {:<4} ({}), value {}"
         print(evfmt.format(e.timestamp(), e.type, ecodes.EV[e.type], e.code, codename, e.value))
 
 

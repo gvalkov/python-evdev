@@ -66,7 +66,7 @@ class EventIO:
         `BlockingIOError` if there are no available events at the moment.
         """
 
-        # events -> [(sec, usec, type, code, val), ...]
+        # events -> ((sec, usec, type, code, val), ...)
         events = _input.device_read_many(self.fd)
 
         for event in events:
