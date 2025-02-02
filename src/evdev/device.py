@@ -1,9 +1,6 @@
-# encoding: utf-8
-
 import collections
 import contextlib
 import os
-import warnings
 
 from . import _input, ecodes, util
 
@@ -382,12 +379,6 @@ class InputDevice(EventIO):
             return util.resolve_ecodes(ecodes.KEY, active_keys)
 
         return active_keys
-
-    @property
-    def fn(self):
-        msg = "Please use {0}.path instead of {0}.fn".format(self.__class__.__name__)
-        warnings.warn(msg, DeprecationWarning, stacklevel=2)
-        return self.path
 
     def absinfo(self, axis_num):
         """

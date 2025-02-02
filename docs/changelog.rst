@@ -10,6 +10,8 @@ Changelog
 
 - Fix build on FreeBSD.
 
+- Drop deprecated ``InputDevice.fn`` (use ``InputDevice.path`` instead).
+
 
 1.8.0 (Jan 25, 2025)
 ====================
