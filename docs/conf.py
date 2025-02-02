@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 import sphinx_rtd_theme
@@ -13,7 +11,7 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # Trick autodoc into running without having built the extension modules.
 if on_rtd:
-    with open("../evdev/_ecodes.py", "w") as fh:
+    with open("../src/evdev/_ecodes.py", "w") as fh:
         fh.write(
             """
 KEY = ABS = REL = SW = MSC = LED = REP = SND = SYN = FF = FF_STATUS = BTN_A = KEY_A = 1
@@ -22,9 +20,9 @@ EV_SND = EV_SYN = EV_FF  = EV_FF_STATUS = FF_STATUS = 1
 KEY_MAX, KEY_CNT = 1, 2"""
         )
 
-    with open("../evdev/_input.py", "w"):
+    with open("../src/evdev/_input.py", "w"):
         pass
-    with open("../evdev/_uinput.py", "w"):
+    with open("../src/evdev/_uinput.py", "w"):
         pass
 
 
@@ -60,7 +58,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "python-evdev"
-copyright = "2012-2024, Georgi Valkov and contributors"
+copyright = "2012-2025, Georgi Valkov and contributors"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

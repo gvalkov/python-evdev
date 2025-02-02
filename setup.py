@@ -10,7 +10,7 @@ from setuptools.command import build_ext as _build_ext
 
 
 curdir = Path(__file__).resolve().parent
-ecodes_c_path = curdir / "evdev/ecodes.c"
+ecodes_c_path = curdir / "src/evdev/ecodes.c"
 
 
 def create_ecodes(headers=None):
@@ -60,7 +60,7 @@ def create_ecodes(headers=None):
 
     print("writing %s (using %s)" % (ecodes_c_path, " ".join(headers)))
     with ecodes_c_path.open("w") as fh:
-        cmd = [sys.executable, "evdev/genecodes_c.py", "--ecodes", *headers]
+        cmd = [sys.executable, "src/evdev/genecodes_c.py", "--ecodes", *headers]
         run(cmd, check=True, stdout=fh)
 
 
@@ -93,12 +93,12 @@ class build_ext(_build_ext.build_ext):
         ecodes_py = Path(self.build_lib) / "evdev/ecodes.py"
         print(f"writing {ecodes_py}")
         with ecodes_py.open("w") as fh:
-            cmd = [sys.executable, "-B", "evdev/genecodes_py.py"]
+            cmd = [sys.executable, "-B", "src/evdev/genecodes_py.py"]
             res = run(cmd, env={"PYTHONPATH": self.build_lib}, stdout=fh)
 
         if res.returncode != 0:
             print(f"failed to generate static {ecodes_py} - will use ecodes_runtime.py")
-            shutil.copy("evdev/ecodes_runtime.py", ecodes_py)
+            shutil.copy("src/evdev/ecodes_runtime.py", ecodes_py)
 
     def run(self):
         for cmd_name in self.get_sub_commands():
@@ -112,9 +112,9 @@ class build_ext(_build_ext.build_ext):
 cflags = ["-std=c99", "-Wno-error=declaration-after-statement"]
 setup(
     ext_modules=[
-        Extension("evdev._input", sources=["evdev/input.c"], extra_compile_args=cflags),
-        Extension("evdev._uinput", sources=["evdev/uinput.c"], extra_compile_args=cflags),
-        Extension("evdev._ecodes", sources=["evdev/ecodes.c"], extra_compile_args=cflags),
+        Extension("evdev._input", sources=["src/evdev/input.c"], extra_compile_args=cflags),
+        Extension("evdev._uinput", sources=["src/evdev/uinput.c"], extra_compile_args=cflags),
+        Extension("evdev._ecodes", sources=["src/evdev/ecodes.c"], extra_compile_args=cflags),
     ],
     cmdclass={
         "build_ext": build_ext,

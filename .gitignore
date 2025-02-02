@@ -17,10 +17,10 @@ __pycache__
 .pytest_cache
 .ruff_cache
 
-evdev/*.so
-evdev/ecodes.c
-evdev/ecodes.pyi
+src/evdev/*.so
+src/evdev/ecodes.c
+src/evdev/ecodes.pyi
 docs/_build
-evdev/_ecodes.py
-evdev/_input.py
-evdev/_uinput.py
+src/evdev/_ecodes.py
+src/evdev/_input.py
+src/evdev/_uinput.py

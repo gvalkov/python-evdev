@@ -1,5 +1,5 @@
 # The _ecodes extension module source file needs to be generated against the
 # evdev headers of the running kernel. Refer to the 'build_ecodes' distutils
 # command in setup.py.
-exclude evdev/ecodes.c
-include evdev/ecodes.py
+exclude src/evdev/ecodes.c
+include src/evdev/ecodes.py

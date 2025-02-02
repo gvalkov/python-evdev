@@ -29,9 +29,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/gvalkov/python-evdev"
 
-[tool.setuptools]
-packages = ["evdev"]
-
 [tool.ruff]
 line-length = 120
 
