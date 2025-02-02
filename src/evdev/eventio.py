@@ -2,6 +2,7 @@ import fcntl
 import functools
 import os
 import select
+from typing import Iterator
 
 from . import _input, _uinput, ecodes
 from .events import InputEvent
@@ -35,7 +36,7 @@ class EventIO:
         """
         return self.fd
 
-    def read_loop(self):
+    def read_loop(self) -> Iterator[InputEvent]:
         """
         Enter an endless :func:`select.select()` loop that yields input events.
         """
@@ -45,7 +46,7 @@ class EventIO:
             for event in self.read():
                 yield event
 
-    def read_one(self):
+    def read_one(self) -> InputEvent:
         """
         Read and return a single input event as an instance of
         :class:`InputEvent <evdev.events.InputEvent>`.
@@ -59,7 +60,7 @@ class EventIO:
         if event:
             return InputEvent(*event)
 
-    def read(self):
+    def read(self) -> Iterator[InputEvent]:
         """
         Read multiple input events from device. Return a generator object that
         yields :class:`InputEvent <evdev.events.InputEvent>` instances. Raises
@@ -114,7 +115,7 @@ class EventIO:
         self.write(event.type, event.code, event.value)
 
     @need_write
-    def write(self, etype, code, value):
+    def write(self, etype: int, code: int, value: int):
         """
         Inject an input event into the input subsystem. Events are
         queued until a synchronization event is received.

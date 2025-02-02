@@ -3,21 +3,20 @@ import glob
 import os
 import re
 import stat
+from typing import Union, List
 
 from . import ecodes
 from .events import event_factory
 
 
-def list_devices(input_device_dir="/dev/input"):
+def list_devices(input_device_dir="/dev/input") -> List[str]:
     """List readable character devices in ``input_device_dir``."""
 
     fns = glob.glob("{}/event*".format(input_device_dir))
-    fns = list(filter(is_device, fns))
-
-    return fns
+    return list(filter(is_device, fns))
 
 
-def is_device(fn):
+def is_device(fn: Union[str, bytes, os.PathLike]) -> bool:
     """Check if ``fn`` is a readable and writable character device."""
 
     if not os.path.exists(fn):

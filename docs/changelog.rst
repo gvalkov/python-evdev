@@ -12,6 +12,8 @@ Changelog
 
 - Drop deprecated ``InputDevice.fn`` (use ``InputDevice.path`` instead).
 
+- More type hints.
+
 
 1.8.0 (Jan 25, 2025)
 ====================

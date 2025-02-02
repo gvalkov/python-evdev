@@ -5,8 +5,10 @@ import re
 import stat
 import time
 from collections import defaultdict
+from typing import Union, Tuple, Dict, Sequence, Optional
 
-from . import _uinput, device, ecodes, ff, util
+from . import _uinput, ecodes, ff, util
+from .device import InputDevice, AbsInfo
 from .events import InputEvent
 
 try:
@@ -38,7 +40,12 @@ class UInput(EventIO):
     )
 
     @classmethod
-    def from_device(cls, *devices, filtered_types=(ecodes.EV_SYN, ecodes.EV_FF), **kwargs):
+    def from_device(
+        cls,
+        *devices: Union[InputDevice, Union[str, bytes, os.PathLike]],
+        filtered_types: Tuple[int] = (ecodes.EV_SYN, ecodes.EV_FF),
+        **kwargs,
+    ):
         """
         Create an UInput device with the capabilities of one or more input
         devices.
@@ -57,8 +64,8 @@ class UInput(EventIO):
 
         device_instances = []
         for dev in devices:
-            if not isinstance(dev, device.InputDevice):
-                dev = device.InputDevice(str(dev))
+            if not isinstance(dev, InputDevice):
+                dev = InputDevice(str(dev))
             device_instances.append(dev)
 
         all_capabilities = defaultdict(set)
@@ -79,14 +86,14 @@ class UInput(EventIO):
 
     def __init__(
         self,
-        events=None,
-        name="py-evdev-uinput",
-        vendor=0x1,
-        product=0x1,
-        version=0x1,
-        bustype=0x3,
-        devnode="/dev/uinput",
-        phys="py-evdev-uinput",
+        events: Optional[Dict[int, Sequence[int]]] = None,
+        name: str = "py-evdev-uinput",
+        vendor: int = 0x1,
+        product: int = 0x1,
+        version: int = 0x1,
+        bustype: int = 0x3,
+        devnode: str = "/dev/uinput",
+        phys: str = "py-evdev-uinput",
         input_props=None,
         # CentOS 7 has sufficiently old headers that FF_MAX_EFFECTS is not defined there,
         # which causes the whole module to fail loading. Fallback on a hardcoded value of
@@ -131,13 +138,13 @@ class UInput(EventIO):
         to inject only ``KEY_*`` and ``BTN_*`` event codes.
         """
 
-        self.name = name  #: Uinput device name.
-        self.vendor = vendor  #: Device vendor identifier.
-        self.product = product  #: Device product identifier.
-        self.version = version  #: Device version identifier.
-        self.bustype = bustype  #: Device bustype - e.g. ``BUS_USB``.
-        self.phys = phys  #: Uinput device physical path.
-        self.devnode = devnode  #: Uinput device node - e.g. ``/dev/uinput/``.
+        self.name: str = name  #: Uinput device name.
+        self.vendor: int = vendor  #: Device vendor identifier.
+        self.product: int = product  #: Device product identifier.
+        self.version: int = version  #: Device version identifier.
+        self.bustype: int = bustype  #: Device bustype - e.g. ``BUS_USB``.
+        self.phys: str = phys  #: Uinput device physical path.
+        self.devnode: str = devnode  #: Uinput device node - e.g. ``/dev/uinput/``.
 
         if not events:
             events = {ecodes.EV_KEY: ecodes.keys.keys()}
@@ -173,7 +180,7 @@ class UInput(EventIO):
         #: An :class:`InputDevice <evdev.device.InputDevice>` instance
         #: for the fake input device. ``None`` if the device cannot be
         #: opened for reading and writing.
-        self.device = self._find_device(self.fd)
+        self.device: InputDevice = self._find_device(self.fd)
 
     def _prepare_events(self, events):
         """Prepare events for passing to _uinput.enable and _uinput.setup"""
@@ -181,7 +188,7 @@ class UInput(EventIO):
         for etype, codes in events.items():
             for code in codes:
                 # Handle max, min, fuzz, flat.
-                if isinstance(code, (tuple, list, device.AbsInfo)):
+                if isinstance(code, (tuple, list, AbsInfo)):
                     # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
                     f = [code[0]]
                     f.extend(code[1])
@@ -206,7 +213,7 @@ class UInput(EventIO):
         return "{}({})".format(self.__class__.__name__, ", ".join(v))
 
     def __str__(self):
-        msg = 'name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}", phys "{}"\n' "event types: {}"
+        msg = 'name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}", phys "{}"\nevent types: {}'
 
         evtypes = [i[0] for i in self.capabilities(True).keys()]
         msg = msg.format(
@@ -225,7 +232,7 @@ class UInput(EventIO):
             _uinput.close(self.fd)
             self.fd = -1
 
-    def capabilities(self, verbose=False, absinfo=True):
+    def capabilities(self, verbose: bool = False, absinfo: bool = True):
         """See :func:`capabilities <evdev.device.InputDevice.capabilities>`."""
         if self.device is None:
             raise UInputError("input device not opened - cannot read capabilities")
@@ -281,7 +288,7 @@ class UInput(EventIO):
             msg = "uinput device name must not be longer than {} characters"
             raise UInputError(msg.format(_uinput.maxnamelen))
 
-    def _find_device(self, fd):
+    def _find_device(self, fd: int) -> InputDevice:
         """
         Tries to find the device node. Will delegate this task to one of
         several platform-specific functions.
@@ -299,7 +306,7 @@ class UInput(EventIO):
         # use the generic fallback method.
         return self._find_device_fallback()
 
-    def _find_device_linux(self, sysname):
+    def _find_device_linux(self, sysname: str) -> InputDevice:
         """
         Tries to find the device node when running on Linux.
         """
@@ -327,15 +334,15 @@ class UInput(EventIO):
         # device to show up or the permissions to be set.
         for attempt in range(19):
             try:
-                return device.InputDevice(device_path)
+                return InputDevice(device_path)
             except (FileNotFoundError, PermissionError):
                 time.sleep(0.1)
 
         # Last attempt. If this fails, whatever exception the last attempt raises
         # shall be the exception that this function raises.
-        return device.InputDevice(device_path)
+        return InputDevice(device_path)
 
-    def _find_device_fallback(self):
+    def _find_device_fallback(self) -> Union[InputDevice, None]:
         """
         Tries to find the device node when UI_GET_SYSNAME is not available or
         we're running on a system sufficiently exotic that we do not know how
@@ -363,6 +370,6 @@ class UInput(EventIO):
         path_number_pairs.sort(key=lambda pair: pair[1], reverse=True)
 
         for path, _ in path_number_pairs:
-            d = device.InputDevice(path)
+            d = InputDevice(path)
             if d.name == self.name:
                 return d
