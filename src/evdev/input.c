@@ -46,12 +46,10 @@ int test_bit(const char* bitmask, int bit) {
 static PyObject *
 device_read(PyObject *self, PyObject *args)
 {
-    int fd;
     struct input_event event;
 
     // get device file descriptor (O_RDONLY|O_NONBLOCK)
-    if (PyArg_ParseTuple(args, "i", &fd) < 0)
-        return NULL;
+    int fd = (int)PyLong_AsLong(PyTuple_GET_ITEM(args, 0));
 
     int n = read(fd, &event, sizeof(event));
 
@@ -68,12 +66,9 @@ device_read(PyObject *self, PyObject *args)
     PyObject* sec  = PyLong_FromLong(event.input_event_sec);
     PyObject* usec = PyLong_FromLong(event.input_event_usec);
     PyObject* val  = PyLong_FromLong(event.value);
-    PyObject* py_input_event = NULL;
-
-    py_input_event = Py_BuildValue("OOhhO", sec, usec, event.type, event.code, val);
-    Py_DECREF(sec);
-    Py_DECREF(usec);
-    Py_DECREF(val);
+    PyObject* type = PyLong_FromLong(event.type);
+    PyObject* code = PyLong_FromLong(event.code);
+    PyObject* py_input_event = PyTuple_Pack(5, sec, usec, type, code, val);
 
     return py_input_event;
 }
@@ -83,17 +78,16 @@ device_read(PyObject *self, PyObject *args)
 static PyObject *
 device_read_many(PyObject *self, PyObject *args)
 {
-    int fd;
-
     // get device file descriptor (O_RDONLY|O_NONBLOCK)
-    int ret = PyArg_ParseTuple(args, "i", &fd);
-    if (!ret) return NULL;
+    int fd = (int)PyLong_AsLong(PyTuple_GET_ITEM(args, 0));
 
-    PyObject* event_list = PyList_New(0);
     PyObject* py_input_event = NULL;
+    PyObject* events = NULL;
     PyObject* sec  = NULL;
     PyObject* usec = NULL;
     PyObject* val  = NULL;
+    PyObject* type = NULL;
+    PyObject* code = NULL;
 
     struct input_event event[64];
 
@@ -102,26 +96,24 @@ device_read_many(PyObject *self, PyObject *args)
 
     if (nread < 0) {
         PyErr_SetFromErrno(PyExc_OSError);
-        Py_DECREF(event_list);
         return NULL;
     }
 
-    // Construct a list of event tuples, which we'll make sense of in Python
-    for (unsigned i = 0 ; i < nread/event_size ; i++) {
+    // Construct a tuple of event tuples. Each tuple is the arguments to InputEvent.
+    size_t num_events = nread / event_size;
+    events = PyTuple_New(num_events);
+    for (size_t i = 0 ; i < num_events; i++) {
         sec  = PyLong_FromLong(event[i].input_event_sec);
         usec = PyLong_FromLong(event[i].input_event_usec);
         val  = PyLong_FromLong(event[i].value);
+        type = PyLong_FromLong(event[i].type);
+        code = PyLong_FromLong(event[i].code);
 
-        py_input_event = Py_BuildValue("OOhhO", sec, usec, event[i].type, event[i].code, val);
-        PyList_Append(event_list, py_input_event);
-
-        Py_DECREF(py_input_event);
-        Py_DECREF(sec);
-        Py_DECREF(usec);
-        Py_DECREF(val);
+        py_input_event = PyTuple_Pack(5, sec, usec, type, code, val);
+        PyTuple_SET_ITEM(events, i, py_input_event);
     }
 
-    return event_list;
+    return events;
 }
 
 
@@ -537,7 +529,6 @@ ioctl_EVIOCGPROP(PyObject *self, PyObject *args)
 
     return res;
 }
-
 
 
 static PyMethodDef MethodTable[] = {
