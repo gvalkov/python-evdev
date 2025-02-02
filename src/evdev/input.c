@@ -552,14 +552,10 @@ static PyMethodDef MethodTable[] = {
 };
 
 
-#define MODULE_NAME "_input"
-#define MODULE_HELP "Python bindings to certain linux input subsystem functions"
-
-#if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    MODULE_NAME,
-    MODULE_HELP,
+    "_input",
+    "Python bindings to certain linux input subsystem functions",
     -1,          /* m_size */
     MethodTable, /* m_methods */
     NULL,        /* m_reload */
@@ -581,19 +577,3 @@ PyInit__input(void)
 {
     return moduleinit();
 }
-
-#else
-static PyObject *
-moduleinit(void)
-{
-    PyObject* m = Py_InitModule3(MODULE_NAME, MethodTable, MODULE_HELP);
-    if (m == NULL) return NULL;
-    return m;
-}
-
-PyMODINIT_FUNC
-init_input(void)
-{
-    moduleinit();
-}
-#endif
