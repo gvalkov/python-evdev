@@ -20,6 +20,9 @@ if not opts:
     print("usage: genecodes.py [--ecodes|--stubs] <headers>")
     exit(2)
 
+if args:
+    headers = args
+
 
 # -----------------------------------------------------------------------------
 macro_regex = r"#define +((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)"
