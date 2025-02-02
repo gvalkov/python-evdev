@@ -301,7 +301,7 @@ static PyObject *
 ioctl_EVIOCGREP(PyObject *self, PyObject *args)
 {
     int fd, ret;
-    unsigned int rep[2] = {0};
+    unsigned int rep[REP_CNT] = {0};
     ret = PyArg_ParseTuple(args, "i", &fd);
     if (!ret) return NULL;
 
@@ -309,7 +309,7 @@ ioctl_EVIOCGREP(PyObject *self, PyObject *args)
     if (ret == -1)
         return NULL;
 
-    return Py_BuildValue("(ii)", rep[0], rep[1]);
+    return Py_BuildValue("(ii)", rep[REP_DELAY], rep[REP_PERIOD]);
 }
 
 
@@ -317,7 +317,7 @@ static PyObject *
 ioctl_EVIOCSREP(PyObject *self, PyObject *args)
 {
     int fd, ret;
-    unsigned int rep[2] = {0};
+    unsigned int rep[REP_CNT] = {0};
 
     ret = PyArg_ParseTuple(args, "iii", &fd, &rep[0], &rep[1]);
     if (!ret) return NULL;
