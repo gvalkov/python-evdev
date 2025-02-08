@@ -1,18 +1,18 @@
 Changelog
 ---------
 
-1.9.0 (Unreleased)
+1.9.0 (Feb 08, 2025)
 ==================
 
-- Fix ``CPATH/C_INCLUDE_PATH`` being ignored during build.
+- Fix for ``CPATH/C_INCLUDE_PATH`` being ignored during build.
 
-- Slightly faster reading of events.
+- Slightly faster reading of events in ``device.read()`` and ``device.read_one()``.
 
-- Fix build on FreeBSD.
+- Fix FreeBSD support.
 
 - Drop deprecated ``InputDevice.fn`` (use ``InputDevice.path`` instead).
 
-- More type hints.
+- Improve type hint coverage and add a ``py.typed`` file to the sdist.
 
 
 1.8.0 (Jan 25, 2025)

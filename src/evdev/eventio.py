@@ -2,7 +2,7 @@ import fcntl
 import functools
 import os
 import select
-from typing import Iterator
+from typing import Iterator, Union
 
 from . import _input, _uinput, ecodes
 from .events import InputEvent
@@ -46,7 +46,7 @@ class EventIO:
             for event in self.read():
                 yield event
 
-    def read_one(self) -> InputEvent:
+    def read_one(self) -> Union[InputEvent, None]:
         """
         Read and return a single input event as an instance of
         :class:`InputEvent <evdev.events.InputEvent>`.
