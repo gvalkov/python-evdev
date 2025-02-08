@@ -9,7 +9,7 @@ from . import ecodes
 from .events import event_factory
 
 
-def list_devices(input_device_dir="/dev/input") -> List[str]:
+def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input") -> List[str]:
     """List readable character devices in ``input_device_dir``."""
 
     fns = glob.glob("{}/event*".format(input_device_dir))

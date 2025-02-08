@@ -16,7 +16,6 @@ Examples:
   evtest /dev/input/event0 /dev/input/event1
 """
 
-
 import atexit
 import optparse
 import re
