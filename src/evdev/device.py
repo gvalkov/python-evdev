@@ -1,7 +1,6 @@
 import contextlib
 import os
-from collections.abc import Iterator
-from typing import NamedTuple, Tuple, Union
+from typing import Iterator, NamedTuple, Tuple, Union
 
 from . import _input, ecodes, util
 
