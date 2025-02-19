@@ -1,6 +1,6 @@
 import contextlib
 import os
-from typing import Iterator, NamedTuple, Tuple, Union
+from typing import Dict, Iterator, List, NamedTuple, Tuple, Union, overload
 
 from . import _input, ecodes, util
 
@@ -176,7 +176,13 @@ class InputDevice(EventIO):
 
         return res
 
-    def capabilities(self, verbose: bool = False, absinfo: bool = True):
+    @overload
+    def capabilities(self, verbose: Literal[False] = ..., absinfo: bool = ...) -> Dict[int, List[int]]:
+        ...
+    @overload
+    def capabilities(self, verbose: Literal[True], absinfo: bool = True) -> Dict[Tuple[str, int], List[Tuple[str, int]]]:
+        ...
+    def capabilities(self, verbose: bool = False, absinfo: bool = True) -> Union[Dict[int, List[int]], Dict[Tuple[str, int], List[Tuple[str, int]]]]:
         """
         Return the event types that this device supports as a mapping of
         supported event types to lists of handled event codes.
