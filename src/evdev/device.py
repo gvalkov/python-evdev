@@ -1,6 +1,6 @@
 import contextlib
 import os
-from typing import Dict, Iterator, List, NamedTuple, Tuple, Union, overload
+from typing import Dict, Iterator, List, Literal, NamedTuple, Tuple, Union, overload
 
 from . import _input, ecodes, util
 
