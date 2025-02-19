@@ -180,7 +180,7 @@ class InputDevice(EventIO):
     def capabilities(self, verbose: Literal[False] = ..., absinfo: bool = ...) -> Dict[int, List[int]]:
         ...
     @overload
-    def capabilities(self, verbose: Literal[True], absinfo: bool = True) -> Dict[Tuple[str, int], List[Tuple[str, int]]]:
+    def capabilities(self, verbose: Literal[True], absinfo: bool = ...) -> Dict[Tuple[str, int], List[Tuple[str, int]]]:
         ...
     def capabilities(self, verbose: bool = False, absinfo: bool = True) -> Union[Dict[int, List[int]], Dict[Tuple[str, int], List[Tuple[str, int]]]]:
         """
