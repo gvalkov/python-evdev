@@ -1,6 +1,6 @@
 import contextlib
 import os
-from typing import NamedTuple, Tuple, Union
+from typing import Dict, Iterator, List, Literal, NamedTuple, Tuple, Union, overload
 
 from . import _input, ecodes, util
 
@@ -95,7 +95,7 @@ class DeviceInfo(NamedTuple):
     product: int
     version: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = "bus: {:04x}, vendor {:04x}, product {:04x}, version {:04x}"
         return msg.format(*self)  # pylint: disable=not-an-iterable
 
@@ -151,7 +151,7 @@ class InputDevice(EventIO):
         #: The number of force feedback effects the device can keep in its memory.
         self.ff_effects_count = _input.ioctl_EVIOCGEFFECTS(self.fd)
 
-    def __del__(self):
+    def __del__(self) -> None:
         if hasattr(self, "fd") and self.fd is not None:
             try:
                 self.close()
@@ -176,7 +176,13 @@ class InputDevice(EventIO):
 
         return res
 
-    def capabilities(self, verbose: bool = False, absinfo: bool = True):
+    @overload
+    def capabilities(self, verbose: Literal[False] = ..., absinfo: bool = ...) -> Dict[int, List[int]]:
+        ...
+    @overload
+    def capabilities(self, verbose: Literal[True], absinfo: bool = ...) -> Dict[Tuple[str, int], List[Tuple[str, int]]]:
+        ...
+    def capabilities(self, verbose: bool = False, absinfo: bool = True) -> Union[Dict[int, List[int]], Dict[Tuple[str, int], List[Tuple[str, int]]]]:
         """
         Return the event types that this device supports as a mapping of
         supported event types to lists of handled event codes.
@@ -263,7 +269,7 @@ class InputDevice(EventIO):
 
         return leds
 
-    def set_led(self, led_num: int, value: int):
+    def set_led(self, led_num: int, value: int) -> None:
         """
         Set the state of the selected LED.
 
@@ -279,18 +285,18 @@ class InputDevice(EventIO):
         """
         return isinstance(other, self.__class__) and self.info == other.info and self.path == other.path
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = 'device {}, name "{}", phys "{}", uniq "{}"'
         return msg.format(self.path, self.name, self.phys, self.uniq or "")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         msg = (self.__class__.__name__, self.path)
         return "{}({!r})".format(*msg)
 
     def __fspath__(self):
         return self.path
 
-    def close(self):
+    def close(self) -> None:
         if self.fd > -1:
             try:
                 super().close()
@@ -298,7 +304,7 @@ class InputDevice(EventIO):
             finally:
                 self.fd = -1
 
-    def grab(self):
+    def grab(self) -> None:
         """
         Grab input device using ``EVIOCGRAB`` - other applications will
         be unable to receive events until the device is released. Only
@@ -311,7 +317,7 @@ class InputDevice(EventIO):
 
         _input.ioctl_EVIOCGRAB(self.fd, 1)
 
-    def ungrab(self):
+    def ungrab(self) -> None:
         """
         Release device if it has been already grabbed (uses `EVIOCGRAB`).
 
@@ -324,7 +330,7 @@ class InputDevice(EventIO):
         _input.ioctl_EVIOCGRAB(self.fd, 0)
 
     @contextlib.contextmanager
-    def grab_context(self):
+    def grab_context(self) -> Iterator[None]:
         """
         A context manager for the duration of which only the current
         process will be able to receive events from the device.
@@ -342,7 +348,7 @@ class InputDevice(EventIO):
         ff_id = _input.upload_effect(self.fd, data)
         return ff_id
 
-    def erase_effect(self, ff_id):
+    def erase_effect(self, ff_id) -> None:
         """
         Erase a force effect from a force feedback device. This also
         stops the effect.
@@ -402,7 +408,7 @@ class InputDevice(EventIO):
         """
         return AbsInfo(*_input.ioctl_EVIOCGABS(self.fd, axis_num))
 
-    def set_absinfo(self, axis_num: int, value=None, min=None, max=None, fuzz=None, flat=None, resolution=None):
+    def set_absinfo(self, axis_num: int, value=None, min=None, max=None, fuzz=None, flat=None, resolution=None) -> None:
         """
         Update :class:`AbsInfo` values. Only specified values will be overwritten.
 
