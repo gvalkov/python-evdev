@@ -46,7 +46,7 @@ from . import _ecodes
 #: Mapping of names to values.
 ecodes = {}
 
-prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF INPUT_PROP".split()
+prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF INPUT_PROP UI_FF".split()
 prev_prefix = ""
 g = globals()
 

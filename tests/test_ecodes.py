@@ -1,9 +1,8 @@
-# encoding: utf-8
-
 from evdev import ecodes
+from evdev import ecodes_runtime
 
 
-prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF"
+prefixes = "KEY ABS REL SW MSC LED BTN REP SND ID EV BUS SYN FF_STATUS FF UI_FF"
 
 
 def to_tuples(val):
@@ -29,3 +28,14 @@ def test_overlap():
     vals_ff = set(to_tuples(ecodes.FF.values()))
     vals_ff_status = set(to_tuples(ecodes.FF_STATUS.values()))
     assert bool(vals_ff & vals_ff_status) is False
+
+
+def test_generated():
+    e_run = vars(ecodes_runtime)
+    e_gen = vars(ecodes)
+
+    def keys(v):
+        res = {k for k in v.keys() if not k.startswith("_") and not k[1].islower()}
+        return res
+
+    assert keys(e_run) == keys(e_gen)

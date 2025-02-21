@@ -40,6 +40,7 @@ entries = [
     ("BUS",    "Dict[int, Union[str, Tuple[str]]]", None),
     ("SYN",    "Dict[int, Union[str, Tuple[str]]]", None),
     ("FF",     "Dict[int, Union[str, Tuple[str]]]", None),
+    ("UI_FF",  "Dict[int, Union[str, Tuple[str]]]", None),
     ("FF_STATUS",  "Dict[int, Union[str, Tuple[str]]]", None),
     ("INPUT_PROP", "Dict[int, Union[str, Tuple[str]]]", None)
 ]
