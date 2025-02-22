@@ -1,8 +1,17 @@
 Changelog
 ---------
 
+
+1.9.1 (Feb 22, 2025)
+====================
+
+- Fix fox missing ``UI_FF`` constants in generated ``ecodes.py``.
+
+- More type annotations.
+
+
 1.9.0 (Feb 08, 2025)
-==================
+====================
 
 - Fix for ``CPATH/C_INCLUDE_PATH`` being ignored during build.
 

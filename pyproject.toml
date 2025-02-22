@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "evdev"
-version = "1.9.0"
+version = "1.9.1"
 description = "Bindings to the Linux input handling subsystem"
 keywords = ["evdev", "input", "uinput"]
 readme = "README.md"
@@ -36,7 +36,7 @@ line-length = 120
 ignore = ["E265", "E241", "F403", "F401", "E401", "E731"]
 
 [tool.bumpversion]
-current_version = "1.9.0"
+current_version = "1.9.1"
 commit = true
 tag = true
 allow_dirty = true
