@@ -6,7 +6,7 @@ import stat
 from typing import Union, List
 
 from . import ecodes
-from .events import InputEvent, event_factory
+from .events import InputEvent, event_factory, KeyEvent, RelEvent, AbsEvent, SynEvent
 
 
 def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input") -> List[str]:
@@ -32,7 +32,7 @@ def is_device(fn: Union[str, bytes, os.PathLike]) -> bool:
     return True
 
 
-def categorize(event: InputEvent) -> InputEvent:
+def categorize(event: InputEvent) -> Union[InputEvent, KeyEvent, RelEvent, AbsEvent, SynEvent]:
     """
     Categorize an event according to its type.
 
