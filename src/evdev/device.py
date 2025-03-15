@@ -109,7 +109,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
 
     __slots__ = ("path", "fd", "info", "name", "phys", "uniq", "_rawcapabilities", "version", "ff_effects_count")
 
-    def __init__(self, dev: Union[_AnyStr, os.PathLike[_AnyStr]]):
+    def __init__(self, dev: Union[_AnyStr, "os.PathLike[_AnyStr]"]):
         """
         Arguments
         ---------
