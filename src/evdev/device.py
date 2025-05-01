@@ -1,6 +1,6 @@
 import contextlib
 import os
-from typing import Dict, Iterator, List, Literal, NamedTuple, Tuple, Union, overload
+from typing import Dict, Generic, Iterator, List, Literal, NamedTuple, Tuple, TypeVar, Union, overload
 
 from . import _input, ecodes, util
 
@@ -8,6 +8,8 @@ try:
     from .eventio_async import EvdevError, EventIO
 except ImportError:
     from .eventio import EvdevError, EventIO
+
+_AnyStr = TypeVar("_AnyStr", str, bytes)
 
 
 class AbsInfo(NamedTuple):
@@ -100,14 +102,14 @@ class DeviceInfo(NamedTuple):
         return msg.format(*self)  # pylint: disable=not-an-iterable
 
 
-class InputDevice(EventIO):
+class InputDevice(EventIO, Generic[_AnyStr]):
     """
     A linux input device from which input events can be read.
     """
 
     __slots__ = ("path", "fd", "info", "name", "phys", "uniq", "_rawcapabilities", "version", "ff_effects_count")
 
-    def __init__(self, dev: Union[str, bytes, os.PathLike]):
+    def __init__(self, dev: Union[_AnyStr, "os.PathLike[_AnyStr]"]):
         """
         Arguments
         ---------
@@ -116,7 +118,7 @@ class InputDevice(EventIO):
         """
 
         #: Path to input device.
-        self.path = dev if not hasattr(dev, "__fspath__") else dev.__fspath__()
+        self.path: _AnyStr = dev if not hasattr(dev, "__fspath__") else dev.__fspath__()
 
         # Certain operations are possible only when the device is opened in read-write mode.
         try:
