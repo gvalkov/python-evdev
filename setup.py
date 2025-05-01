@@ -14,7 +14,7 @@ curdir = Path(__file__).resolve().parent
 ecodes_c_path = curdir / "src/evdev/ecodes.c"
 
 
-def create_ecodes(headers=None, reproducibility=False):
+def create_ecodes(headers=None, reproducible=False):
     if not headers:
         include_paths = set()
         cpath = os.environ.get("CPATH", "").strip()
@@ -66,8 +66,8 @@ def create_ecodes(headers=None, reproducibility=False):
     print("writing %s (using %s)" % (ecodes_c_path, " ".join(headers)))
     with ecodes_c_path.open("w") as fh:
         cmd = [sys.executable, "src/evdev/genecodes_c.py"]
-        if reproducibility:
-            cmd.append("--reproducibility")
+        if reproducible:
+            cmd.append("--reproducible")
         cmd.extend(["--ecodes", *headers])
         run(cmd, check=True, stdout=fh)
 
@@ -77,21 +77,21 @@ class build_ecodes(Command):
 
     user_options = [
         ("evdev-headers=", None, "colon-separated paths to input subsystem headers"),
-        ("reproducibility", None, "hide host details (host/paths) to create a reproducible output"),
+        ("reproducible", None, "hide host details (host/paths) to create a reproducible output"),
     ]
 
     def initialize_options(self):
         self.evdev_headers = None
-        self.reproducibility = False
+        self.reproducible = False
 
     def finalize_options(self):
         if self.evdev_headers:
             self.evdev_headers = self.evdev_headers.split(":")
-        if self.reproducibility is None:
-            self.reproducibility = False
+        if self.reproducible is None:
+            self.reproducible = False
 
     def run(self):
-        create_ecodes(self.evdev_headers, reproducibility=self.reproducibility)
+        create_ecodes(self.evdev_headers, reproducible=self.reproducible)
 
 
 class build_ext(_build_ext.build_ext):
