@@ -15,22 +15,27 @@ headers = [
     "/usr/include/linux/uinput.h",
 ]
 
-opts, args = getopt.getopt(sys.argv[1:], "", ["ecodes", "stubs"])
+opts, args = getopt.getopt(sys.argv[1:], "", ["ecodes", "stubs", "reproducibility"])
 if not opts:
-    print("usage: genecodes.py [--ecodes|--stubs] <headers>")
+    print("usage: genecodes.py [--ecodes|--stubs] [--reproducibility] <headers>")
     exit(2)
 
 if args:
     headers = args
+
+reproducibility = ("--reproducibility", "") in opts
 
 
 # -----------------------------------------------------------------------------
 macro_regex = r"#define\s+((?:KEY|ABS|REL|SW|MSC|LED|BTN|REP|SND|ID|EV|BUS|SYN|FF|UI_FF|INPUT_PROP)_\w+)"
 macro_regex = re.compile(macro_regex)
 
-# Uname without hostname.
-uname = list(os.uname())
-uname = " ".join((uname[0], *uname[2:]))
+if reproducibility:
+    uname = "hidden for reproducibility"
+else:
+    # Uname without hostname.
+    uname = list(os.uname())
+    uname = " ".join((uname[0], *uname[2:]))
 
 
 # -----------------------------------------------------------------------------
@@ -138,5 +143,5 @@ elif ("--stubs", "") in opts:
     template = template_stubs
 
 body = os.linesep.join(body)
-text = template % (uname, headers, body)
+text = template % (uname, headers if not reproducibility else ["hidden for reproducibility"], body)
 print(text.strip())
