@@ -2,6 +2,17 @@ Changelog
 ---------
 
 
+1.9.2 (May 01, 2025)
+====================
+
+- Add the "--reproducible" build option which removes the build date and used headers from the
+  generated ``ecodes.c``. Example usage::
+
+    python -m build --config-setting=--build-option='build_ecodes --reproducible' -n 
+
+- Use ``Generic`` to set precise type for ``InputDevice.path``.
+
+
 1.9.1 (Feb 22, 2025)
 ====================
 
