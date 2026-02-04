@@ -63,12 +63,12 @@ device_read(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    PyObject* sec  = PyLong_FromLong(event.input_event_sec);
-    PyObject* usec = PyLong_FromLong(event.input_event_usec);
-    PyObject* val  = PyLong_FromLong(event.value);
-    PyObject* type = PyLong_FromLong(event.type);
-    PyObject* code = PyLong_FromLong(event.code);
-    PyObject* py_input_event = PyTuple_Pack(5, sec, usec, type, code, val);
+    PyObject *py_input_event = PyTuple_New(5);
+    PyTuple_SET_ITEM(py_input_event, 0, PyLong_FromLong(event.input_event_sec));
+    PyTuple_SET_ITEM(py_input_event, 1, PyLong_FromLong(event.input_event_usec));
+    PyTuple_SET_ITEM(py_input_event, 2, PyLong_FromLong(event.type));
+    PyTuple_SET_ITEM(py_input_event, 3, PyLong_FromLong(event.code));
+    PyTuple_SET_ITEM(py_input_event, 4, PyLong_FromLong(event.value));
 
     return py_input_event;
 }
@@ -80,14 +80,6 @@ device_read_many(PyObject *self, PyObject *args)
 {
     // get device file descriptor (O_RDONLY|O_NONBLOCK)
     int fd = (int)PyLong_AsLong(PyTuple_GET_ITEM(args, 0));
-
-    PyObject* py_input_event = NULL;
-    PyObject* events = NULL;
-    PyObject* sec  = NULL;
-    PyObject* usec = NULL;
-    PyObject* val  = NULL;
-    PyObject* type = NULL;
-    PyObject* code = NULL;
 
     struct input_event event[64];
 
@@ -101,15 +93,15 @@ device_read_many(PyObject *self, PyObject *args)
 
     // Construct a tuple of event tuples. Each tuple is the arguments to InputEvent.
     size_t num_events = nread / event_size;
-    events = PyTuple_New(num_events);
-    for (size_t i = 0 ; i < num_events; i++) {
-        sec  = PyLong_FromLong(event[i].input_event_sec);
-        usec = PyLong_FromLong(event[i].input_event_usec);
-        val  = PyLong_FromLong(event[i].value);
-        type = PyLong_FromLong(event[i].type);
-        code = PyLong_FromLong(event[i].code);
 
-        py_input_event = PyTuple_Pack(5, sec, usec, type, code, val);
+    PyObject* events = PyTuple_New(num_events);
+    for (size_t i = 0 ; i < num_events; i++) {
+        PyObject *py_input_event = PyTuple_New(5);
+        PyTuple_SET_ITEM(py_input_event, 0, PyLong_FromLong(event[i].input_event_sec));
+        PyTuple_SET_ITEM(py_input_event, 1, PyLong_FromLong(event[i].input_event_usec));
+        PyTuple_SET_ITEM(py_input_event, 2, PyLong_FromLong(event[i].type));
+        PyTuple_SET_ITEM(py_input_event, 3, PyLong_FromLong(event[i].code));
+        PyTuple_SET_ITEM(py_input_event, 4, PyLong_FromLong(event[i].value));
         PyTuple_SET_ITEM(events, i, py_input_event);
     }
 
@@ -200,6 +192,11 @@ ioctl_capabilities(PyObject *self, PyObject *args)
     return capabilities;
 
     on_err:
+        Py_XDECREF(capabilities);
+        Py_XDECREF(eventcodes);
+        Py_XDECREF(capability);
+        Py_XDECREF(py_absinfo);
+        Py_XDECREF(absitem);
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
 }
@@ -408,7 +405,9 @@ ioctl_EVIOCG_bits(PyObject *self, PyObject *args)
     PyObject* res = PyList_New(0);
     for (int i=0; i<=max; i++) {
         if (test_bit(bytes, i)) {
-            PyList_Append(res, Py_BuildValue("i", i));
+            PyObject *val = PyLong_FromLong(i);
+            PyList_Append(res, val);
+            Py_DECREF(val);
         }
     }
 
@@ -523,7 +522,9 @@ ioctl_EVIOCGPROP(PyObject *self, PyObject *args)
     PyObject* res = PyList_New(0);
     for (int i=0; i<INPUT_PROP_MAX; i++) {
         if (test_bit(bytes, i)) {
-            PyList_Append(res, Py_BuildValue("i", i));
+            PyObject *val = PyLong_FromLong(i);
+            PyList_Append(res, val);
+            Py_DECREF(val);
         }
     }
 
