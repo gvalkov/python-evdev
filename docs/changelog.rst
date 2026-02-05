@@ -1,6 +1,13 @@
 Changelog
 ---------
 
+1.9.3 (Feb 05, 2025)
+====================
+
+- Fix several memory leaks in ``input.c``.
+
+- Raise the minimum supported Python version to 3.9 and the setuptools version to 77.0.
+
 
 1.9.2 (May 01, 2025)
 ====================
