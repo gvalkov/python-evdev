@@ -8,7 +8,7 @@ version = "1.9.2"
 description = "Bindings to the Linux input handling subsystem"
 keywords = ["evdev", "input", "uinput"]
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "BSD-3-Clause"
 requires-python = ">=3.8"
 authors = [
   { name="Georgi Valkov", email="georgi.t.valkov@gmail.com" },
@@ -22,7 +22,6 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
-    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 
