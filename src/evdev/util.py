@@ -9,15 +9,33 @@ from . import ecodes
 from .events import InputEvent, event_factory, KeyEvent, RelEvent, AbsEvent, SynEvent
 
 
-def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input") -> List[str]:
-    """List readable character devices in ``input_device_dir``."""
+def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input", writable: bool = True) -> List[str]:
+    """List readable (and optionally writable) character devices in ``input_device_dir``.
+
+    Arguments
+    ---------
+    input_device_dir : str|bytes|PathLike
+      Path to the input device directory. Default is ``/dev/input``.
+    writable : bool
+      If True (default), only list devices that are both readable and
+      writable. If False, list all readable devices.
+    """
 
     fns = glob.glob("{}/event*".format(input_device_dir))
-    return list(filter(is_device, fns))
+    return list(filter(lambda fn: is_device(fn, writable=writable), fns))
 
 
-def is_device(fn: Union[str, bytes, os.PathLike]) -> bool:
-    """Check if ``fn`` is a readable and writable character device."""
+def is_device(fn: Union[str, bytes, os.PathLike], writable: bool = True) -> bool:
+    """Check if ``fn`` is a readable (and optionally writable) character device.
+
+    Arguments
+    ---------
+    fn : str|bytes|PathLike
+      Path to the device file.
+    writable : bool
+      If True (default), also check for write access. If False, only
+      check for read access.
+    """
 
     if not os.path.exists(fn):
         return False
@@ -26,7 +44,8 @@ def is_device(fn: Union[str, bytes, os.PathLike]) -> bool:
     if not stat.S_ISCHR(m):
         return False
 
-    if not os.access(fn, os.R_OK | os.W_OK):
+    access = os.R_OK | os.W_OK if writable else os.R_OK
+    if not os.access(fn, access):
         return False
 
     return True
