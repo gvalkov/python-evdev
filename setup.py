@@ -12,6 +12,7 @@ from setuptools.command import build_ext as _build_ext
 
 curdir = Path(__file__).resolve().parent
 ecodes_c_path = curdir / "src/evdev/ecodes.c"
+ecodes_pyi_path = curdir / "src/evdev/_ecodes.pyi"
 
 
 def create_ecodes(headers=None, reproducible=False):
@@ -63,13 +64,14 @@ def create_ecodes(headers=None, reproducible=False):
         sys.stderr.write(textwrap.dedent(msg))
         sys.exit(1)
 
-    print("writing %s (using %s)" % (ecodes_c_path, " ".join(headers)))
-    with ecodes_c_path.open("w") as fh:
-        cmd = [sys.executable, "src/evdev/genecodes_c.py"]
-        if reproducible:
-            cmd.append("--reproducible")
-        cmd.extend(["--ecodes", *headers])
-        run(cmd, check=True, stdout=fh)
+    for path, arg in [(ecodes_c_path, "--ecodes"), (ecodes_pyi_path, "--stubs")]:
+        print("writing %s (using %s)" % (path, " ".join(headers)))
+        with path.open("w") as fh:
+            cmd = [sys.executable, "src/evdev/genecodes_c.py"]
+            if reproducible:
+                cmd.append("--reproducible")
+            cmd.extend([arg, *headers])
+            run(cmd, check=True, stdout=fh)
 
 
 class build_ecodes(Command):
@@ -96,8 +98,8 @@ class build_ecodes(Command):
 
 class build_ext(_build_ext.build_ext):
     def has_ecodes(self):
-        if ecodes_c_path.exists():
-            print("ecodes.c already exists ... skipping build_ecodes")
+        if ecodes_c_path.exists() and ecodes_pyi_path.exists():
+            print("ecodes.c and _ecodes.pyi already exist ... skipping build_ecodes")
             return False
         return True
 

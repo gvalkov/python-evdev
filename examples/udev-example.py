@@ -37,11 +37,11 @@ while True:
                 # should adapt this to your needs
                 if "py-evdev-uinput" in name:
                     if udev.action == "add":
-                        print("Device added: %s" % udev)
+                        print(f"Device added: {udev}")
                         fds[dev.fd] = InputDevice(udev.device_node)
                         break
                     if udev.action == "remove":
-                        print("Device removed: %s" % udev)
+                        print(f"Device removed: {udev}")
 
                         def helper():
                             global fds

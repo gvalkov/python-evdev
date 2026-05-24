@@ -1,22 +1,30 @@
+from __future__ import annotations
+
 import collections
 import glob
 import os
 import re
 import stat
-from typing import Union, List
+from typing import TYPE_CHECKING, overload
 
 from . import ecodes
 from .events import InputEvent, event_factory, KeyEvent, RelEvent, AbsEvent, SynEvent
 
+if TYPE_CHECKING:
+    from _typeshed import StrOrBytesPath
+    from collections.abc import Iterator, Mapping, Sequence
 
-def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input") -> List[str]:
+    from .device import AbsInfo
+
+
+def list_devices(input_device_dir: str | os.PathLike[str] = "/dev/input") -> list[str]:
     """List readable character devices in ``input_device_dir``."""
 
-    fns = glob.glob("{}/event*".format(input_device_dir))
+    fns = glob.glob(f"{input_device_dir}/event*")
     return list(filter(is_device, fns))
 
 
-def is_device(fn: Union[str, bytes, os.PathLike]) -> bool:
+def is_device(fn: StrOrBytesPath) -> bool:
     """Check if ``fn`` is a readable and writable character device."""
 
     if not os.path.exists(fn):
@@ -32,7 +40,7 @@ def is_device(fn: Union[str, bytes, os.PathLike]) -> bool:
     return True
 
 
-def categorize(event: InputEvent) -> Union[InputEvent, KeyEvent, RelEvent, AbsEvent, SynEvent]:
+def categorize(event: InputEvent) -> InputEvent | KeyEvent | RelEvent | AbsEvent | SynEvent:
     """
     Categorize an event according to its type.
 
@@ -47,7 +55,15 @@ def categorize(event: InputEvent) -> Union[InputEvent, KeyEvent, RelEvent, AbsEv
         return event
 
 
-def resolve_ecodes_dict(typecodemap, unknown="?"):
+def resolve_ecodes_dict(
+    typecodemap: Mapping[int, Sequence[int | tuple[int, AbsInfo]]],
+    unknown: str = "?",
+) -> Iterator[
+    tuple[
+        tuple[str | tuple[str, ...], int],
+        list[tuple[str | tuple[str, ...], int] | tuple[tuple[str | tuple[str, ...], int], AbsInfo]],
+    ]
+]:
     """
     Resolve event codes and types to their verbose names.
 
@@ -82,7 +98,33 @@ def resolve_ecodes_dict(typecodemap, unknown="?"):
         yield (type_name, etype), resolved
 
 
-def resolve_ecodes(ecode_dict, ecode_list, unknown="?"):
+@overload
+def resolve_ecodes(  # pyright: ignore[reportOverlappingOverload]
+    ecode_dict: Mapping[int, str | tuple[str, ...]],
+    ecode_list: Sequence[int],
+    unknown: str = ...,
+) -> list[tuple[str | tuple[str, ...], int]]: ...
+@overload
+def resolve_ecodes(
+    ecode_dict: Mapping[int, str | tuple[str, ...]],
+    ecode_list: Sequence[tuple[int, AbsInfo]],
+    unknown: str = ...,
+) -> list[tuple[tuple[str | tuple[str, ...], int], AbsInfo]]: ...
+@overload
+def resolve_ecodes(
+    ecode_dict: Mapping[int, str | tuple[str, ...]],
+    ecode_list: Sequence[int | tuple[int, AbsInfo]],
+    unknown: str = ...,
+) -> list[tuple[str | tuple[str, ...], int] | tuple[tuple[str | tuple[str, ...], int], AbsInfo]]: ...
+def resolve_ecodes(
+    ecode_dict: Mapping[int, str | tuple[str, ...]],
+    ecode_list: Sequence[int | tuple[int, AbsInfo]],
+    unknown: str = "?",
+) -> (
+    list[tuple[str | tuple[str, ...], int]]
+    | list[tuple[tuple[str | tuple[str, ...], int], AbsInfo]]
+    | list[tuple[str | tuple[str, ...], int] | tuple[tuple[str | tuple[str, ...], int], AbsInfo]]
+):
     """
     Resolve event codes and types to their verbose names.
 
@@ -91,27 +133,29 @@ def resolve_ecodes(ecode_dict, ecode_list, unknown="?"):
     >>> resolve_ecodes(ecodes.BTN, [272, 273, 274])
     [(['BTN_LEFT', 'BTN_MOUSE'], 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274)]
     """
-    res = []
+    res: list[
+        tuple[str | tuple[str, ...], int]
+        | tuple[tuple[str | tuple[str, ...], int], AbsInfo]
+    ] = []
     for ecode in ecode_list:
         # elements with AbsInfo(), eg { 3 : [(0, AbsInfo(...)), (1, AbsInfo(...))] }
         if isinstance(ecode, tuple):
             if ecode[0] in ecode_dict:
-                l = ((ecode_dict[ecode[0]], ecode[0]), ecode[1])
+                res.append(((ecode_dict[ecode[0]], ecode[0]), ecode[1]))
             else:
-                l = ((unknown, ecode[0]), ecode[1])
+                res.append(((unknown, ecode[0]), ecode[1]))
 
         # just ecodes, e.g: { 0 : [0, 1, 3], 1 : [30, 48] }
         else:
             if ecode in ecode_dict:
-                l = (ecode_dict[ecode], ecode)
+                res.append((ecode_dict[ecode], ecode))
             else:
-                l = (unknown, ecode)
-        res.append(l)
+                res.append((unknown, ecode))
 
     return res
 
 
-def find_ecodes_by_regex(regex):
+def find_ecodes_by_regex(regex: str | re.Pattern[str]) -> dict[int, list[int]]:
     """
     Find ecodes matching a regex and return a mapping of event type to event codes.
 
@@ -130,7 +174,7 @@ def find_ecodes_by_regex(regex):
     """
 
     regex = re.compile(regex)  # re.compile is idempotent
-    result = collections.defaultdict(list)
+    result: dict[int, list[int]] = collections.defaultdict(list)
 
     for type_code, codes in ecodes.bytype.items():
         for code, names in codes.items():

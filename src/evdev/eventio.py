@@ -1,11 +1,20 @@
+from __future__ import annotations
+
 import fcntl
 import functools
 import os
 import select
-from typing import Iterator, Union
+from typing import TYPE_CHECKING, Concatenate, ParamSpec, TypeVar
 
 from . import _input, _uinput, ecodes
-from .events import InputEvent
+from .events import HasEvent, InputEvent, is_has_event
+
+if TYPE_CHECKING:
+    from functools import _Wrapped
+    from collections.abc import Callable, Iterator
+
+_P = ParamSpec("_P")
+_R = TypeVar("_R")
 
 
 # --------------------------------------------------------------------------
@@ -28,7 +37,10 @@ class EventIO:
       beeps).
     """
 
-    def fileno(self):
+    fd: int
+    path: str | bytes
+
+    def fileno(self) -> int:
         """
         Return the file descriptor to the open event device. This makes
         it possible to pass instances directly to :func:`select.select()` and
@@ -43,10 +55,9 @@ class EventIO:
 
         while True:
             r, w, x = select.select([self.fd], [], [])
-            for event in self.read():
-                yield event
+            yield from self.read()
 
-    def read_one(self) -> Union[InputEvent, None]:
+    def read_one(self) -> InputEvent | None:
         """
         Read and return a single input event as an instance of
         :class:`InputEvent <evdev.events.InputEvent>`.
@@ -74,24 +85,24 @@ class EventIO:
             yield InputEvent(*event)
 
     # pylint: disable=no-self-argument
-    def need_write(func):
+    def need_write(func: Callable[Concatenate[EventIO, _P], _R]) -> _Wrapped[Concatenate[EventIO, _P], _R, _P, _R]:
         """
         Decorator that raises :class:`EvdevError` if there is no write access to the
         input device.
         """
 
         @functools.wraps(func)
-        def wrapper(*args):
-            fd = args[0].fd
+        def wrapper(self: EventIO, /, *args: _P.args, **kwargs: _P.kwargs) -> _R:
+            fd = self.fd
             if fcntl.fcntl(fd, fcntl.F_GETFL) & os.O_RDWR:
                 # pylint: disable=not-callable
-                return func(*args)
-            msg = 'no write access to device "%s"' % args[0].path
+                return func(self, *args, **kwargs)
+            msg = f'no write access to device "{self.path}"'
             raise EvdevError(msg)
 
         return wrapper
 
-    def write_event(self, event):
+    def write_event(self, event: InputEvent | HasEvent) -> None:
         """
         Inject an input event into the input subsystem. Events are
         queued until a synchronization event is received.
@@ -109,13 +120,13 @@ class EventIO:
         >>> ui.write_event(ev)
         """
 
-        if hasattr(event, "event"):
+        if is_has_event(event):
             event = event.event
 
         self.write(event.type, event.code, event.value)
 
     @need_write
-    def write(self, etype: int, code: int, value: int):
+    def write(self, etype: int, code: int, value: int) -> None:
         """
         Inject an input event into the input subsystem. Events are
         queued until a synchronization event is received.
@@ -139,7 +150,7 @@ class EventIO:
 
         _uinput.write(self.fd, etype, code, value)
 
-    def syn(self):
+    def syn(self) -> None:
         """
         Inject a ``SYN_REPORT`` event into the input subsystem. Events
         queued by :func:`write()` will be fired. If possible, events
@@ -148,5 +159,5 @@ class EventIO:
 
         self.write(ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
 
-    def close(self):
+    def close(self) -> None:
         pass

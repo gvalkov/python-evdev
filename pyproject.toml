@@ -9,7 +9,7 @@ description = "Bindings to the Linux input handling subsystem"
 keywords = ["evdev", "input", "uinput"]
 readme = "README.md"
 license = "BSD-3-Clause"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
   { name="Georgi Valkov", email="georgi.t.valkov@gmail.com" },
 ]
@@ -32,6 +32,7 @@ classifiers = [
 line-length = 120
 
 [tool.ruff.lint]
+select = ["UP", "TC"]
 ignore = ["E265", "E241", "F403", "F401", "E401", "E731"]
 
 [tool.bumpversion]

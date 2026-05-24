@@ -1,22 +1,29 @@
+from __future__ import annotations
+
 import asyncio
 import select
 import sys
+from typing import TYPE_CHECKING
 
 from . import eventio
-from .events import InputEvent
 
 # needed for compatibility
-from .eventio import EvdevError
+from .eventio import EvdevError as EvdevError
 
-if sys.version_info >= (3, 11):
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from typing_extensions import Self
+
+    from .events import InputEvent
+elif sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing import Any as Self
 
 
 class ReadIterator:
-    def __init__(self, device):
-        self.current_batch = iter(())
+    def __init__(self, device: EventIO) -> None:
+        self.current_batch: Iterator[InputEvent] = iter(())
         self.device = device
 
     # Standard iterator protocol.
@@ -35,8 +42,8 @@ class ReadIterator:
     def __aiter__(self) -> Self:
         return self
 
-    def __anext__(self) -> "asyncio.Future[InputEvent]":
-        future = asyncio.Future()
+    def __anext__(self) -> asyncio.Future[InputEvent]:
+        future: asyncio.Future[InputEvent] = asyncio.Future()
         try:
             # Read from the previous batch of events.
             future.set_result(next(self.current_batch))
@@ -69,22 +76,22 @@ class EventIO(eventio.EventIO):
         except Exception as error:
             future.set_exception(error)
 
-    def async_read_one(self):
+    def async_read_one(self) -> asyncio.Future[InputEvent | None]:
         """
         Asyncio coroutine to read and return a single input event as
         an instance of :class:`InputEvent <evdev.events.InputEvent>`.
         """
-        future = asyncio.Future()
+        future: asyncio.Future[InputEvent | None] = asyncio.Future()
         self._do_when_readable(lambda: self._set_result(future, self.read_one))
         return future
 
-    def async_read(self):
+    def async_read(self) -> asyncio.Future[Iterator[InputEvent]]:
         """
         Asyncio coroutine to read multiple input events from device. Return
         a generator object that yields :class:`InputEvent <evdev.events.InputEvent>`
         instances.
         """
-        future = asyncio.Future()
+        future: asyncio.Future[Iterator[InputEvent]] = asyncio.Future()
         self._do_when_readable(lambda: self._set_result(future, self.read))
         return future
 
@@ -96,7 +103,7 @@ class EventIO(eventio.EventIO):
         """
         return ReadIterator(self)
 
-    def close(self):
+    def close(self) -> None:
         try:
             loop = asyncio.get_event_loop()
             loop.remove_reader(self.fileno())

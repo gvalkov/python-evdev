@@ -16,6 +16,8 @@ Examples:
   evtest /dev/input/event0 /dev/input/event1
 """
 
+from __future__ import annotations
+
 import atexit
 import optparse
 import re
@@ -113,21 +115,21 @@ def print_capabilities(device):
     capabilities = device.capabilities(verbose=True)
     input_props = device.input_props(verbose=True)
 
-    print("Device name: {.name}".format(device))
-    print("Device info: {.info}".format(device))
-    print("Repeat settings: {}\n".format(device.repeat))
+    print(f"Device name: {device.name}")
+    print(f"Device info: {device.info}")
+    print(f"Repeat settings: {device.repeat}\n")
 
     if ("EV_LED", ecodes.EV_LED) in capabilities:
         leds = ",".join(i[0] for i in device.leds(True))
-        print("Active LEDs: %s" % leds)
+        print(f"Active LEDs: {leds}")
 
     active_keys = ",".join(k[0] for k in device.active_keys(True))
-    print("Active keys: %s\n" % active_keys)
+    print(f"Active keys: {active_keys}\n")
 
     if input_props:
         print("Input properties:")
         for type, code in input_props:
-            print("  %s %s" % (type, code))
+            print(f"  {type} {code}")
         print()
 
     print("Device capabilities:")
@@ -137,11 +139,11 @@ def print_capabilities(device):
             # code <- ('BTN_RIGHT', 273) or (['BTN_LEFT', 'BTN_MOUSE'], 272)
             if isinstance(code[1], AbsInfo):
                 print("    Code {:<4} {}:".format(*code[0]))
-                print("      {}".format(code[1]))
+                print(f"      {code[1]}")
             else:
                 # Multiple names may resolve to one value.
                 s = ", ".join(code[0]) if isinstance(code[0], list) else code[0]
-                print("    Code {:<4} {}".format(s, code[1]))
+                print(f"    Code {s:<4} {code[1]}")
         print("")
 
 

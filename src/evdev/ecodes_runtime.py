@@ -39,6 +39,8 @@ codes. For example::
     'FF_PERIODIC'
 """
 
+from __future__ import annotations
+
 from inspect import getmembers
 
 from . import _ecodes

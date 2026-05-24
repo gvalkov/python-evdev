@@ -2,8 +2,11 @@
 # Gather everything into a single, convenient namespace.
 # --------------------------------------------------------------------------
 
-# The superfluous "import name as name" syntax is here to satisfy mypy's attrs-defined rule.
-# Alternatively all exported objects can be listed in __all__.
+# The "import name as name" syntax is here to satisfy Python's type system
+# import conventions:
+# https://typing.python.org/en/latest/spec/distributing.html#import-conventions
+
+from __future__ import annotations
 
 from . import (
     ecodes as ecodes,

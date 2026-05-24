@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ctypes
 import os
 import platform
@@ -5,16 +7,37 @@ import re
 import stat
 import time
 from collections import defaultdict
-from typing import Union, Tuple, Dict, Sequence, Optional
+from typing import TYPE_CHECKING, Literal, overload
 
 from . import _uinput, ecodes, ff, util
 from .device import InputDevice, AbsInfo
-from .events import InputEvent
+from .events import InputEvent as InputEvent
 
-try:
-    from evdev.eventio_async import EventIO
-except ImportError:
-    from evdev.eventio import EventIO
+if TYPE_CHECKING:
+    from _typeshed import StrOrBytesPath
+    from collections.abc import Iterable, Mapping, Sequence
+    from typing_extensions import Self, TypedDict, Unpack
+
+    from .device import _AbsInfoCapabilities, _VerboseAbsInfoCapabilities
+    from .eventio_async import EventIO
+
+    class _FromDeviceKwargs(TypedDict, total=False):
+        name: str
+        vendor: int
+        product: int
+        version: int
+        bustype: int
+        devnode: str
+        phys: str
+        input_props: Iterable[int] | None
+        max_effects: int
+else:
+    try:
+        from evdev.eventio_async import EventIO
+    except ImportError:
+        from evdev.eventio import EventIO
+
+    from typing import Any as Self
 
 
 class UInputError(Exception):
@@ -42,10 +65,10 @@ class UInput(EventIO):
     @classmethod
     def from_device(
         cls,
-        *devices: Union[InputDevice, Union[str, bytes, os.PathLike]],
-        filtered_types: Tuple[int] = (ecodes.EV_SYN, ecodes.EV_FF),
-        **kwargs,
-    ):
+        *devices: InputDevice[str] | InputDevice[bytes] | StrOrBytesPath,
+        filtered_types: Iterable[int] = (ecodes.EV_SYN, ecodes.EV_FF),
+        **kwargs: Unpack[_FromDeviceKwargs],
+    ) -> Self:
         """
         Create an UInput device with the capabilities of one or more input
         devices.
@@ -55,20 +78,20 @@ class UInput(EventIO):
         devices : InputDevice|str
           Varargs of InputDevice instances or paths to input devices.
 
-        filtered_types : Tuple[event type codes]
+        filtered_types : tuple[event type codes]
           Event types to exclude from the capabilities of the uinput device.
 
         **kwargs
           Keyword arguments to UInput constructor (i.e. name, vendor etc.).
         """
 
-        device_instances = []
+        device_instances: list[InputDevice[str] | InputDevice[bytes]] = []
         for dev in devices:
             if not isinstance(dev, InputDevice):
                 dev = InputDevice(str(dev))
             device_instances.append(dev)
 
-        all_capabilities = defaultdict(set)
+        all_capabilities: dict[int, set[int | tuple[int, AbsInfo]]] = defaultdict(set)
 
         if "max_effects" not in kwargs:
             kwargs["max_effects"] = min([dev.ff_effects_count for dev in device_instances])
@@ -86,7 +109,7 @@ class UInput(EventIO):
 
     def __init__(
         self,
-        events: Optional[Dict[int, Sequence[int]]] = None,
+        events: Mapping[int, Iterable[int | tuple[int, AbsInfo | Sequence[int]]]] | None = None,
         name: str = "py-evdev-uinput",
         vendor: int = 0x1,
         product: int = 0x1,
@@ -94,12 +117,12 @@ class UInput(EventIO):
         bustype: int = 0x3,
         devnode: str = "/dev/uinput",
         phys: str = "py-evdev-uinput",
-        input_props=None,
+        input_props: Iterable[int] | None = None,
         # CentOS 7 has sufficiently old headers that FF_MAX_EFFECTS is not defined there,
         # which causes the whole module to fail loading. Fallback on a hardcoded value of
         # FF_MAX_EFFECTS if it is not defined in the ecodes.
-        max_effects=ecodes.ecodes.get("FF_MAX_EFFECTS", 96),
-    ):
+        max_effects: int = ecodes.ecodes.get("FF_MAX_EFFECTS", 96),
+    ) -> None:
         """
         Arguments
         ---------
@@ -180,18 +203,41 @@ class UInput(EventIO):
         #: An :class:`InputDevice <evdev.device.InputDevice>` instance
         #: for the fake input device. ``None`` if the device cannot be
         #: opened for reading and writing.
-        self.device: InputDevice = self._find_device(self.fd)
+        self.device: InputDevice[str] | None = self._find_device(self.fd)
 
-    def _prepare_events(self, events):
+    def _prepare_events(
+        self,
+        events: Mapping[
+            int,
+            Iterable[
+                int
+                | tuple[int, AbsInfo | Sequence[int]]
+                | list[int | AbsInfo | Sequence[int]]
+            ]
+        ],
+    ) -> tuple[
+        list[list[int]], list[tuple[int, int]]
+    ]:
         """Prepare events for passing to _uinput.enable and _uinput.setup"""
-        absinfo, prepared_events = [], []
+        absinfo: list[list[int]] = []
+        prepared_events: list[tuple[int, int]] = []
         for etype, codes in events.items():
             for code in codes:
                 # Handle max, min, fuzz, flat.
+                # NOTE: AbsInfo is wrong here: AbsInfo[0] is the latest reported value rather
+                # than an event code. The type has been changed to disallow passing an AbsInfo
+                # directly in the iterable object, but this instance check was kept for
+                # backwards compatibility.
                 if isinstance(code, (tuple, list, AbsInfo)):
                     # Flatten (ABS_Y, (0, 255, 0, 0, 0, 0)) to (ABS_Y, 0, 255, 0, 0, 0, 0).
-                    f = [code[0]]
-                    f.extend(code[1])
+
+                    # list doesn't allow us to type each index individually, so the following
+                    # helps the type checker out and is a no-op at runtime
+                    if TYPE_CHECKING:
+                        assert isinstance(code[0], int)
+                        assert isinstance(code[1], Sequence)
+
+                    f = [code[0], *code[1]]
                     # Ensure the tuple is always 6 ints long, since uinput.c:uinput_create
                     # does little in the way of checking the length.
                     f.extend([0] * (6 - len(code[1])))
@@ -200,19 +246,19 @@ class UInput(EventIO):
                 prepared_events.append((etype, code))
         return absinfo, prepared_events
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, type, value, tb):
+    def __exit__(self, type: object, value: object, tb: object) -> None:
         if hasattr(self, "fd"):
             self.close()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # TODO:
         v = (repr(getattr(self, i)) for i in ("name", "bustype", "vendor", "product", "version", "phys"))
         return "{}({})".format(self.__class__.__name__, ", ".join(v))
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = 'name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}", phys "{}"\nevent types: {}'
 
         evtypes = [i[0] for i in self.capabilities(True).keys()]
@@ -222,7 +268,7 @@ class UInput(EventIO):
 
         return msg
 
-    def close(self):
+    def close(self) -> None:
         # Close the associated InputDevice, if it was previously opened.
         if self.device is not None:
             self.device.close()
@@ -232,14 +278,34 @@ class UInput(EventIO):
             _uinput.close(self.fd)
             self.fd = -1
 
-    def capabilities(self, verbose: bool = False, absinfo: bool = True):
+    @overload
+    def capabilities(self, verbose: Literal[False] = False, absinfo: Literal[True] = True) -> _AbsInfoCapabilities: ...
+    @overload
+    def capabilities(self, verbose: Literal[False], absinfo: Literal[False]) -> dict[int, list[int]]: ...
+    @overload
+    def capabilities(self, verbose: Literal[True], absinfo: Literal[True] = True) -> _VerboseAbsInfoCapabilities: ...
+    @overload
+    def capabilities(self, verbose: Literal[True], absinfo: Literal[False]) -> dict[tuple[str, int], list[tuple[str, int]]]: ...
+    @overload
+    def capabilities(self, verbose: bool = False, absinfo: bool = True) -> (
+        _AbsInfoCapabilities
+        | dict[int, list[int]]
+        | _VerboseAbsInfoCapabilities
+        | dict[tuple[str, int], list[tuple[str, int]]]
+    ): ...
+    def capabilities(self, verbose: bool = False, absinfo: bool = True) -> (
+        _AbsInfoCapabilities
+        | dict[int, list[int]]
+        | _VerboseAbsInfoCapabilities
+        | dict[tuple[str, int], list[tuple[str, int]]]
+    ):
         """See :func:`capabilities <evdev.device.InputDevice.capabilities>`."""
         if self.device is None:
             raise UInputError("input device not opened - cannot read capabilities")
 
         return self.device.capabilities(verbose, absinfo)
 
-    def begin_upload(self, effect_id):
+    def begin_upload(self, effect_id: int) -> ff.UInputUpload:
         upload = ff.UInputUpload()
         upload.effect_id = effect_id
 
@@ -249,12 +315,12 @@ class UInput(EventIO):
 
         return upload
 
-    def end_upload(self, upload):
+    def end_upload(self, upload: ff.UInputUpload) -> None:
         ret = self.dll._uinput_end_upload(self.fd, ctypes.byref(upload))
         if ret:
             raise UInputError("Failed to end uinput upload: " + os.strerror(ret))
 
-    def begin_erase(self, effect_id):
+    def begin_erase(self, effect_id: int) -> ff.UInputErase:
         erase = ff.UInputErase()
         erase.effect_id = effect_id
 
@@ -263,12 +329,12 @@ class UInput(EventIO):
             raise UInputError("Failed to begin uinput erase: " + os.strerror(ret))
         return erase
 
-    def end_erase(self, erase):
+    def end_erase(self, erase: ff.UInputErase) -> None:
         ret = self.dll._uinput_end_erase(self.fd, ctypes.byref(erase))
         if ret:
             raise UInputError("Failed to end uinput erase: " + os.strerror(ret))
 
-    def _verify(self):
+    def _verify(self) -> None:
         """
         Verify that an uinput device exists and is readable and writable
         by the current process.
@@ -288,7 +354,7 @@ class UInput(EventIO):
             msg = "uinput device name must not be longer than {} characters"
             raise UInputError(msg.format(_uinput.maxnamelen))
 
-    def _find_device(self, fd: int) -> InputDevice:
+    def _find_device(self, fd: int) -> InputDevice[str] | None:
         """
         Tries to find the device node. Will delegate this task to one of
         several platform-specific functions.
@@ -306,7 +372,7 @@ class UInput(EventIO):
         # use the generic fallback method.
         return self._find_device_fallback()
 
-    def _find_device_linux(self, sysname: str) -> InputDevice:
+    def _find_device_linux(self, sysname: str) -> InputDevice[str]:
         """
         Tries to find the device node when running on Linux.
         """
@@ -342,7 +408,7 @@ class UInput(EventIO):
         # shall be the exception that this function raises.
         return InputDevice(device_path)
 
-    def _find_device_fallback(self) -> Union[InputDevice, None]:
+    def _find_device_fallback(self) -> InputDevice[str] | None:
         """
         Tries to find the device node when UI_GET_SYSNAME is not available or
         we're running on a system sufficiently exotic that we do not know how
@@ -356,7 +422,7 @@ class UInput(EventIO):
         # Strictly speaking, we cannot be certain that everything returned by list_devices()
         # ends at event[0-9]+: it might return something like "/dev/input/events_all". Find
         # the devices that have the expected structure and extract their device number.
-        path_number_pairs = []
+        path_number_pairs: list[tuple[str, int]] = []
         regex = re.compile("/dev/input/event([0-9]+)")
         for path in util.list_devices("/dev/input/"):
             regex_match = regex.fullmatch(path)

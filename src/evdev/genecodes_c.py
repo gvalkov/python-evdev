@@ -2,6 +2,8 @@
 Generate a Python extension module with the constants defined in linux/input.h.
 """
 
+from __future__ import annotations
+
 import getopt
 import os
 import re
@@ -92,25 +94,7 @@ template_stubs = r"""
 
 # pylint: skip-file
 
-ecodes: dict[str, int]
-keys: dict[int, str|list[str]]
-bytype: dict[int, dict[int, str|list[str]]]
-
-KEY: dict[int, str|list[str]]
-ABS: dict[int, str|list[str]]
-REL: dict[int, str|list[str]]
-SW:  dict[int, str|list[str]]
-MSC: dict[int, str|list[str]]
-LED: dict[int, str|list[str]]
-BTN: dict[int, str|list[str]]
-REP: dict[int, str|list[str]]
-SND: dict[int, str|list[str]]
-ID:  dict[int, str|list[str]]
-EV:  dict[int, str|list[str]]
-BUS: dict[int, str|list[str]]
-SYN: dict[int, str|list[str]]
-FF_STATUS:     dict[int, str|list[str]]
-FF_INPUT_PROP: dict[int, str|list[str]]
+from typing import Final
 
 %s
 """
@@ -120,7 +104,7 @@ def parse_headers(headers=headers):
     for header in headers:
         try:
             fh = open(header)
-        except (IOError, OSError):
+        except OSError:
             continue
 
         for line in fh:
@@ -131,15 +115,15 @@ def parse_headers(headers=headers):
 
 all_macros = list(parse_headers())
 if not all_macros:
-    print("no input macros found in: %s" % " ".join(headers), file=sys.stderr)
+    print(f"no input macros found in: {' '.join(headers)}", file=sys.stderr)
     sys.exit(1)
 
 # pylint: disable=possibly-used-before-assignment, used-before-assignment
 if ("--ecodes", "") in opts:
-    body = ("    PyModule_AddIntMacro(m, %s);" % macro for macro in all_macros)
+    body = (f"    PyModule_AddIntMacro(m, {macro});" for macro in all_macros)
     template = template_ecodes
 elif ("--stubs", "") in opts:
-    body = ("%s: int" % macro for macro in all_macros)
+    body = (f"{macro}: Final[int]" for macro in all_macros)
     template = template_stubs
 
 body = os.linesep.join(body)
