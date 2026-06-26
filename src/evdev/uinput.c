@@ -405,7 +405,9 @@ moduleinit(void)
 {
     PyObject* m = PyModule_Create(&moduledef);
     if (m == NULL) return NULL;
-
+#ifdef Py_GIL_DISABLED
+    PyUnstable_Module_SetGIL(m, Py_MOD_GIL_NOT_USED);
+#endif
     PyModule_AddIntConstant(m, "maxnamelen", UINPUT_MAX_NAME_SIZE);
     return m;
 }
