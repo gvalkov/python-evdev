@@ -55,7 +55,7 @@ class ReadIterator:
 
 class EventIO(eventio.EventIO):
     def _do_when_readable(self, callback):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
 
         def ready():
             loop.remove_reader(self.fileno())
@@ -98,7 +98,7 @@ class EventIO(eventio.EventIO):
 
     def close(self):
         try:
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             loop.remove_reader(self.fileno())
         except RuntimeError:
             # no event loop present, so there is nothing to
