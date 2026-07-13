@@ -36,7 +36,7 @@ class ReadIterator:
         return self
 
     def __anext__(self) -> "asyncio.Future[InputEvent]":
-        future = asyncio.Future()
+        future = asyncio.get_running_loop().create_future()
         try:
             # Read from the previous batch of events.
             future.set_result(next(self.current_batch))
@@ -55,7 +55,10 @@ class ReadIterator:
 
 class EventIO(eventio.EventIO):
     def _do_when_readable(self, callback):
-        loop = asyncio.get_event_loop()
+        # Remember the loop the reader is registered on so that close() can
+        # remove it later, even when called without a running event loop.
+        loop = asyncio.get_running_loop()
+        self._loop = loop
 
         def ready():
             loop.remove_reader(self.fileno())
@@ -74,7 +77,7 @@ class EventIO(eventio.EventIO):
         Asyncio coroutine to read and return a single input event as
         an instance of :class:`InputEvent <evdev.events.InputEvent>`.
         """
-        future = asyncio.Future()
+        future = asyncio.get_running_loop().create_future()
         self._do_when_readable(lambda: self._set_result(future, self.read_one))
         return future
 
@@ -84,7 +87,7 @@ class EventIO(eventio.EventIO):
         a generator object that yields :class:`InputEvent <evdev.events.InputEvent>`
         instances.
         """
-        future = asyncio.Future()
+        future = asyncio.get_running_loop().create_future()
         self._do_when_readable(lambda: self._set_result(future, self.read))
         return future
 
@@ -97,10 +100,11 @@ class EventIO(eventio.EventIO):
         return ReadIterator(self)
 
     def close(self):
-        try:
-            loop = asyncio.get_event_loop()
-            loop.remove_reader(self.fileno())
-        except RuntimeError:
-            # no event loop present, so there is nothing to
-            # remove the reader from. Ignore
-            pass
+        # A reader is only registered once an async read has been awaited, in
+        # which case _do_when_readable recorded the loop it was added to.
+        loop = getattr(self, "_loop", None)
+        if loop is None or loop.is_closed():
+            # No reader was ever registered, or its loop is already gone, so
+            # there is nothing to remove the reader from.
+            return
+        loop.remove_reader(self.fileno())
