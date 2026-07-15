@@ -54,6 +54,10 @@ class ReadIterator:
 
 
 class EventIO(eventio.EventIO):
+    # The event loop a reader was last registered on, or None if no async read
+    # has been awaited yet. Set in _do_when_readable, used by close().
+    _loop: "asyncio.AbstractEventLoop | None" = None
+
     def _do_when_readable(self, callback):
         # Remember the loop the reader is registered on so that close() can
         # remove it later, even when called without a running event loop.
@@ -102,7 +106,7 @@ class EventIO(eventio.EventIO):
     def close(self):
         # A reader is only registered once an async read has been awaited, in
         # which case _do_when_readable recorded the loop it was added to.
-        loop = getattr(self, "_loop", None)
+        loop = self._loop
         if loop is None or loop.is_closed():
             # No reader was ever registered, or its loop is already gone, so
             # there is nothing to remove the reader from.
