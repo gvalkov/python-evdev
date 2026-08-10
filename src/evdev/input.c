@@ -24,6 +24,14 @@
 #include <linux/input.h>
 #endif
 
+#if defined(Py_GIL_DISABLED)
+    #define MAYBE_BEGIN_ALLOW_THREADS Py_BEGIN_ALLOW_THREADS
+    #define MAYBE_END_ALLOW_THREADS   Py_END_ALLOW_THREADS
+#else
+    #define MAYBE_BEGIN_ALLOW_THREADS
+    #define MAYBE_END_ALLOW_THREADS
+#endif
+
 #ifndef input_event_sec
 #define input_event_sec time.tv_sec
 #define input_event_usec time.tv_usec
@@ -52,9 +60,9 @@ device_read(PyObject *self, PyObject *args)
     int fd = (int)PyLong_AsLong(PyTuple_GET_ITEM(args, 0));
 
     int n;
-    Py_BEGIN_ALLOW_THREADS
+    MAYBE_BEGIN_ALLOW_THREADS
     n = read(fd, &event, sizeof(event));
-    Py_END_ALLOW_THREADS
+    MAYBE_END_ALLOW_THREADS
 
     if (n < 0) {
         if (errno == EAGAIN) {
@@ -88,9 +96,9 @@ device_read_many(PyObject *self, PyObject *args)
 
     size_t event_size = sizeof(struct input_event);
     ssize_t nread;
-    Py_BEGIN_ALLOW_THREADS
+    MAYBE_BEGIN_ALLOW_THREADS
     nread = read(fd, event, event_size*64);
-    Py_END_ALLOW_THREADS
+    MAYBE_END_ALLOW_THREADS
 
     if (nread < 0) {
         PyErr_SetFromErrno(PyExc_OSError);
