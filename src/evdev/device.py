@@ -116,17 +116,15 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         dev : str|bytes|PathLike
           Path to input device
         readonly : bool
-          If True, the device is opened in read-only mode (``O_RDONLY``)
-          without attempting ``O_RDWR`` first. This avoids triggering
-          firmware side-effects (such as LED state re-assertion) on
-          certain hardware. Default is False.
+          Open in read-only mode (``O_RDONLY``) without attempting ``O_RDWR`` first.
         """
 
         #: Path to input device.
         self.path: _AnyStr = dev if not hasattr(dev, "__fspath__") else dev.__fspath__()
 
-        # Certain operations are possible only when the device is opened in read-write mode.
         try:
+            # Certain operations are possible only when the device is opened in read-write mode.
+            # This avoids triggering firmware side-effects (such as LED state re-assertion) on certain hardware.
             if readonly:
                 raise OSError
             fd = os.open(dev, os.O_RDWR | os.O_NONBLOCK)

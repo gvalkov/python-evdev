@@ -17,25 +17,15 @@ def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input"
     input_device_dir : str|bytes|PathLike
       Path to the input device directory. Default is ``/dev/input``.
     writable : bool
-      If True (default), only list devices that are both readable and
-      writable. If False, list all readable devices.
+      Only list devices that are both readable and writable.
     """
 
     fns = glob.glob("{}/event*".format(input_device_dir))
-    return list(filter(lambda fn: is_device(fn, writable=writable), fns))
+    return [fn for fn in fns if is_device(fn, writable=writable)]
 
 
 def is_device(fn: Union[str, bytes, os.PathLike], writable: bool = True) -> bool:
-    """Check if ``fn`` is a readable (and optionally writable) character device.
-
-    Arguments
-    ---------
-    fn : str|bytes|PathLike
-      Path to the device file.
-    writable : bool
-      If True (default), also check for write access. If False, only
-      check for read access.
-    """
+    """Check if ``fn`` is a readable (and optionally writable) character device."""
 
     if not os.path.exists(fn):
         return False
@@ -44,7 +34,7 @@ def is_device(fn: Union[str, bytes, os.PathLike], writable: bool = True) -> bool
     if not stat.S_ISCHR(m):
         return False
 
-    access = os.R_OK | os.W_OK if writable else os.R_OK
+    access = (os.R_OK | os.W_OK) if writable else os.R_OK
     if not os.access(fn, access):
         return False
 
