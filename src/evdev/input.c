@@ -24,6 +24,14 @@
 #include <linux/input.h>
 #endif
 
+#if defined(Py_GIL_DISABLED)
+    #define MAYBE_BEGIN_ALLOW_THREADS Py_BEGIN_ALLOW_THREADS
+    #define MAYBE_END_ALLOW_THREADS   Py_END_ALLOW_THREADS
+#else
+    #define MAYBE_BEGIN_ALLOW_THREADS
+    #define MAYBE_END_ALLOW_THREADS
+#endif
+
 #ifndef input_event_sec
 #define input_event_sec time.tv_sec
 #define input_event_usec time.tv_usec
@@ -51,7 +59,10 @@ device_read(PyObject *self, PyObject *args)
     // get device file descriptor (O_RDONLY|O_NONBLOCK)
     int fd = (int)PyLong_AsLong(PyTuple_GET_ITEM(args, 0));
 
-    int n = read(fd, &event, sizeof(event));
+    int n;
+    MAYBE_BEGIN_ALLOW_THREADS
+    n = read(fd, &event, sizeof(event));
+    MAYBE_END_ALLOW_THREADS
 
     if (n < 0) {
         if (errno == EAGAIN) {
@@ -84,7 +95,10 @@ device_read_many(PyObject *self, PyObject *args)
     struct input_event event[64];
 
     size_t event_size = sizeof(struct input_event);
-    ssize_t nread = read(fd, event, event_size*64);
+    ssize_t nread;
+    MAYBE_BEGIN_ALLOW_THREADS
+    nread = read(fd, event, event_size*64);
+    MAYBE_END_ALLOW_THREADS
 
     if (nread < 0) {
         PyErr_SetFromErrno(PyExc_OSError);
@@ -570,6 +584,9 @@ moduleinit(void)
 {
     PyObject* m = PyModule_Create(&moduledef);
     if (m == NULL) return NULL;
+#ifdef Py_GIL_DISABLED
+    PyUnstable_Module_SetGIL(m, Py_MOD_GIL_NOT_USED);
+#endif
     return m;
 }
 
