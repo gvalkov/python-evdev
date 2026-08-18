@@ -67,6 +67,16 @@ def test_enable_events(c):
         assert sorted(cap[e.EV_KEY]) == sorted(c["events"][e.EV_KEY])
 
 
+def test_enable_event_type_without_codes(c):
+    e = ecodes
+    c["events"] = {e.EV_KEY: [e.KEY_A], e.EV_REP: []}
+
+    with uinput.UInput(**c) as ui:
+        repeat = ui.device.repeat
+        assert repeat.delay > 0
+        assert repeat.repeat > 0
+
+
 def test_abs_values(c):
     e = ecodes
     c = {

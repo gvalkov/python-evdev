@@ -1,6 +1,12 @@
 Changelog
 ---------
 
+Unreleased
+==========
+
+- Allow ``UInput`` event types without event codes, such as ``EV_REP``.
+
+
 1.9.3 (Feb 05, 2025)
 ====================
 
