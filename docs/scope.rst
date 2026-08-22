@@ -8,10 +8,10 @@ with nearly all event types.
 The basic functionality for reading and uploading force-feedback events is
 there, but it has not been exercised sufficiently. A major shortcoming of the
 uinput wrapper is that it does not support force-feedback devices at all (see
-issue `#23`_).
+:pr:`23`).
 
-Some characters, such as ``:`` (colon), cannot be easily injected (see issue
-`#7`_), Translating them into UInput events would require knowing the kernel
+Some characters, such as ``:`` (colon), cannot be easily injected (see
+:issue:`7`), translating them into UInput events would require knowing the kernel
 keyboard translation table, which is beyond the scope of python-evdev. Please
 look into the following projects if you need more complete or convenient input
 injection support.
@@ -26,6 +26,3 @@ injection support.
 .. _uinput-mapper:     https://github.com/MerlijnWajer/uinput-mapper
 .. _pynput:            https://github.com/moses-palmer/pynput
 .. _pygame:            http://www.pygame.org/
-
-.. _`#7`:  https://github.com/gvalkov/python-evdev/issues/7
-.. _`#23`: https://github.com/gvalkov/python-evdev/pull/23

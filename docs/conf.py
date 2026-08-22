@@ -1,6 +1,5 @@
 import os
 import sys
-import sphinx_rtd_theme
 
 # Check if readthedocs is building us
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
@@ -29,7 +28,7 @@ KEY_MAX, KEY_CNT = 1, 2"""
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-# needs_sphinx = '1.0'
+# needs_sphinx = "1.0"
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
@@ -38,6 +37,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinx.ext.extlinks",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
 ]
@@ -51,14 +51,14 @@ templates_path = ["_templates"]
 source_suffix = ".rst"
 
 # The encoding of source files.
-# source_encoding = 'utf-8-sig'
+# source_encoding = "utf-8-sig"
 
 # The master toctree document.
 master_doc = "index"
 
 # General information about the project.
 project = "python-evdev"
-copyright = "2012-2025, Georgi Valkov and contributors"
+copyright = "2012-2026, Georgi Valkov and contributors"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -76,9 +76,9 @@ version = release
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-# today = ''
+# today = ""
 # Else, today_fmt is used as the format for a strftime call.
-# today_fmt = '%B %d, %Y'
+# today_fmt = "%B %d, %Y"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -99,7 +99,7 @@ exclude_patterns = ["_build"]
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-# pygments_style = 'sphinx'
+# pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -110,7 +110,7 @@ exclude_patterns = ["_build"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -128,7 +128,7 @@ html_short_title = "evdev"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = ''
+# html_logo = ""
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -142,7 +142,7 @@ html_static_path = ["_static"]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-# html_last_updated_fmt = '%b %d, %Y'
+# html_last_updated_fmt = "%b %d, %Y"
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -176,7 +176,7 @@ html_show_sourcelink = True
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-# html_use_opensearch = ''
+# html_use_opensearch = ""
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 # html_file_suffix = None
@@ -189,11 +189,11 @@ htmlhelp_basename = "python-evdev-doc"
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
-    #'papersize': 'letterpaper',
+    #"papersize": "letterpaper",
     # The font size ('10pt', '11pt' or '12pt').
-    #'pointsize': '10pt',
+    #"pointsize": "10pt",
     # Additional stuff for the LaTeX preamble.
-    #'preamble': '',
+    #"preamble": "",
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -259,9 +259,15 @@ intersphinx_mapping = {"python": ("http://docs.python.org/3", None)}
 # texinfo_domain_indices = True
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
+# texinfo_show_urls = "footnote"
 
 # Copybutton config
 # copybutton_prompt_text = r">>> "
 # copybutton_prompt_is_regexp = True
 # copybutton_only_copy_prompt_lines = True
+
+extlinks = {
+    "issue": ("https://github.com/gvalkov/python-evdev/issues/%s", "#%s"),
+    "pr": ("https://github.com/gvalkov/python-evdev/pull/%s", "#%s"),
+    "ghuser": ("https://github.com/%s", "@%s"),
+}

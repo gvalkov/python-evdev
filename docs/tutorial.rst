@@ -23,7 +23,7 @@ Listing device capabilities
 
     >>> import evdev
 
-    >>> device = evdev.InputDevice('/dev/input/event0')
+    >>> device = evdev.InputDevice("/dev/input/event0")
     >>> print(device)
     device /dev/input/event0, name "Dell USB Optical Mouse", phys "usb-0000:00:12.0-2/input0"
 
@@ -31,8 +31,8 @@ Listing device capabilities
     ... { 0: [0, 1, 2], 1: [272, 273, 274, 275], 2: [0, 1, 6, 8], 4: [4] }
 
     >>> device.capabilities(verbose=True)
-    ... { ('EV_SYN', 0): [('SYN_REPORT', 0), ('SYN_CONFIG', 1), ('SYN_MT_REPORT', 2)],
-    ...   ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ('BTN_MIDDLE', 274), ('BTN_SIDE', 275)], ...
+    ... { ("EV_SYN", 0): [("SYN_REPORT", 0), ("SYN_CONFIG", 1), ("SYN_MT_REPORT", 2)],
+    ...   ("EV_KEY", 1): [("BTN_MOUSE", 272), ("BTN_RIGHT", 273), ("BTN_MIDDLE", 274), ("BTN_SIDE", 275)], ...
 
 
 Listing device capabilities (devices with absolute axes)
@@ -42,7 +42,7 @@ Listing device capabilities (devices with absolute axes)
 
     >>> import evdev
 
-    >>> device = evdev.InputDevice('/dev/input/event7')
+    >>> device = evdev.InputDevice("/dev/input/event7")
     >>> print(device)
     device /dev/input/event7, name "Wacom Bamboo 2FG 4x5 Finger", phys ""
 
@@ -52,9 +52,9 @@ Listing device capabilities (devices with absolute axes)
     ...       (1, AbsInfo(min=0, max=10240, fuzz=128, flat=0))] }
 
     >>> device.capabilities(verbose=True)
-    ... { ('EV_KEY', 1): [('BTN_MOUSE', 272), ('BTN_RIGHT', 273), ...],
-    ...   ('EV_ABS', 3): [(('ABS_X', 0), AbsInfo(min=0, max=15360, fuzz=128, flat=0)),
-    ...                   (('ABS_Y', 1), AbsInfo(min=0, max=10240, fuzz=128, flat=0)),] }
+    ... { ("EV_KEY", 1): [("BTN_MOUSE", 272), ("BTN_RIGHT", 273), ...],
+    ...   ("EV_ABS", 3): [(("ABS_X", 0), AbsInfo(min=0, max=15360, fuzz=128, flat=0)),
+    ...                   (("ABS_Y", 1), AbsInfo(min=0, max=10240, fuzz=128, flat=0)),] }
 
     >>> device.capabilities(absinfo=False)
     ... { 1: [272, 273, 277, 278, 325, 330, 333],
@@ -67,7 +67,7 @@ Getting and setting LED states
 ::
 
     >>> dev.leds(verbose=True)
-    ... [('LED_NUML', 0), ('LED_CAPSL', 1)]
+    ... [("LED_NUML", 0), ("LED_CAPSL", 1)]
 
     >>> dev.leds()
     ... [0, 1]
@@ -82,7 +82,7 @@ Getting currently active keys
 ::
 
     >>> dev.active_keys(verbose=True)
-    ... [('KEY_3', 4), ('KEY_LEFTSHIFT', 42)]
+    ... [("KEY_3", 4), ("KEY_LEFTSHIFT", 42)]
 
     >>> dev.active_keys()
     ... [4, 42]
@@ -96,7 +96,7 @@ Reading events from a single device in an endless loop.
 ::
 
     >>> from evdev import InputDevice, categorize, ecodes
-    >>> dev = InputDevice('/dev/input/event1')
+    >>> dev = InputDevice("/dev/input/event1")
 
     >>> print(dev)
     device /dev/input/event1, name "Dell Dell USB Keyboard", phys "usb-0000:00:12.1-2/input0"
@@ -104,7 +104,7 @@ Reading events from a single device in an endless loop.
     >>> for event in dev.read_loop():
     ...     if event.type == ecodes.EV_KEY:
     ...         print(categorize(event))
-    ... # pressing 'a' and holding 'space'
+    ... # pressing "a" and holding "space"
     key event at 1337016188.396030, 30 (KEY_A), down
     key event at 1337016188.492033, 30 (KEY_A), up
     key event at 1337016189.772129, 57 (KEY_SPACE), down
@@ -125,7 +125,7 @@ Reading events (using :mod:`asyncio`)
     >>> import asyncio
     >>> from evdev import InputDevice
 
-    >>> dev = InputDevice('/dev/input/event1')
+    >>> dev = InputDevice("/dev/input/event1")
 
     >>> async def main(dev):
     ...     async for ev in dev.async_read_loop():
@@ -146,7 +146,7 @@ Reading events from multiple devices (using :mod:`select`)
     >>> from select import select
 
     # A mapping of file descriptors (integers) to InputDevice instances.
-    >>> devices = map(InputDevice, ('/dev/input/event1', '/dev/input/event2'))
+    >>> devices = map(InputDevice, ("/dev/input/event1", "/dev/input/event2"))
     >>> devices = {dev.fd: dev for dev in devices}
 
     >>> for dev in devices.values(): print(dev)
@@ -176,8 +176,8 @@ This can also be achieved using the :mod:`selectors` module in Python 3.4:
 
    selector = DefaultSelector()
 
-   mouse = InputDevice('/dev/input/event1')
-   keybd = InputDevice('/dev/input/event2')
+   mouse = InputDevice("/dev/input/event1")
+   keybd = InputDevice("/dev/input/event2")
 
    # This works because InputDevice has a `fileno()` method.
    selector.register(mouse, EVENT_READ)
@@ -204,10 +204,10 @@ Yet another possibility is the :mod:`asyncio` module from Python 3.4:
         while True:
             events = yield from device.async_read()
             for event in events:
-                print(device.path, evdev.categorize(event), sep=': ')
+                print(device.path, evdev.categorize(event), sep=": ")
 
-    mouse = evdev.InputDevice('/dev/input/eventX')
-    keybd = evdev.InputDevice('/dev/input/eventY')
+    mouse = evdev.InputDevice("/dev/input/eventX")
+    keybd = evdev.InputDevice("/dev/input/eventY")
 
     for device in mouse, keybd:
         asyncio.async(print_events(device))
@@ -221,12 +221,12 @@ Since Python 3.5, the `async/await`_ syntax makes this even simpler:
 
     import asyncio, evdev
 
-    mouse = evdev.InputDevice('/dev/input/event4')
-    keybd = evdev.InputDevice('/dev/input/event5')
+    mouse = evdev.InputDevice("/dev/input/event4")
+    keybd = evdev.InputDevice("/dev/input/event5")
 
     async def print_events(device):
         async for event in device.async_read_loop():
-            print(device.path, evdev.categorize(event), sep=': ')
+            print(device.path, evdev.categorize(event), sep=": ")
 
     for device in mouse, keybd:
         asyncio.ensure_future(print_events(device))
@@ -242,14 +242,14 @@ Accessing evdev constants
 
     >>> from evdev import ecodes
 
-    >>> ecodes.KEY_A, ecodes.ecodes['KEY_A']
+    >>> ecodes.KEY_A, ecodes.ecodes["KEY_A"]
     ... (30, 30)
     >>> ecodes.KEY[30]
-    ... 'KEY_A'
+    ... "KEY_A"
     >>> ecodes.bytype[ecodes.EV_KEY][30]
-    ... 'KEY_A'
+    ... "KEY_A"
     >>> ecodes.KEY[152]  # a single value may correspond to multiple codes
-    ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
+    ... ["KEY_COFFEE", "KEY_SCREENLOCK"]
 
 
 Searching event codes by regex
@@ -259,11 +259,11 @@ Searching event codes by regex
 
     >>> from evdev import util
 
-    >>> res = util.find_ecodes_by_regex(r'(ABS|KEY)_BR(AKE|EAK)')
+    >>> res = util.find_ecodes_by_regex(r"(ABS|KEY)_BR(AKE|EAK)")
     >>> res
     ... {1: [411], 3: [10]}
     >>> util.resolve_ecodes_dict(res)
-    ... {('EV_KEY', 1): [('KEY_BREAK', 411)], ('EV_ABS', 3): [('ABS_BRAKE', 10)]}
+    ... {("EV_KEY", 1): [("KEY_BREAK", 411)], ("EV_ABS", 3): [("ABS_BRAKE", 10)]}
 
 
 Getting exclusive access to a device
@@ -314,8 +314,8 @@ Injecting input
     >>> ui.close()
 
 
-Injecting events (using a context manager)
-==========================================
+Injecting events using a context manager
+========================================
 
 ::
 
@@ -345,7 +345,7 @@ Specifying ``uinput`` device options
     ...         (e.ABS_MT_POSITION_X, (0, 128, 255, 0)) ]
     ... }
 
-    >>> ui = UInput(cap, name='example-device', version=0x3)
+    >>> ui = UInput(cap, name="example-device", version=0x3)
     >>> print(ui)
     name "example-device", bus "BUS_USB", vendor "0001", product "0001", version "0003"
     event types: EV_KEY EV_ABS EV_SYN
@@ -363,25 +363,54 @@ Specifying ``uinput`` device options
     >>> ui.syn()
 
 
-Create ``uinput`` device with capabilities of another device
-================================================================
+Creating an ``uinput`` device with capabilities of another device
+=================================================================
 
 ::
 
     >>> from evdev import UInput, InputDevice
 
-    >>> mouse = InputDevice('/dev/input/event1')
-    >>> keybd = '/dev/input/event2'
+    >>> mouse = InputDevice("/dev/input/event1")
+    >>> keybd = "/dev/input/event2"
 
-    >>> ui = UInput.from_device(mouse, keybd, name='keyboard-mouse-device')
+    >>> ui = UInput.from_device(mouse, keybd, name="keyboard-mouse-device")
     >>> ui.capabilities(verbose=True).keys()
-    dict_keys([('EV_LED', 17), ('EV_KEY', 1), ('EV_SYN', 0), ('EV_REL', 2), ('EV_MSC', 4)])
+    dict_keys([("EV_LED", 17), ("EV_KEY", 1), ("EV_SYN", 0), ("EV_REL", 2), ("EV_MSC", 4)])
 
 
 .. _`async/await`:  https://docs.python.org/3/library/asyncio-task.html
 
-Create ``uinput`` device capable of receiving FF-effects
-========================================================
+
+Uploading FF-effects
+====================
+
+::
+
+    from evdev import InputDevice, ff
+
+    dev = InputDevice(...)
+
+    rumble = ff.Rumble(strong_magnitude=0x0000, weak_magnitude=0xffff)
+    duration_ms = 1000
+
+    effect = ff.Effect(
+        type=ecodes.FF_RUMBLE,
+        id=-1,
+        direction=0,
+        ff_trigger=ff.Trigger(button=0, interval=0),
+        ff_replay=ff.Replay(length=duration_ms, delay=0),
+        u=ff.EffectType(ff_rumble_effect=rumble),
+    )
+
+    # Since id=-1, `upload_effect()` will create a new effect and return its effect id.
+    # By default, the effect id is also written back to the `effect.id` field.
+    # This behaviour can be controlled by the `writeback_id` argument.
+    eid = dev.upload_effect(effect)  # mutates `effect`
+    eid = dev.upload_effect(effect, writeback_id=False)  # does not mutate `effect`
+
+
+Creating an ``uinput`` device capable of receiving FF-effects
+=============================================================
 
 ::
 
@@ -393,7 +422,7 @@ Create ``uinput`` device capable of receiving FF-effects
        ecodes.EV_KEY: [ecodes.KEY_A, ecodes.KEY_B]
     }
 
-    ui = UInput(cap, name='test-controller', version=0x3)
+    ui = UInput(cap, name="test-controller", version=0x3)
 
     async def print_events(device):
         async for event in device.async_read_loop():
@@ -408,12 +437,12 @@ Create ``uinput`` device capable of receiving FF-effects
                 upload = device.begin_upload(event.value)
                 upload.retval = 0
 
-                print(f'[upload] effect_id: {upload.effect.id}, type: {upload.effect.type}')
+                print(f"[upload] effect_id: {upload.effect.id}, type: {upload.effect.type}")
                 device.end_upload(upload)
 
             elif event.code == ecodes.UI_FF_ERASE:
                 erase = device.begin_erase(event.value)
-                print(f'[erase] effect_id {erase.effect_id}')
+                print(f"[erase] effect_id {erase.effect_id}")
 
                 erase.retval = 0
                 device.end_erase(erase)
@@ -423,15 +452,15 @@ Create ``uinput`` device capable of receiving FF-effects
     loop.run_forever()
 
 
-Injecting an FF-event into first FF-capable device found
-========================================================
+Injecting an FF-event into the first FF-capable device found
+============================================================
 
 ::
 
     from evdev import ecodes, InputDevice, ff, list_devices
     import time
 
-    # Find first EV_FF capable event device (that we have permissions to use).
+    # Find the first EV_FF capable event device (that we have permissions to use).
     for name in list_devices():
         dev = InputDevice(name)
         if ecodes.EV_FF in dev.capabilities():
@@ -451,7 +480,7 @@ Injecting an FF-event into first FF-capable device found
     repeat_count = 1
     effect_id = dev.upload_effect(effect)
     dev.write(ecodes.EV_FF, effect_id, repeat_count)
-    time.sleep(duration_ms / 1000) 
+    time.sleep(duration_ms / 1000)
     dev.erase_effect(effect_id)
 
 
@@ -463,7 +492,7 @@ Forwarding force-feedback from uinput to a real device
     import evdev
     from evdev import ecodes as e
 
-    # Find first EV_FF capable event device (that we have permissions to use).
+    # Find the first EV_FF capable event device (that we have permissions to use).
     for name in evdev.list_devices():
         dev = evdev.InputDevice(name)
         if e.EV_FF in dev.capabilities():
@@ -479,7 +508,6 @@ Forwarding force-feedback from uinput to a real device
     effects = set()
 
     for event in uinput.read_loop():
-        
         # Handle the special uinput events
         if event.type == e.EV_UINPUT:
 
@@ -489,20 +517,20 @@ Forwarding force-feedback from uinput to a real device
                 # Checks if this is a new effect
                 if upload.effect.id not in effects:
                     effects.add(upload.effect.id)
-                    # Setting id to 1 indicates that a new effect must be allocated
+                    # Setting id to -1 indicates that a new effect must be allocated
                     upload.effect.id = -1
 
                 dev.upload_effect(upload.effect)
                 upload.retval = 0
                 uinput.end_upload(upload)
-                
+
             elif event.code == e.UI_FF_ERASE:
                 erase = uinput.begin_erase(event.value)
                 erase.retval = 0
                 dev.erase_effect(erase.effect_id)
                 effects.remove(erase.effect_id)
                 uinput.end_erase(erase)
-        
+
         # Forward writes to actual rumble device.
         elif event.type == e.EV_FF:
             dev.write(event.type, event.code, event.value)

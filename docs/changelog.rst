@@ -5,7 +5,7 @@ Changelog
 ====================
 
 - ``upload_effect()`` now writes the generated effect id back to the effect struct.
-  This can be controlled with the `writeback_id` argument::
+  This can be controlled with the `writeback_id` argument (:issue:`250`)::
 
     >>> effect = Effect(id=-1, ...)
     >>> dev.upload_effect(effect)
@@ -20,15 +20,15 @@ Changelog
     -1
 
 - Add the ``readonly`` parameter to ``InputDevice``, which opens the device without
-  attempting ``O_RDWR`` first, avoiding firmware side-effects on some hardware.
+  attempting ``O_RDWR`` first, avoiding firmware side-effects on some hardware (:pr:`251`).
 
-- Add the ``writable`` parameter to ``list_devices()`` and ``is_device()``.
+- Add the ``writable`` parameter to ``list_devices()`` and ``is_device()`` (:pr:`251`).
 
-- Support for Python free-threaded mode.
+- Support for Python free-threaded mode (:pr:`257`).
 
 - Fix asyncio deprecations: use ``asyncio.get_running_loop()`` instead of
   ``asyncio.get_event_loop()`` and ``loop.create_future()`` instead of
-  ``asyncio.Future()``.
+  ``asyncio.Future()`` (:pr:`229`).
 
 
 1.9.3 (Feb 05, 2025)
@@ -53,7 +53,7 @@ Changelog
 1.9.1 (Feb 22, 2025)
 ====================
 
-- Fix fox missing ``UI_FF`` constants in generated ``ecodes.py``.
+- Fix for missing ``UI_FF`` constants in generated ``ecodes.py``.
 
 - More type annotations.
 
@@ -86,23 +86,23 @@ Changelog
 - Reverse mappings in ``evdev.ecodes`` that point to more than one value are now tuples instead of lists. For example::
 
     >>> ecodes.KEY[153]
-    ('KEY_DIRECTION', 'KEY_ROTATE_DISPLAY')
+    ("KEY_DIRECTION", "KEY_ROTATE_DISPLAY")
 
 - Raise the minimum supported Python version to 3.8.
 
-- Fix keyboard delay and repeat being swapped (#227).
+- Fix keyboard delay and repeat being swapped (:pr:`227`).
 
-- Move the ``syn()`` convenience method from ``InputDevice`` to ``EventIO`` (#224).
+- Move the ``syn()`` convenience method from ``InputDevice`` to ``EventIO`` (:pr:`224`).
 
 
 1.7.1 (May 8, 2024)
 ====================
 
-- Provide fallback value for ``FF_MAX_EFFECTS``, which fixes the build on EL 7 (#219).
+- Provide fallback value for ``FF_MAX_EFFECTS``, which fixes the build on EL 7 (:pr:`219`).
 
-- Add ``#ifdef`` guards around ``UI_GET_SYSNAME`` to improve kernel compatibility (#218) .
+- Add ``#ifdef`` guards around ``UI_GET_SYSNAME`` to improve kernel compatibility (:pr:`218`).
 
-- Wait up to two seconds for uinput devices to appear. (#215)
+- Wait up to two seconds for uinput devices to appear (:pr:`215`).
 
 
 1.7.0 (Feb 18, 2024)
@@ -112,7 +112,7 @@ Changelog
 
 - Add the uniq address to the string representation of ``InputDevice``.
 
-- Improved method for finding the device node corresponding to a uinput device (`#206 <https://github.com/gvalkov/python-evdev/pull/206>`_).
+- Improved method for finding the device node corresponding to a uinput device (:pr:`206`).
 
 - Repository TLC (reformatted with ruff, fixed linting warnings, moved packaging metadata to ``pyproject.toml`` etc.).
 
@@ -126,23 +126,22 @@ Changelog
 1.6.0 (Jul 17, 2022)
 ====================
 
-- Fix Python 3.11 compatibility (`#174 <https://github.com/gvalkov/python-evdev/pull/174>`_).
+- Fix Python 3.11 compatibility (:pr:`174`).
 
 
 1.5.0 (Mar 24, 2022)
 ====================
 
-- Fix documentation (`#163 <https://github.com/gvalkov/python-evdev/pull/163>`_, `#160 <https://github.com/gvalkov/python-evdev/pull/160>`_).
+- Fix documentation (:pr:`163`, :pr:`160`).
 
-- Re-enable TTY echo at evtest exit (`#155 <https://github.com/gvalkov/python-evdev/pull/155>`_).
+- Re-enable TTY echo at evtest exit (:pr:`155`).
 
-- Fix ``ImportError: sys.meta_path is None, Python is likely shutting down`` (`#154 <https://github.com/gvalkov/python-evdev/pull/154>`_).
+- Fix ``ImportError: sys.meta_path is None, Python is likely shutting down`` (:pr:`154`).
 
 - Closing the input device file descriptor in ``InputDevice.close()`` now
-  happens in the main thread, instead of in a new thread (reverts `#146
-  <https://github.com/gvalkov/python-evdev/pull/146>`_).
+  happens in the main thread, instead of in a new thread (reverts :pr:`146`).
 
-- Fix ``util.find_ecodes_by_regex`` not working across all supported Python versions (`#152 <https://github.com/gvalkov/python-evdev/pull/152>`_).
+- Fix ``util.find_ecodes_by_regex`` not working across all supported Python versions (:pr:`152`).
 
 
 
@@ -152,19 +151,19 @@ Changelog
 - Fix ``InputDevice.set_absinfo`` to allow setting parameters to zero.
 
 - Fix off-by-one in ``ioctl_EVIOCG_bits``, which causes value at the end of the
-  list to not be reported back (`#131 <https://github.com/gvalkov/python-evdev/pull/131>`_).
+  list to not be reported back (:pr:`131`).
 
-- Fix ``set_absinfo`` to allow setting parameters to zero (`#128 <https://github.com/gvalkov/python-evdev/pull/128>`_).
+- Fix ``set_absinfo`` to allow setting parameters to zero (:pr:`128`).
 
-- Fix leak when returning ``BlockingIOError`` from a read (`#143 <https://github.com/gvalkov/python-evdev/pull/143>`_).
+- Fix leak when returning ``BlockingIOError`` from a read (:pr:`143`).
 
 - Fix "There is no current event loop in thread" error for non asyncio code
-  (`#146 <https://github.com/gvalkov/python-evdev/pull/146>`_).
+  (:pr:`146`).
 
-- Prevent ``InputDevice`` destructor from blocking (`#145 <https://github.com/gvalkov/python-evdev/pull/145>`_).
+- Prevent ``InputDevice`` destructor from blocking (:pr:`145`).
 
 - Add missing return codes to ``os.strerror()`` calls and fix force feedback
-  example in docs (`#138 <https://github.com/gvalkov/python-evdev/pull/137>`_).
+  example in docs (:pr:`137`).
 
 - Add the ``util.find_ecodes_by_regex()`` helper function.
 
@@ -194,10 +193,9 @@ Changelog
 
 - Add UInput support for the resolution parameter in AbsInfo. This brings
   support for the new method of uinput device setup, which was `introduced in
-  Linux 4.5`_ (thanks to `@LinusCDE`_).
+  Linux 4.5`_ (thanks to :ghuser:`LinusCDE`).
 
-- Vendor and product identifiers can be greater or equal to `0x8000` (thanks
-  `@ivaradi`_).
+- Vendor and product identifiers can be greater or equal to `0x8000` (thanks to the contributor of :pr:`104`).
 
 
 1.1.2 (Sep 1, 2018)
@@ -211,7 +209,7 @@ Changelog
 1.1.0 (Aug 27, 2018)
 ====================
 
-- Add support for handling force-feedback effect uploads (many thanks to `@ndreys`_).
+- Add support for handling force-feedback effect uploads (many thanks to :ghuser:`ndreys`).
 
 - Fix typo preventing ff effects that need left coefficients from working.
 
@@ -230,7 +228,7 @@ Changelog
   Using the former will show a ``DeprecationWarning``, but would otherwise continue
   working as before.
 
-- Fix ``InputDevice`` comparison raising ``AttributeError`` due to a non-existant
+- Fix ``InputDevice`` comparison raising ``AttributeError`` due to a nonexistent
   ``path`` attribute.
 
 - Fix asyncio support in Python 3.5+.
@@ -243,7 +241,7 @@ Changelog
 0.8.1 (Mar 24, 2018)
 ====================
 
-- Fix Python 2 compatibility issue in with ``Uinput.from_device``.
+- Fix Python 2 compatibility issue in ``Uinput.from_device``.
 
 - Fix minor `evdev.evtest` formatting issue.
 
@@ -281,7 +279,7 @@ Changelog
 - ``InputDevice`` now accepts objects that support the path protocol.
   For example::
 
-    pth = pathlib.Path('/dev/input/event0')
+    pth = pathlib.Path("/dev/input/event0")
     dev = evdev.InputDevice(pth)
 
 - Support path protocol in ``InputDevice``. This means that ``InputDevice``
@@ -289,22 +287,22 @@ Changelog
 
 - Exceptions raised during ``InputDevice.async_read()`` (and similar) are now
   handled properly (i.e. an exception is set on the returned future instead of
-  leaking that exception into the event loop) (Fixes `#67`_).
+  leaking that exception into the event loop) (Fixes :issue:`67`).
 
 
 0.6.4 (Oct 07, 2016)
 ====================
 
-- Exclude ``ecodes.c`` from source distribution (Fixes `#63`_).
+- Exclude ``ecodes.c`` from source distribution (Fixes :issue:`63`).
 
 
 0.6.3 (Oct 06, 2016)
 ====================
 
 - Add the ``UInput.from_device`` class method, which allows uinput device to be
-  created with the capabiltiies of one or more existing input devices::
+  created with the capabilities of one or more existing input devices::
 
-    ui = UInput.from_device('/dev/input1', '/dev/input2', **constructor_kwargs)
+    ui = UInput.from_device("/dev/input1", "/dev/input2", **constructor_kwargs)
 
 - Add the ``build_ecodes`` distutils command, which generates the ``ecodes.c``
   extension module. The new way of overwriting the evdev header locations is::
@@ -323,7 +321,7 @@ Changelog
 ====================
 
 - Disable tty echoing while evtest is running.
-- Allow evtest to listen to more than one devices.
+- Allow evtest to listen to more than one device.
 
 - The setup.py script now allows the location of the input header files to be
   overwritten. For example::
@@ -337,13 +335,13 @@ Changelog
 0.6.0 (Feb 14, 2016)
 ====================
 
-- Asyncio and async/await support (many thanks to `@paulo-raca`_).
-- Add the ability to set the `phys` property of uinput devices (thanks `@paulo-raca`_).
-- Add a generic :func:`InputDevice.set` method (thanks `@paulo-raca`_).
+- Asyncio and async/await support (many thanks to :ghuser:`paulo-raca`).
+- Add the ability to set the `phys` property of uinput devices (thanks :ghuser:`paulo-raca`).
+- Add a generic :func:`InputDevice.set` method (thanks :ghuser:`paulo-raca`).
 - Distribute the evtest script along with evdev.
 - Fix issue with generating :mod:`ecodes.c` in recent kernels (``>= 4.4.0``).
-- Fix absinfo item indexes in :func:`UInput.uinput_create()` (thanks `@forsenonlhaimaisentito`_).
-- More robust comparison of :class:`InputDevice` objects (thanks `@isia`_).
+- Fix absinfo item indexes in :func:`UInput.uinput_create()` (thanks :ghuser:`forsenonlhaimaisentito`).
+- More robust comparison of :class:`InputDevice` objects (thanks :ghuser:`isia`).
 
 
 0.5.0 (Jun 16, 2015)
@@ -375,26 +373,26 @@ Changelog
 ====================
 
 - Add method for returning a list of the currently active keys -
-  :func:`InputDevice.active_keys()` (thanks `@spasche`_).
+  :func:`InputDevice.active_keys()` (thanks :ghuser:`spasche`).
 
-- Fix a potential buffer overflow in :func:`ioctl_capabilities()` (thanks `@spasche`_).
+- Fix a potential buffer overflow in :func:`ioctl_capabilities()` (thanks :ghuser:`spasche`).
 
 
 0.4.4 (Jun 04, 2014)
 ====================
 
 - Calling :func:`InputDevice.read_one()` should always return ``None``,
-  when there is nothing to be read, even in case of a ``EAGAIN`` errno
+  when there is nothing to be read, even in case of an ``EAGAIN`` errno
   (thanks JPP).
 
 
 0.4.3 (Dec 19, 2013)
 ====================
 
-- Silence :class:`OSError` in destructor (thanks `@polyphemus`_).
+- Silence :class:`OSError` in destructor (thanks :ghuser:`polyphemus`).
 
 - Make :func:`InputDevice.close()` work in cases in which stdin (fd 0)
-  has been closed (thanks `@polyphemus`_).
+  has been closed (thanks :ghuser:`polyphemus`).
 
 
 0.4.2 (Dec 13, 2013)
@@ -415,23 +413,23 @@ Changelog
 0.4.0 (Jul 01, 2013)
 ====================
 
-- Add ``FF_*`` and ``FF_STATUS`` codes to :func:`ecodes` (thanks `@bgilbert`_).
+- Add ``FF_*`` and ``FF_STATUS`` codes to :func:`ecodes` (thanks :ghuser:`bgilbert`).
 
 - Reverse event code mappings (``ecodes.{KEY,FF,REL,ABS}`` and etc.)
   will now map to a list of codes, whenever a value corresponds to
   multiple codes::
 
     >>> ecodes.KEY[152]
-    ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
+    ... ["KEY_COFFEE", "KEY_SCREENLOCK"]
     >>> ecodes.KEY[30]
-    ... 'KEY_A'
+    ... "KEY_A"
 
 - Set the state of a LED through :func:`InputDevice.set_led()` (thanks
-  `@accek`_).
+  :ghuser:`accek`).
 
 - Open :attr:`InputDevice.fd` in ``O_RDWR`` mode from now on.
 
-- Fix segfault in :func:`InputDevice.device_read_many()` (thanks `@bgilbert`_).
+- Fix segfault in :func:`InputDevice.device_read_many()` (thanks :ghuser:`bgilbert`).
 
 
 0.3.3 (May 29, 2013)
@@ -447,7 +445,7 @@ Changelog
 0.3.2 (Apr 05, 2013)
 ====================
 
-- Fix vendor id and product id order in :func:`DeviceInfo` (thanks `@kived`_).
+- Fix vendor id and product id order in :func:`DeviceInfo` (thanks :ghuser:`kived`).
 
 
 0.3.1 (Nov 23, 2012)
@@ -512,7 +510,7 @@ Changelog
 - Split ``ioctl_devinfo`` into ``ioctl_devinfo`` and
   ``ioctl_capabilities``.
 
-- Split :func:`UInput.uinput_open()` to :func:`UInput.uinput_open()`
+- Split :func:`UInput.uinput_open()` into :func:`UInput.uinput_open()`
   and :func:`UInput.uinput_create()`
 
 - Add more uinput usage examples and documentation.
@@ -542,20 +540,5 @@ Changelog
 
 *Initial Release*
 
-.. _`@polyphemus`: https://github.com/polyphemus
-.. _`@bgilbert`: https://github.com/bgilbert
-.. _`@accek`: https://github.com/accek
-.. _`@kived`: https://github.com/kived
-.. _`@spasche`: https://github.com/spasche
-.. _`@isia`:    https://github.com/isia
-.. _`@forsenonlhaimaisentito`: https://github.com/forsenonlhaimaisentito
-.. _`@paulo-raca`: https://github.com/paulo-raca
-.. _`@ndreys`: https://github.com/ndreys
-.. _`@LinusCDE`: https://github.com/gvalkov/python-evdev/pulls/LinusCDE
-.. _`@ivaradi`: https://github.com/gvalkov/python-evdev/pull/104
-
 .. _`introduced in Linux 4.5`: https://github.com/torvalds/linux/commit/052876f8e5aec887d22c4d06e54aa5531ffcec75
 .. _issue21121: http://bugs.python.org/issue21121
-.. _`#63`:      https://github.com/gvalkov/python-evdev/issues/63
-.. _`#67`:      https://github.com/gvalkov/python-evdev/issues/67
-.. _`#250`:     https://github.com/gvalkov/python-evdev/issues/250

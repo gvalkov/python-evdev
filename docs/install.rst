@@ -17,8 +17,8 @@ From source
 
 The latest stable version of *python-evdev* can be installed from pypi_,
 provided that you have a compiler, pip_ and the Python and Linux development
-headers installed on your system. Installing these is distribution specific and
-typically falls into one of the following:
+headers installed on your system. The exact packages are distribution specific
+and typically falls into one of the following:
 
 On a Debian compatible OS:
 
@@ -27,7 +27,7 @@ On a Debian compatible OS:
     $ apt install python-dev python-pip gcc
     $ apt install linux-headers-$(uname -r)
 
-On a Redhat compatible OS:
+On a RedHat compatible OS:
 
 .. code-block:: bash
 
@@ -41,7 +41,7 @@ On Arch Linux and derivatives:
     $ pacman -S core/linux-api-headers python-pip gcc
 
 Once all OS dependencies are available, you may install *python-evdev* using
-pip_, preferably in a [virtualenv]_:
+pip_, preferably in a virtual environment:
 
 .. code-block:: bash
 
@@ -52,8 +52,8 @@ pip_, preferably in a [virtualenv]_:
     $ python3 -m pip install --user evdev
 
     # Install in a virtual environment.
-    $ python3 -m venv abc
-    $ source abc/bin/activate
+    $ python3 -m venv path
+    $ source path/bin/activate
     $ python3 -m pip install evdev
 
 
@@ -61,15 +61,15 @@ Specifying header locations
 ---------------------------
 
 By default, the setup script will look for the ``input.h`` and
-``input-event-codes.h`` [#f1]_ header files ``/usr/include/linux``.
+``input-event-codes.h`` [#f1]_ header files in ``/usr/include/linux``.
 
-You may use the ``--evdev-headers`` option to the ``build_ext`` setuptools
-command to the location of these header files. It accepts one or more
-colon-separated paths. For example:
+The ``--evdev-headers`` option of the setuptools ``build_ext`` command
+overrides the header search location. It accepts one or more colon-separated
+paths. For example:
 
 .. code-block:: bash
 
-    $ python setup.py build_ext \
+    $ python3 setup.py build_ext \
         --evdev-headers buildroot/input.h:buildroot/input-event-codes.h \
         --include-dirs  buildroot/ \
         install  # or any other command (e.g. develop, bdist, bdist_wheel)
@@ -92,9 +92,6 @@ it is recommended to use an OS package or to install from source.
 
 
 .. [#f1] ``input-event-codes.h`` is found only in recent kernel versions.
-.. _pypi:              http://pypi.python.org/pypi/evdev
-.. _evdev-binary:      http://pypi.python.org/pypi/evdev-binary
-.. _github:            https://github.com/gvalkov/python-evdev
+.. _pypi:              https://pypi.org/project/evdev
+.. _evdev-binary:      https://pypi.org/project/evdev-binary
 .. _pip:               http://pip.readthedocs.org/en/latest/installing.html
-.. _example:           https://github.com/gvalkov/python-evdev/tree/master/examples
-.. _virtualenv:        https://docs.python.org/3/library/venv.html

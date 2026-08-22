@@ -66,10 +66,10 @@ API Reference
    :member-order: bysource
 
 .. autodata:: evdev.ecodes.keys
-   :annotation: {0: 'KEY_RESERVED', 1: 'KEY_ESC', 2: 'KEY_1', ...}
+   :annotation: {0: "KEY_RESERVED", 1: "KEY_ESC", 2: "KEY_1", ...}
 
 .. autodata:: evdev.ecodes.ecodes
-   :annotation: {'KEY_END': 107, 'FF_RUMBLE': 80, 'KEY_KPDOT': 83, 'KEY_CNT': 768, ...}'
+   :annotation: {"KEY_END": 107, "FF_RUMBLE": 80, "KEY_KPDOT": 83, "KEY_CNT": 768, ...}
 
 .. autodata:: evdev.ecodes.bytype
-   :annotation: {0: {0: 'SYN_REPORT', 1: 'SYN_CONFIG', 2: 'SYN_MT_REPORT', 3: 'SYN_DROPPED'}, ...}
+   :annotation: {0: {0: "SYN_REPORT", 1: "SYN_CONFIG", 2: "SYN_MT_REPORT", 3: "SYN_DROPPED"}, ...}

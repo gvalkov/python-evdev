@@ -28,14 +28,14 @@ Reading events from a device
 
     >>> import evdev
 
-    >>> device = evdev.InputDevice('/dev/input/event1')
+    >>> device = evdev.InputDevice("/dev/input/event1")
     >>> print(device)
     device /dev/input/event1, name "USB Keyboard", phys "usb-0000:00:12.1-2/input0"
 
     >>> for event in device.read_loop():
     ...     if event.type == evdev.ecodes.EV_KEY:
     ...         print(evdev.categorize(event))
-    ... # pressing 'a' and holding 'space'
+    ... # pressing "a" and holding "space"
     key event at 1337016188.396030, 30 (KEY_A), down
     key event at 1337016188.492033, 30 (KEY_A), up
     key event at 1337016189.772129, 57 (KEY_SPACE), down
@@ -55,16 +55,16 @@ names and values of the event subsystem constants.
 
     >>> ecodes.KEY_A
     ... 30
-    >>> ecodes.ecodes['KEY_A']
+    >>> ecodes.ecodes["KEY_A"]
     ... 30
     >>> ecodes.KEY[30]
-    ... 'KEY_A'
+    ... "KEY_A"
     >>> ecodes.bytype[ecodes.EV_KEY][30]
-    ... 'KEY_A'
+    ... "KEY_A"
 
     # A single value may correspond to multiple event codes.
     >>> ecodes.KEY[152]
-    ... ['KEY_COFFEE', 'KEY_SCREENLOCK']
+    ... ["KEY_COFFEE", "KEY_SCREENLOCK"]
 
 
 Listing and monitoring input devices
