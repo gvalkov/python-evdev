@@ -32,6 +32,8 @@ Changelog
 
 - Raise the minimum supported Python version to 3.11.
 
+- Allow ``UInput`` event types without event codes, such as ``EV_REP`` (:pr:`260`).
+
 
 1.9.3 (Feb 05, 2025)
 ====================

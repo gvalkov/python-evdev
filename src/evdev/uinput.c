@@ -299,6 +299,25 @@ uinput_write(PyObject *self, PyObject *args)
 
 
 static PyObject *
+uinput_enable_event_type(PyObject *self, PyObject *args)
+{
+    int fd;
+    uint16_t type;
+
+    int ret = PyArg_ParseTuple(args, "ih", &fd, &type);
+    if (!ret) return NULL;
+
+    if (ioctl(fd, UI_SET_EVBIT, type) < 0) {
+        _uinput_close(fd);
+        PyErr_SetFromErrno(PyExc_OSError);
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+
+static PyObject *
 uinput_enable_event(PyObject *self, PyObject *args)
 {
     int fd;
@@ -375,6 +394,9 @@ static PyMethodDef MethodTable[] = {
 
     { "enable", uinput_enable_event, METH_VARARGS,
       "Enable a type of event."},
+
+    { "enable_type", uinput_enable_event_type, METH_VARARGS,
+      "Enable an event type without enabling an event code."},
 
     { "set_phys", uinput_set_phys, METH_VARARGS,
       "Set physical path"},

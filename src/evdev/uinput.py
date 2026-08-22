@@ -106,7 +106,9 @@ class UInput(EventIO):
         events : dict
           Dictionary of event types mapping to lists of event codes. The
           event types and codes that the uinput device will be able to
-          inject - defaults to all key codes.
+          inject - defaults to all key codes. An event type mapped to an
+          empty sequence enables the event type without enabling any event
+          codes, which is useful for types such as ``EV_REP``.
 
         name
           The name of the input device.
@@ -164,6 +166,10 @@ class UInput(EventIO):
         input_props = input_props or []
         for prop in input_props:
             _uinput.set_prop(self.fd, prop)
+
+        for etype, codes in events.items():
+            if not codes:
+                _uinput.enable_type(self.fd, etype)
 
         for etype, code in prepared_events:
             _uinput.enable(self.fd, etype, code)
