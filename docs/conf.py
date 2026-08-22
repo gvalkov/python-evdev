@@ -1,28 +1,11 @@
-import os
 import sys
+import tomllib
+from pathlib import Path
 
-# Check if readthedocs is building us
-on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-
-# Trick autodoc into running without having built the extension modules.
-if on_rtd:
-    with open("../src/evdev/_ecodes.py", "w") as fh:
-        fh.write(
-            """
-KEY = ABS = REL = SW = MSC = LED = REP = SND = SYN = FF = FF_STATUS = BTN_A = KEY_A = 1
-EV_KEY = EV_ABS = EV_REL = EV_SW = EV_MSC = EV_LED = EV_REP = 1
-EV_SND = EV_SYN = EV_FF  = EV_FF_STATUS = FF_STATUS = 1
-KEY_MAX, KEY_CNT = 1, 2"""
-        )
-
-    with open("../src/evdev/_input.py", "w"):
-        pass
-    with open("../src/evdev/_uinput.py", "w"):
-        pass
+src_dir = Path(__file__).resolve().parents[1] / "src"
+if str(src_dir) not in sys.path:
+    sys.path.append(str(src_dir))
 
 
 # -- General configuration -----------------------------------------------------
@@ -38,7 +21,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.extlinks",
-    "sphinx_rtd_theme",
     "sphinx_copybutton",
 ]
 
@@ -60,12 +42,8 @@ master_doc = "index"
 project = "python-evdev"
 copyright = "2012-2026, Georgi Valkov and contributors"
 
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-#
-# The full version, including alpha/beta/rc tags.
-release = "1.9.3"
+with (Path(__file__).parents[1] / "pyproject.toml").open("rb") as fh:
+    release = tomllib.load(fh)["project"]["version"]
 
 # The short X.Y version.
 version = release
@@ -271,3 +249,12 @@ extlinks = {
     "pr": ("https://github.com/gvalkov/python-evdev/pull/%s", "#%s"),
     "ghuser": ("https://github.com/%s", "@%s"),
 }
+
+
+def autodoc_process_docstring(what, name, obj, options, lines, docstring=None):
+    if isinstance(obj, dict) and obj.__doc__ is dict.__doc__:
+        del lines[:]
+
+
+def setup(app):
+    app.connect("autodoc-process-docstring", autodoc_process_docstring)
