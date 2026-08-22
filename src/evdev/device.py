@@ -2,7 +2,7 @@ import contextlib
 import os
 from typing import Dict, Generic, Iterator, List, Literal, NamedTuple, Tuple, TypeVar, Union, overload
 
-from . import _input, ecodes, util
+from . import _input, ecodes, ff, util
 
 try:
     from .eventio_async import EvdevError, EventIO
@@ -346,13 +346,16 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         yield
         self.ungrab()
 
-    def upload_effect(self, effect: "ff.Effect"):
+    def upload_effect(self, effect: "ff.Effect", writeback_id: bool = True) -> int:
         """
-        Upload a force feedback effect to a force feedback device.
+        Upload a force feedback effect to a force feedback device and return its effect id.
+        If ``writeback_id`` is ``True``, the effect id is written back to the ``effect`` struct.
         """
 
         data = memoryview(effect).tobytes()
         ff_id = _input.upload_effect(self.fd, data)
+        if writeback_id:
+            effect.id = ff_id
         return ff_id
 
     def erase_effect(self, ff_id) -> None:
