@@ -15,14 +15,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Run pytest tests
         # sudo required to write to uinputs
         run: |
-          sudo python -m pip install pytest setuptools
-          sudo python -m pip install -e .
-          sudo python -m pytest tests
+          sudo uv venv
+          sudo uv pip install -e . pytest
+          sudo uv run pytest tests

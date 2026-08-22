@@ -34,18 +34,6 @@ line-length = 120
 [tool.ruff.lint]
 ignore = ["E265", "E241", "F403", "F401", "E401", "E731"]
 
-[tool.bumpversion]
-current_version = "1.9.3"
-commit = true
-tag = true
-allow_dirty = true
-
-[[tool.bumpversion.files]]
-filename = "pyproject.toml"
-
-[[tool.bumpversion.files]]
-filename = "docs/conf.py"
-
 [tool.pylint.'MESSAGES CONTROL']
 disable = """
     no-member,
@@ -54,3 +42,18 @@ disable = """
 [tool.pylint.typecheck]
 generated-members = ["evdev.ecodes.*"]
 ignored-modules= ["evdev._*"]
+
+[dependency-groups]
+dev = [
+    "build>=1.5.0",
+    "cibuildwheel>=2.23.4",
+    "furo>=2025.12.19",
+    "pytest>=9.1.1",
+    "ruff>=0.16.4",
+    "setuptools>=82.0.1",
+    "sphinx>=9.0.4",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-autodoc-typehints>=2.3.0",
+    "sphinx-copybutton>=0.5.2",
+    "twine>=7.0.0",
+]

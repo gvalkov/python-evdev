@@ -15,12 +15,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
-        with:
-          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10
 
       - name: Install python-evdev
         run: |
-          python -m pip install -v .
-          (cd /tmp && python -c "import evdev.ecodes; print(evdev.ecodes)")
+          uv venv -p ${{ matrix.python-version }}
+          uv pip install -v .
+          (cd /tmp && "$GITHUB_WORKSPACE/.venv/bin/python" -c "import evdev.ecodes; print(evdev.ecodes)")
