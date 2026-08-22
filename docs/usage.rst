@@ -1,5 +1,5 @@
-Quick Start
------------
+Getting started
+---------------
 
 
 Listing accessible event devices

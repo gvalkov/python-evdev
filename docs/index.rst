@@ -17,20 +17,20 @@ movement or a tap on a touchscreen.
 
 
 .. toctree::
-   :caption: Installation
+   :caption: Install
    :maxdepth: 2
 
    install
 
 .. toctree::
-   :caption: Usage
+   :caption: Guide
 
    usage
    tutorial
    apidoc
 
 .. toctree::
-   :caption: Project
+   :caption: About
    :maxdepth: 2
 
    scope

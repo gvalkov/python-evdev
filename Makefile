@@ -1,4 +1,4 @@
-docs-live:
+docs-live: dev
 	uv run sphinx-autobuild docs/ docs/_build
 
 docs:

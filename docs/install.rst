@@ -1,5 +1,5 @@
-From an OS package
-==================
+OS package
+==========
 
 Python-evdev has been packaged for the following distributions:
 
@@ -75,12 +75,14 @@ paths. For example:
         install  # or any other command (e.g. develop, bdist, bdist_wheel)
 
 
-From a binary package
-=====================
+Binary wheels
+=============
 
 You may choose to install a precompiled version of *python-evdev* from pypi. The
-`evdev-binary`_ package provides binary wheels that have been compiled on EL8
-against the 4.18.0 kernel headers.
+`evdev-binary`_ package provides binary wheels that have been compiled on the
+`manylinux_2_34`_ image (AlmaLinux 9, glibc 2.34) against the 5.14.0 kernel
+headers. Wheels for musl-based systems (e.g. Alpine Linux) are built on the
+`musllinux_1_2`_ image (Alpine Linux 3.22).
 
 .. code-block:: bash
 
@@ -94,4 +96,6 @@ it is recommended to use an OS package or to install from source.
 .. [#f1] ``input-event-codes.h`` is found only in recent kernel versions.
 .. _pypi:              https://pypi.org/project/evdev
 .. _evdev-binary:      https://pypi.org/project/evdev-binary
+.. _manylinux_2_34:    https://github.com/pypa/manylinux
+.. _musllinux_1_2:     https://peps.python.org/pep-0600/
 .. _pip:               http://pip.readthedocs.org/en/latest/installing.html
