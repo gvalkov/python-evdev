@@ -1,6 +1,36 @@
 Changelog
 ---------
 
+2.0.0 (Aug 22, 2026)
+====================
+
+- ``upload_effect()`` now writes the generated effect id back to the effect struct.
+  This can be controlled with the `writeback_id` argument::
+
+    >>> effect = Effect(id=-1, ...)
+    >>> dev.upload_effect(effect)
+    1
+    >>> effect.id
+    1
+
+    >>> effect = Effect(id=-1, ...)
+    >>> dev.upload_effect(effect, writeback_id=False)
+    1
+    >>> effect.id
+    -1
+
+- Add the ``readonly`` parameter to ``InputDevice``, which opens the device without
+  attempting ``O_RDWR`` first, avoiding firmware side-effects on some hardware.
+
+- Add the ``writable`` parameter to ``list_devices()`` and ``is_device()``.
+
+- Support for Python free-threaded mode.
+
+- Fix asyncio deprecations: use ``asyncio.get_running_loop()`` instead of
+  ``asyncio.get_event_loop()`` and ``loop.create_future()`` instead of
+  ``asyncio.Future()``.
+
+
 1.9.3 (Feb 05, 2025)
 ====================
 
@@ -15,7 +45,7 @@ Changelog
 - Add the "--reproducible" build option which removes the build date and used headers from the
   generated ``ecodes.c``. Example usage::
 
-    python -m build --config-setting=--build-option='build_ecodes --reproducible' -n 
+    python -m build --config-setting=--build-option='build_ecodes --reproducible' -n
 
 - Use ``Generic`` to set precise type for ``InputDevice.path``.
 
@@ -528,3 +558,4 @@ Changelog
 .. _issue21121: http://bugs.python.org/issue21121
 .. _`#63`:      https://github.com/gvalkov/python-evdev/issues/63
 .. _`#67`:      https://github.com/gvalkov/python-evdev/issues/67
+.. _`#250`:     https://github.com/gvalkov/python-evdev/issues/250
