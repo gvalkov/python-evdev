@@ -9,7 +9,7 @@ description = "Bindings to the Linux input handling subsystem"
 keywords = ["evdev", "input", "uinput"]
 readme = "README.md"
 license = "BSD-3-Clause"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 authors = [
   { name="Georgi Valkov", email="georgi.t.valkov@gmail.com" },
 ]

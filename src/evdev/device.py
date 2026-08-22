@@ -1,6 +1,6 @@
 import contextlib
 import os
-from typing import Dict, Generic, Iterator, List, Literal, NamedTuple, Tuple, TypeVar, Union, overload
+from typing import Generic, Iterator, Literal, NamedTuple, TypeVar, overload
 
 from . import _input, ecodes, ff, util
 
@@ -58,7 +58,7 @@ class AbsInfo(NamedTuple):
     flat: int
     resolution: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "value {}, min {}, max {}, fuzz {}, flat {}, res {}".format(*self)  # pylint: disable=not-an-iterable
 
 
@@ -78,7 +78,7 @@ class KbdInfo(NamedTuple):
     delay: int
     repeat: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "delay {}, repeat {}".format(self.delay, self.repeat)
 
 
@@ -109,7 +109,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
 
     __slots__ = ("path", "fd", "info", "name", "phys", "uniq", "_rawcapabilities", "version", "ff_effects_count")
 
-    def __init__(self, dev: Union[_AnyStr, "os.PathLike[_AnyStr]"], readonly: bool = False):
+    def __init__(self, dev: _AnyStr | os.PathLike[_AnyStr], readonly: bool = False):
         """
         Arguments
         ---------
@@ -184,12 +184,14 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         return res
 
     @overload
-    def capabilities(self, verbose: Literal[False] = ..., absinfo: bool = ...) -> Dict[int, List[int]]:
+    def capabilities(self, verbose: Literal[False] = ..., absinfo: bool = ...) -> dict[int, list[int]]:
         ...
     @overload
-    def capabilities(self, verbose: Literal[True], absinfo: bool = ...) -> Dict[Tuple[str, int], List[Tuple[str, int]]]:
+    def capabilities(self, verbose: Literal[True], absinfo: bool = ...) -> dict[tuple[str, int], list[tuple[str, int]]]:
         ...
-    def capabilities(self, verbose: bool = False, absinfo: bool = True) -> Union[Dict[int, List[int]], Dict[Tuple[str, int], List[Tuple[str, int]]]]:
+    def capabilities(
+        self, verbose: bool = False, absinfo: bool = True
+    ) -> dict[int, list[int]] | dict[tuple[str, int], list[tuple[str, int]]]:
         """
         Return the event types that this device supports as a mapping of
         supported event types to lists of handled event codes.
@@ -286,7 +288,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         """
         self.write(ecodes.EV_LED, led_num, value)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """
         Two devices are equal if their :data:`info` attributes are equal.
         """
@@ -300,7 +302,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         msg = (self.__class__.__name__, self.path)
         return "{}({!r})".format(*msg)
 
-    def __fspath__(self):
+    def __fspath__(self) -> _AnyStr:
         return self.path
 
     def close(self) -> None:
@@ -358,7 +360,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
             effect.id = ff_id
         return ff_id
 
-    def erase_effect(self, ff_id) -> None:
+    def erase_effect(self, ff_id: int) -> None:
         """
         Erase a force effect from a force feedback device. This also
         stops the effect.
@@ -376,7 +378,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         return KbdInfo(*_input.ioctl_EVIOCGREP(self.fd))
 
     @repeat.setter
-    def repeat(self, value: Tuple[int, int]):
+    def repeat(self, value: tuple[int, int]):
         return _input.ioctl_EVIOCSREP(self.fd, *value)
 
     def active_keys(self, verbose: bool = False):
@@ -418,7 +420,16 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         """
         return AbsInfo(*_input.ioctl_EVIOCGABS(self.fd, axis_num))
 
-    def set_absinfo(self, axis_num: int, value=None, min=None, max=None, fuzz=None, flat=None, resolution=None) -> None:
+    def set_absinfo(
+        self,
+        axis_num: int,
+        value: int | None = None,
+        min: int | None = None,
+        max: int | None = None,
+        fuzz: int | None = None,
+        flat: int | None = None,
+        resolution: int | None = None,
+    ) -> None:
         """
         Update :class:`AbsInfo` values. Only specified values will be overwritten.
 

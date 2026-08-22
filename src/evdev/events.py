@@ -47,7 +47,7 @@ class InputEvent:
 
     __slots__ = "sec", "usec", "type", "code", "value"
 
-    def __init__(self, sec, usec, type, code, value):
+    def __init__(self, sec: int, usec: int, type: int, code: int, value: int):
         #: Time in seconds since epoch at which event occurred.
         self.sec: int = sec
 
@@ -67,11 +67,11 @@ class InputEvent:
         """Return event timestamp as a float."""
         return self.sec + (self.usec / 1000000.0)
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = "event at {:f}, code {:02d}, type {:02d}, val {:02d}"
         return msg.format(self.timestamp(), self.code, self.type, self.value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         msg = "{}({!r}, {!r}, {!r}, {!r}, {!r})"
         return msg.format(self.__class__.__name__, self.sec, self.usec, self.type, self.code, self.value)
 
@@ -95,24 +95,24 @@ class KeyEvent:
         self.scancode: int = event.code
 
         if event.value == 0:
-            self.keystate = KeyEvent.key_up
+            self.keystate: int = KeyEvent.key_up
         elif event.value == 2:
-            self.keystate = KeyEvent.key_hold
+            self.keystate: int = KeyEvent.key_hold
         elif event.value == 1:
-            self.keystate = KeyEvent.key_down
+            self.keystate: int = KeyEvent.key_down
 
         try:
-            self.keycode = keys[event.code]
+            self.keycode: int = keys[event.code]
         except KeyError:
             if allow_unknown:
-                self.keycode = "0x{:02X}".format(event.code)
+                self.keycode: int = "0x{:02X}".format(event.code)
             else:
                 raise
 
         #: Reference to an :class:`InputEvent` instance.
         self.event: InputEvent = event
 
-    def __str__(self):
+    def __str__(self) -> str:
         try:
             ks = ("up", "down", "hold")[self.keystate]
         except IndexError:
@@ -121,7 +121,7 @@ class KeyEvent:
         msg = "key event at {:f}, {} ({}), {}"
         return msg.format(self.event.timestamp(), self.scancode, self.keycode, ks)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
@@ -134,11 +134,11 @@ class RelEvent:
         #: Reference to an :class:`InputEvent` instance.
         self.event: InputEvent = event
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = "relative axis event at {:f}, {}"
         return msg.format(self.event.timestamp(), REL[self.event.code])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
@@ -151,11 +151,11 @@ class AbsEvent:
         #: Reference to an :class:`InputEvent` instance.
         self.event: InputEvent = event
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = "absolute axis event at {:f}, {}"
         return msg.format(self.event.timestamp(), ABS[self.event.code])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
@@ -171,17 +171,17 @@ class SynEvent:
         #: Reference to an :class:`InputEvent` instance.
         self.event: InputEvent = event
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = "synchronization event at {:f}, {}"
         return msg.format(self.event.timestamp(), SYN[self.event.code])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{}({!r})".format(self.__class__.__name__, self.event)
 
 
 #: A mapping of event types to :class:`InputEvent` sub-classes. Used
 #: by :func:`evdev.util.categorize()`
-event_factory = {
+event_factory: dict[int, type[InputEvent]] = {
     EV_KEY: KeyEvent,
     EV_REL: RelEvent,
     EV_ABS: AbsEvent,

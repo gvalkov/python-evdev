@@ -2,7 +2,7 @@ import fcntl
 import functools
 import os
 import select
-from typing import Iterator, Union
+from typing import Iterator, Callable
 
 from . import _input, _uinput, ecodes
 from .events import InputEvent
@@ -28,7 +28,7 @@ class EventIO:
       beeps).
     """
 
-    def fileno(self):
+    def fileno(self) -> int:
         """
         Return the file descriptor to the open event device. This makes
         it possible to pass instances directly to :func:`select.select()` and
@@ -46,7 +46,7 @@ class EventIO:
             for event in self.read():
                 yield event
 
-    def read_one(self) -> Union[InputEvent, None]:
+    def read_one(self) -> InputEvent | None:
         """
         Read and return a single input event as an instance of
         :class:`InputEvent <evdev.events.InputEvent>`.
@@ -74,7 +74,7 @@ class EventIO:
             yield InputEvent(*event)
 
     # pylint: disable=no-self-argument
-    def need_write(func):
+    def need_write(func: Callable) -> Callable:
         """
         Decorator that raises :class:`EvdevError` if there is no write access to the
         input device.
@@ -91,7 +91,7 @@ class EventIO:
 
         return wrapper
 
-    def write_event(self, event):
+    def write_event(self, event: InputEvent):
         """
         Inject an input event into the input subsystem. Events are
         queued until a synchronization event is received.
@@ -139,7 +139,7 @@ class EventIO:
 
         _uinput.write(self.fd, etype, code, value)
 
-    def syn(self):
+    def syn(self) -> None:
         """
         Inject a ``SYN_REPORT`` event into the input subsystem. Events
         queued by :func:`write()` will be fired. If possible, events
@@ -148,5 +148,5 @@ class EventIO:
 
         self.write(ecodes.EV_SYN, ecodes.SYN_REPORT, 0)
 
-    def close(self):
+    def close(self) -> None:
         pass

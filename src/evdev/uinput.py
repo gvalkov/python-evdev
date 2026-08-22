@@ -5,7 +5,7 @@ import re
 import stat
 import time
 from collections import defaultdict
-from typing import Union, Tuple, Dict, Sequence, Optional
+from typing import Sequence
 
 from . import _uinput, ecodes, ff, util
 from .device import InputDevice, AbsInfo
@@ -42,10 +42,10 @@ class UInput(EventIO):
     @classmethod
     def from_device(
         cls,
-        *devices: Union[InputDevice, Union[str, bytes, os.PathLike]],
-        filtered_types: Tuple[int] = (ecodes.EV_SYN, ecodes.EV_FF),
+        *devices: InputDevice | str | bytes | os.PathLike,
+        filtered_types: tuple[int] = (ecodes.EV_SYN, ecodes.EV_FF),
         **kwargs,
-    ):
+    ) -> "UInput":
         """
         Create an UInput device with the capabilities of one or more input
         devices.
@@ -86,7 +86,7 @@ class UInput(EventIO):
 
     def __init__(
         self,
-        events: Optional[Dict[int, Sequence[int]]] = None,
+        events: dict[int, Sequence[int]] | None = None,
         name: str = "py-evdev-uinput",
         vendor: int = 0x1,
         product: int = 0x1,
@@ -94,11 +94,11 @@ class UInput(EventIO):
         bustype: int = 0x3,
         devnode: str = "/dev/uinput",
         phys: str = "py-evdev-uinput",
-        input_props=None,
+        input_props: Sequence[int] | None = None,
         # CentOS 7 has sufficiently old headers that FF_MAX_EFFECTS is not defined there,
         # which causes the whole module to fail loading. Fallback on a hardcoded value of
         # FF_MAX_EFFECTS if it is not defined in the ecodes.
-        max_effects=ecodes.ecodes.get("FF_MAX_EFFECTS", 96),
+        max_effects: int = ecodes.ecodes.get("FF_MAX_EFFECTS", 96),
     ):
         """
         Arguments
@@ -182,7 +182,7 @@ class UInput(EventIO):
         #: opened for reading and writing.
         self.device: InputDevice = self._find_device(self.fd)
 
-    def _prepare_events(self, events):
+    def _prepare_events(self, events: dict[int, Sequence[int]]):
         """Prepare events for passing to _uinput.enable and _uinput.setup"""
         absinfo, prepared_events = [], []
         for etype, codes in events.items():
@@ -200,19 +200,19 @@ class UInput(EventIO):
                 prepared_events.append((etype, code))
         return absinfo, prepared_events
 
-    def __enter__(self):
+    def __enter__(self) -> "UInput":
         return self
 
-    def __exit__(self, type, value, tb):
+    def __exit__(self, type, value, tb) -> None:
         if hasattr(self, "fd"):
             self.close()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # TODO:
         v = (repr(getattr(self, i)) for i in ("name", "bustype", "vendor", "product", "version", "phys"))
         return "{}({})".format(self.__class__.__name__, ", ".join(v))
 
-    def __str__(self):
+    def __str__(self) -> str:
         msg = 'name "{}", bus "{}", vendor "{:04x}", product "{:04x}", version "{:04x}", phys "{}"\nevent types: {}'
 
         evtypes = [i[0] for i in self.capabilities(True).keys()]
@@ -222,7 +222,7 @@ class UInput(EventIO):
 
         return msg
 
-    def close(self):
+    def close(self) -> None:
         # Close the associated InputDevice, if it was previously opened.
         if self.device is not None:
             self.device.close()
@@ -232,14 +232,14 @@ class UInput(EventIO):
             _uinput.close(self.fd)
             self.fd = -1
 
-    def capabilities(self, verbose: bool = False, absinfo: bool = True):
+    def capabilities( self, verbose: bool = False, absinfo: bool = True):
         """See :func:`capabilities <evdev.device.InputDevice.capabilities>`."""
         if self.device is None:
             raise UInputError("input device not opened - cannot read capabilities")
 
         return self.device.capabilities(verbose, absinfo)
 
-    def begin_upload(self, effect_id):
+    def begin_upload(self, effect_id: int) -> ff.UInputUpload:
         upload = ff.UInputUpload()
         upload.effect_id = effect_id
 
@@ -249,12 +249,12 @@ class UInput(EventIO):
 
         return upload
 
-    def end_upload(self, upload):
+    def end_upload(self, upload: ff.UInputUpload) -> None:
         ret = self.dll._uinput_end_upload(self.fd, ctypes.byref(upload))
         if ret:
             raise UInputError("Failed to end uinput upload: " + os.strerror(ret))
 
-    def begin_erase(self, effect_id):
+    def begin_erase(self, effect_id: int) -> ff.UInputErase:
         erase = ff.UInputErase()
         erase.effect_id = effect_id
 
@@ -263,12 +263,12 @@ class UInput(EventIO):
             raise UInputError("Failed to begin uinput erase: " + os.strerror(ret))
         return erase
 
-    def end_erase(self, erase):
+    def end_erase(self, erase: ff.UInputErase) -> None:
         ret = self.dll._uinput_end_erase(self.fd, ctypes.byref(erase))
         if ret:
             raise UInputError("Failed to end uinput erase: " + os.strerror(ret))
 
-    def _verify(self):
+    def _verify(self) -> None:
         """
         Verify that an uinput device exists and is readable and writable
         by the current process.
@@ -342,7 +342,7 @@ class UInput(EventIO):
         # shall be the exception that this function raises.
         return InputDevice(device_path)
 
-    def _find_device_fallback(self) -> Union[InputDevice, None]:
+    def _find_device_fallback(self) -> InputDevice | None:
         """
         Tries to find the device node when UI_GET_SYSNAME is not available or
         we're running on a system sufficiently exotic that we do not know how

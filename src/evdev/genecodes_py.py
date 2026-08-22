@@ -15,7 +15,7 @@ print(ecodes.__doc__.strip())
 print('"""')
 
 print()
-print("from typing import Final, Dict, Tuple, Union")
+print("from typing import Final")
 print()
 
 for name, value in ecodes.ecodes.items():
@@ -23,26 +23,26 @@ for name, value in ecodes.ecodes.items():
 print()
 
 entries = [
-    ("ecodes", "Dict[str, int]", "#: Mapping of names to values."),
-    ("bytype", "Dict[int, Dict[int, Union[str, Tuple[str]]]]", "#: Mapping of event types to other value/name mappings."),
-    ("keys",   "Dict[int, Union[str, Tuple[str]]]", "#: Keys are a combination of all BTN and KEY codes."),
-    ("KEY",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("ABS",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("REL",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("SW",     "Dict[int, Union[str, Tuple[str]]]", None),
-    ("MSC",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("LED",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("BTN",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("REP",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("SND",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("ID",     "Dict[int, Union[str, Tuple[str]]]", None),
-    ("EV",     "Dict[int, Union[str, Tuple[str]]]", None),
-    ("BUS",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("SYN",    "Dict[int, Union[str, Tuple[str]]]", None),
-    ("FF",     "Dict[int, Union[str, Tuple[str]]]", None),
-    ("UI_FF",  "Dict[int, Union[str, Tuple[str]]]", None),
-    ("FF_STATUS",  "Dict[int, Union[str, Tuple[str]]]", None),
-    ("INPUT_PROP", "Dict[int, Union[str, Tuple[str]]]", None)
+    ("ecodes", "dict[str, int]", "#: Mapping of names to values."),
+    ("bytype", "dict[int, dict[int, str | tuple[str]]]", "#: Mapping of event types to other value/name mappings."),
+    ("keys",   "dict[int, str | tuple[str]]", "#: Keys are a combination of all BTN and KEY codes."),
+    ("KEY",    "dict[int, str | tuple[str]]", None),
+    ("ABS",    "dict[int, str | tuple[str]]", None),
+    ("REL",    "dict[int, str | tuple[str]]", None),
+    ("SW",     "dict[int, str | tuple[str]]", None),
+    ("MSC",    "dict[int, str | tuple[str]]", None),
+    ("LED",    "dict[int, str | tuple[str]]", None),
+    ("BTN",    "dict[int, str | tuple[str]]", None),
+    ("REP",    "dict[int, str | tuple[str]]", None),
+    ("SND",    "dict[int, str | tuple[str]]", None),
+    ("ID",     "dict[int, str | tuple[str]]", None),
+    ("EV",     "dict[int, str | tuple[str]]", None),
+    ("BUS",    "dict[int, str | tuple[str]]", None),
+    ("SYN",    "dict[int, str | tuple[str]]", None),
+    ("FF",     "dict[int, str | tuple[str]]", None),
+    ("UI_FF",  "dict[int, str | tuple[str]]", None),
+    ("FF_STATUS",  "dict[int, str | tuple[str]]", None),
+    ("INPUT_PROP", "dict[int, str | tuple[str]]", None)
 ]
 
 for key, annotation, doc in entries:

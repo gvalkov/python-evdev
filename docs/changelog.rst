@@ -30,6 +30,8 @@ Changelog
   ``asyncio.get_event_loop()`` and ``loop.create_future()`` instead of
   ``asyncio.Future()`` (:pr:`229`).
 
+- Raise the minimum supported Python version to 3.11.
+
 
 1.9.3 (Feb 05, 2025)
 ====================

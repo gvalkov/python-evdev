@@ -3,13 +3,12 @@ import glob
 import os
 import re
 import stat
-from typing import Union, List
 
 from . import ecodes
 from .events import InputEvent, event_factory, KeyEvent, RelEvent, AbsEvent, SynEvent
 
 
-def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input", writable: bool = True) -> List[str]:
+def list_devices(input_device_dir: str | bytes | os.PathLike = "/dev/input", writable: bool = True) -> list[str]:
     """List readable (and optionally writable) character devices in ``input_device_dir``.
 
     Arguments
@@ -24,7 +23,7 @@ def list_devices(input_device_dir: Union[str, bytes, os.PathLike] = "/dev/input"
     return [fn for fn in fns if is_device(fn, writable=writable)]
 
 
-def is_device(fn: Union[str, bytes, os.PathLike], writable: bool = True) -> bool:
+def is_device(fn: str | bytes | os.PathLike, writable: bool = True) -> bool:
     """Check if ``fn`` is a readable (and optionally writable) character device."""
 
     if not os.path.exists(fn):
@@ -41,7 +40,7 @@ def is_device(fn: Union[str, bytes, os.PathLike], writable: bool = True) -> bool
     return True
 
 
-def categorize(event: InputEvent) -> Union[InputEvent, KeyEvent, RelEvent, AbsEvent, SynEvent]:
+def categorize(event: InputEvent) -> InputEvent | KeyEvent | RelEvent | AbsEvent | SynEvent:
     """
     Categorize an event according to its type.
 
