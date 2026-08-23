@@ -13,7 +13,7 @@ dev:
 	uv pip install -e .
 
 sdist:
-	uv build
+	uv build --sdist
 
 bdist:
 	git clean -fdx src/

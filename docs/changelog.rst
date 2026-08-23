@@ -1,7 +1,7 @@
 Changelog
 ---------
 
-2.0.0 (Aug 22, 2026)
+2.0.0 (Aug 23, 2026)
 ====================
 
 - ``upload_effect()`` now writes the generated effect id back to the effect struct.
