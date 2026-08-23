@@ -1,6 +1,6 @@
 import contextlib
 import os
-from typing import Generic, Iterator, Literal, NamedTuple, TypeVar, overload
+from typing import Generic, Iterator, Literal, NamedTuple, AnyStr, overload
 
 from . import _input, ecodes, ff, util
 
@@ -9,7 +9,7 @@ try:
 except ImportError:
     from .eventio import EvdevError, EventIO
 
-_AnyStr = TypeVar("_AnyStr", str, bytes)
+PathLike = AnyStr | os.PathLike[AnyStr]
 
 
 class AbsInfo(NamedTuple):
@@ -102,25 +102,25 @@ class DeviceInfo(NamedTuple):
         return msg.format(*self)  # pylint: disable=not-an-iterable
 
 
-class InputDevice(EventIO, Generic[_AnyStr]):
+class InputDevice(EventIO, Generic[AnyStr]):
     """
     A linux input device from which input events can be read.
     """
 
     __slots__ = ("path", "fd", "info", "name", "phys", "uniq", "_rawcapabilities", "version", "ff_effects_count")
 
-    def __init__(self, dev: _AnyStr | os.PathLike[_AnyStr], readonly: bool = False):
+    def __init__(self, dev: PathLike, readonly: bool = False):
         """
         Arguments
         ---------
-        dev : str|bytes|PathLike
+        dev :
           Path to input device
         readonly : bool
           Open in read-only mode (``O_RDONLY``) without attempting ``O_RDWR`` first.
         """
 
         #: Path to input device.
-        self.path: _AnyStr = dev if not hasattr(dev, "__fspath__") else dev.__fspath__()
+        self.path: str | bytes = dev if not hasattr(dev, "__fspath__") else dev.__fspath__()
 
         try:
             # Certain operations are possible only when the device is opened in read-write mode.
@@ -138,7 +138,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         info_res = _input.ioctl_devinfo(self.fd)
 
         #: A :class:`DeviceInfo <evdev.device.DeviceInfo>` instance.
-        self.info = DeviceInfo(*info_res[:4])
+        self.info: DeviceInfo = DeviceInfo(*info_res[:4])
 
         #: The name of the event device.
         self.name: str = info_res[4]
@@ -198,9 +198,9 @@ class InputDevice(EventIO, Generic[_AnyStr]):
 
         Example
         --------
+
         >>> device.capabilities()
-        { 1: [272, 273, 274],
-          2: [0, 1, 6, 8] }
+        { 1: [272, 273, 274], 2: [0, 1, 6, 8] }
 
         If ``verbose`` is ``True``, event codes and types will be resolved
         to their names.
@@ -302,7 +302,7 @@ class InputDevice(EventIO, Generic[_AnyStr]):
         msg = (self.__class__.__name__, self.path)
         return "{}({!r})".format(*msg)
 
-    def __fspath__(self) -> _AnyStr:
+    def __fspath__(self) -> AnyStr:
         return self.path
 
     def close(self) -> None:
