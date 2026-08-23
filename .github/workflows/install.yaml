@@ -1,4 +1,4 @@
-name: Test install
+name: Install
 
 on:
   - push
@@ -15,11 +15,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install python-evdev
         run: |
           uv venv -p ${{ matrix.python-version }}
           uv pip install -v .
-          (cd /tmp && "$GITHUB_WORKSPACE/.venv/bin/python" -c "import evdev.ecodes; print(evdev.ecodes)")
+          uv run python -c "import evdev.ecodes; print(evdev.ecodes)"
