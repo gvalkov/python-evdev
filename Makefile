@@ -1,5 +1,10 @@
+HEADERS := input.h input-event-codes.h uinput.h
+
+src/evdev/ecodes_generated.py:
+	uv run python3 src/evdev/genecodes_py.py $(HEADERS:%=/usr/include/linux/%) > $@
+
 docs-live: dev
-	uv run sphinx-autobuild docs/ docs/_build
+	uv run sphinx-autobuild --watch src/evdev docs/ docs/_build -E
 
 docs:
 	uv run sphinx-build -b html docs docs/_build/html

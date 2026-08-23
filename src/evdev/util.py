@@ -13,9 +13,9 @@ def list_devices(input_device_dir: str | bytes | os.PathLike = "/dev/input", wri
 
     Arguments
     ---------
-    input_device_dir : str|bytes|PathLike
+    input_device_dir
       Path to the input device directory. Default is ``/dev/input``.
-    writable : bool
+    writable
       Only list devices that are both readable and writable.
     """
 

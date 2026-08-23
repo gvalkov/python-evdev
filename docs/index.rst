@@ -27,7 +27,12 @@ movement or a tap on a touchscreen.
 
    usage
    tutorial
+
+.. toctree::
+   :caption: Reference
+
    apidoc
+   ecodes
 
 .. toctree::
    :caption: About

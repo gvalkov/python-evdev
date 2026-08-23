@@ -17,8 +17,8 @@ Listing accessible event devices
 
 .. note::
 
-   If you do not see any devices, ensure that your user is in the
-   correct group (typically ``input``) to have read/write access.
+   If no devices are shown, ensure your user belongs to the correct group
+   (usually ``input``) to obtain read and write access.
 
 
 Reading events from a device
@@ -75,4 +75,18 @@ listing and monitoring input devices:
 
 .. code-block:: bash
 
-   $ python -m evdev.evtest
+   $ python3 -m evdev.evtest
+
+   ID  Device              Name                  Phys                             Uniq
+   -------------------------------------------------------------------------------------------
+   01  /dev/input/event11  Logitech MX Keys      usb-0000:00:14.0-5.4.4/input2:2  9a-b0-2c-b4
+   02  /dev/input/event12  Logitech MX Master 3  usb-0000:00:14.0-5.4.4/input2:1  f8-b5-f2-aa
+
+   Select devices [0-02]: 01
+   Listening for events (press ctrl-c to exit) ...
+   time 1787478743.772676 type 4 (EV_MSC), code 4    (MSC_SCAN), value 458976
+   time 1787478743.772676 type 1 (EV_KEY), code 29   (KEY_LEFTCTRL), value 1
+   time 1787478743.772676 ------------- SYN_REPORT -------------
+   time 1787478743.872566 type 4 (EV_MSC), code 4    (MSC_SCAN), value 458758
+   time 1787478743.872566 type 1 (EV_KEY), code 46   (KEY_C), value 1
+   time 1787478743.872566 ------------- SYN_REPORT -------------

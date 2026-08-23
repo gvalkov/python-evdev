@@ -115,11 +115,6 @@ Reading events from a single device in an endless loop.
 Reading events (using :mod:`asyncio`)
 ======================================
 
-.. note::
-
-   This requires Python 3.5+ for the async/await keywords.
-
-
 ::
 
     >>> import asyncio

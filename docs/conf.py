@@ -18,19 +18,32 @@ if str(src_dir) not in sys.path:
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
+    "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.extlinks",
     "sphinx_copybutton",
+    "sphinx_autodoc_typehints",
 ]
 
+napoleon_use_rtype = False
+napoleon_google_doscring = False
+
+typehints_use_rtype = False
+typehints_document_rtype_none = False
+
+autodoc_typehints = "none"
 autodoc_member_order = "bysource"
+always_use_bars_union = True
+typehints_defaults = "comma"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+}
 
 # The encoding of source files.
 # source_encoding = "utf-8-sig"
@@ -251,10 +264,31 @@ extlinks = {
 }
 
 
-def autodoc_process_docstring(what, name, obj, options, lines, docstring=None):
-    if isinstance(obj, dict) and obj.__doc__ is dict.__doc__:
-        del lines[:]
+def skip_namedtuple_dunders(app, what, name, obj, skip, options):
+    doc = getattr(obj, "__doc__", "") or ""
+    if "Alias for field number" in doc:
+        return True
 
+    hidden_attributes = {
+        "__orig_bases__",
+        "__parameters__",
+        "__annotations__",
+        "__annotate_func__",
+        "__annotations_cache__",
+        "__module__",
+        "__doc__",
+        "__new__",
+        "__getnewargs__",
+        "__replace__",
+        "__weakref__",
+        "__firstlineno__",
+        "__static_attributes__",
+    }
+
+    if name in hidden_attributes:
+        return True  # True means "skip this member"
+
+    return skip
 
 def setup(app):
-    app.connect("autodoc-process-docstring", autodoc_process_docstring)
+    app.connect("autodoc-skip-member", skip_namedtuple_dunders)

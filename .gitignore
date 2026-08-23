@@ -26,3 +26,4 @@ docs/_build
 src/evdev/_ecodes.py
 src/evdev/_input.py
 src/evdev/_uinput.py
+src/evdev/ecodes_generated.py
