@@ -482,7 +482,13 @@ upload_effect(PyObject *self, PyObject *args)
     ret = PyArg_ParseTuple(args, "iO", &fd, &effect_data);
     if (!ret) return NULL;
 
-    void* data = PyBytes_AsString(effect_data);
+    char* data;
+    Py_ssize_t data_size;
+    if (PyBytes_AsStringAndSize(effect_data, &data, &data_size) < 0) return NULL;
+    if (data_size < (Py_ssize_t)sizeof(struct ff_effect)) {
+        PyErr_SetString(PyExc_ValueError, "effect data is too short for struct ff_effect");
+        return NULL;
+    }
     struct ff_effect effect = {};
     memmove(&effect, data, sizeof(struct ff_effect));
 
