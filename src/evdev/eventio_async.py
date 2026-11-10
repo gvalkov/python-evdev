@@ -44,10 +44,14 @@ class ReadIterator:
 
             def next_batch_ready(batch):
                 try:
-                    self.current_batch = batch.result()
+                    result = batch.result()
+                    if future.done():
+                        return
+                    self.current_batch = result
                     future.set_result(next(self.current_batch))
                 except Exception as e:
-                    future.set_exception(e)
+                    if not future.done():
+                        future.set_exception(e)
 
             self.device.async_read().add_done_callback(next_batch_ready)
         return future
@@ -71,6 +75,8 @@ class EventIO(eventio.EventIO):
         loop.add_reader(self.fileno(), ready)
 
     def _set_result(self, future, cb) -> None:
+        if future.done():
+            return
         try:
             future.set_result(cb())
         except Exception as error:
